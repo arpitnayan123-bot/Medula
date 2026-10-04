@@ -991,3 +991,27 @@ Stage Summary:
 - GitHub main is byte-identical to local HEAD 2245355 (224 files, tree SHA match = full content identity).
 - Repo now reflects: sky-blue light theme pinned, Medical Map → Doubt Search, simplified All Subjects, strict homepage redesign, live top-journal research feeds.
 - PAT remains inline-only; rotation still recommended for the user.
+
+---
+Task ID: 26
+Agent: Z.ai Code (main)
+Task: PRODUCT 01 — Medical Learn: build LEARN as a separate, major first-class section
+
+Work Log:
+- Inspected existing Learn infra: learn-view (hero/NBA/phases/systems/atlas/papers), concept-explorer with full lessons (114/186 concepts), /api/learn/{home,curriculum,atlas,papers}, ConceptEdge (293), CurriculumSource/Asset3D/ResearchPaper engine models. DB: 31 subjects · 123 topics · 186 concepts · 182 Qs · 115 cards · 4 cases · 32 3D assets.
+- Gap analysis: no dedicated topic study surface, no Year framing, no 5-state progress (user marks), no connected flow rail, cross-subject links not surfaced at topic level.
+- Schema: added LearnProgress (standalone, no FK → non-destructive db:push) — profileId+kind(topic|concept)+entityId+status, unique per (profile,kind,entity).
+- New lib src/lib/learn-status.ts: 5-state model (not-started/learning/completed/needs-revision/mastered); resolution = user mark ?? analytics (score≥85+recall≥0.65→mastered, recall<0.55→needs-revision, engaged→learning).
+- New APIs: GET /api/learn/topic/[id] (concepts w/ status, kind groups, flow counts, key facts aggregated ONLY from existing lesson fields, sibling+cross-subject topics via real ConceptEdges, section availability, evidence rollup, cases, 3D assets); GET /api/learn/subject/[id] (per-topic status rollups, registry); GET/POST /api/learn/progress (resolve/set/clear marks, entity existence validated).
+- New src/components/learn/learn-study.tsx: LearnStudyOverlay slide-over (z-50, mounted BEFORE ConceptExplorer so concepts stack above) with internal stack Subject→Topic (depth≤3, Back button, Escape, body-scroll lock). TopicStudy = breadcrumb + header mark dropdown + mastery + state chips + FLOW RAIL (Learn/Understand/Explore/Clinical/Practice/Revise — each wired: lesson→explorer, cases/questions/revise→views with closeLearn hand-off; 0-count steps honestly disabled) + concepts grouped by kind with per-concept ProgressMark + key facts + case strip + connected-topics cards (cross-subject push) + sources/evidence footer. SubjectStudy = year/phase header + Quiz subject + mastery + 5-state legend + topics by system + curriculum registry.
+- Learn view: added MBBS year chips (All/1/2/3/4, spanning subjects always visible); subject cards now openLearn('subject') — removed inline accordion machinery (subjectCache/topicConcepts/graph fetches), file −150 lines and shallower.
+- ConceptExplorer: added ProgressMark (5-state) in header actions, resolved via ?conceptId= progress API.
+- button.tsx: added xs size variant.
+- Fixes found in E2E: (1) nested-button hydration error — concept cards restructured to div + inner lesson button + sibling ProgressMark; (2) mobile horizontal overflow 415/390 — "Physical Medicine & Rehabilitation" nowrap truncate forced grid track to 399px; fixed with min-w-0 on grid items (learn-view subject cards + study-surface cards).
+- Verified agent-browser: resume gate intact → #/learn → Year 1 filter → Physiology → topics by system (Renal/Cardiovascular/Endocrine/Respiratory/GI) → Cardiac Action Potential topic (flow rail: Learn 1/1, Understand 30s, Explore 0 disabled, Clinical 1 case, Practice/Revise honest) → Understand opened explorer above overlay → topic mark persisted to DB → cross-subject: ACS → Cardiovascular Drugs (Pharmacology) with Back → Practice handed off to #/questions → concept mark persisted (c2-physiology-cardiac-action-potential: learning). Mobile 390 zero overflow; desktop 1440 clean; screenshots agent-ctx/p01-*.png. lint 0 errors; tsc src/ clean.
+- Committed 1a3d428 + pushed to GitHub (SHA verified: local == remote).
+
+Stage Summary:
+- LEARN is now a first-class connected knowledge system: Year → Subject → System → Topic → Concept with a 6-step flow rail, 5-state progress (explicit marks override analytics), cross-subject discovery via real curriculum edges, and honest content-honesty rules throughout (measured counts, attribution-not-reproduction sources footer, no fabricated facts).
+- Future-ready: progress API is entity-generic (topic|concept), topic payload carries section availability for deeper renderers, overlay stack caps depth, all hand-offs use existing store presets (quizPreset/researchSeedQuery/tutor-question).
+- Suggested next: surface LearnProgress on Home dashboard ("completed this week"), doubt-search subject menu → openLearn hand-off, ⌘K overlay deep links to topics.
