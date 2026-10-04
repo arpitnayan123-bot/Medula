@@ -7,7 +7,7 @@ import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
 import { Logo } from '@/components/brand/logo'
 import { cn } from '@/lib/utils'
 import {
-  Home, Brain, BookOpen, CircleHelp, Stethoscope, RefreshCcw,
+  Home, Brain, BookMarked, BookOpen, CircleHelp, Stethoscope, RefreshCcw,
   Sparkles, UserRound, Search, Menu, X,
   Keyboard, WifiOff, LayoutGrid, Compass, FlaskConical,
 } from 'lucide-react'
@@ -17,6 +17,7 @@ import type { View } from '@/lib/types'
 const NAV: { id: View; label: string; icon: typeof Home; hint?: string }[] = [
   { id: 'home', label: 'Home', icon: Home },
   { id: 'map', label: 'Search', icon: Search },
+  { id: 'hub', label: 'Topic Hub', icon: BookMarked },
   { id: 'learn', label: 'Learn', icon: BookOpen },
   { id: 'questions', label: 'Questions', icon: CircleHelp },
   { id: 'revise', label: 'Revise', icon: RefreshCcw },
@@ -32,7 +33,7 @@ const NAV: { id: View; label: string; icon: typeof Home; hint?: string }[] = [
 // rows — the library is assimilated, not scattered. Profile lives in the
 // sidebar footer card (desktop) and the More sheet (mobile), not the groups.
 const NAV_GROUPS: { title: string; items: View[] }[] = [
-  { title: 'Daily study', items: ['home', 'map', 'learn', 'questions', 'revise'] },
+  { title: 'Daily study', items: ['home', 'map', 'hub', 'learn', 'questions', 'revise'] },
   { title: 'Clinical & deep dives', items: ['understand', 'cases'] },
   { title: 'Discover', items: ['research', 'explore', 'tutor'] },
 ]

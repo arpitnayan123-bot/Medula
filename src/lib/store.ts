@@ -8,8 +8,64 @@ import type { Profile, View } from './types'
 // the doctor back where they left off, and mirror to the URL hash (#/map)
 // so a reload keeps the same view.
 export const APP_VIEWS: readonly View[] = [
-  'home', 'map', 'explore', 'research', 'understand', 'learn', 'questions', 'cases', 'revise', 'tutor', 'progress', 'roadmap', 'profile',
+  'home', 'map', 'explore', 'research', 'understand', 'learn', 'hub', 'questions', 'cases', 'revise', 'tutor', 'progress', 'roadmap', 'profile',
 ] as const
+
+// ── Topic Hub deep links ────────────────────────────────────────────────
+// The hub supports shareable deep links of the form #/hub?topic=<id> (and
+// ?concept=<id> when a search resolved a concept). page.tsx normalises the
+// hash to #/hub, so the Topic Hub view re-reads the full hash on mount and
+// also mirrors the resolved target into sessionStorage for reloads.
+export const HUB_TOPIC_KEY = 'medula:hub-topic'
+export const HUB_CONCEPT_KEY = 'medula:hub-concept'
+
+export function parseHubHash(hash?: string): { topicId: string | null; conceptId: string | null } {
+  const h = hash ?? (typeof window !== 'undefined' ? window.location.hash : '')
+  if (!h.startsWith('#/hub')) return { topicId: null, conceptId: null }
+  let topicId: string | null = null
+  let conceptId: string | null = null
+  try {
+    const qs = h.slice('#/hub'.length).replace(/^\?/, '')
+    for (const part of qs.split('&')) {
+      const [k, v] = part.split('=')
+      const val = v ? decodeURIComponent(v) : null
+      if (k === 'topic' && val) topicId = val
+      if (k === 'concept' && val) conceptId = val
+    }
+  } catch { /* malformed hash — ignore */ }
+  return { topicId, conceptId }
+}
+
+export function writeHubHash(topicId: string, conceptId: string | null): void {
+  if (typeof window === 'undefined') return
+  const qs = new URLSearchParams({ topic: topicId })
+  if (conceptId) qs.set('concept', conceptId)
+  try { window.history.replaceState(null, '', `#/hub?${qs.toString()}`) } catch { /* private mode */ }
+}
+
+export function readHubKeys(): { topicId: string | null; conceptId: string | null } {
+  if (typeof window === 'undefined') return { topicId: null, conceptId: null }
+  let topicId: string | null = null
+  let conceptId: string | null = null
+  try { topicId = window.sessionStorage.getItem(HUB_TOPIC_KEY) } catch { /* private mode */ }
+  try { conceptId = window.sessionStorage.getItem(HUB_CONCEPT_KEY) } catch { /* private mode */ }
+  if (!topicId) {
+    const fromHash = parseHubHash()
+    topicId = fromHash.topicId
+    conceptId = conceptId ?? fromHash.conceptId
+  }
+  return { topicId, conceptId }
+}
+
+export function writeHubKeys(topicId: string | null, conceptId: string | null): void {
+  if (typeof window === 'undefined') return
+  try {
+    if (topicId) window.sessionStorage.setItem(HUB_TOPIC_KEY, topicId)
+    else window.sessionStorage.removeItem(HUB_TOPIC_KEY)
+    if (conceptId) window.sessionStorage.setItem(HUB_CONCEPT_KEY, conceptId)
+    else window.sessionStorage.removeItem(HUB_CONCEPT_KEY)
+  } catch { /* private mode */ }
+}
 
 export const LAST_VIEW_KEY = 'medos:last-view'
 export const SESSION_KEY = 'medos:session'
@@ -68,13 +124,15 @@ export function readStoredView(): View | null {
 export function viewFromHash(hash?: string): View | null {
   const h = hash ?? (typeof window !== 'undefined' ? window.location.hash : '')
   if (!h) return null
-  const m = /^#\/([a-z]+)$/.exec(h)
+  // Tolerate query params (e.g. #/hub?topic=x) — the param payload is
+  // recovered by the target view itself via parseHubHash/readHubKeys.
+  const m = /^#\/([a-z]+)(\?.*)?$/.exec(h)
   return isAppView(m?.[1] ?? null) ? (m![1] as View) : null
 }
 
 export function viewToLabel(v: View): string {
   const labels: Partial<Record<View, string>> = {
-    home: 'Home', map: 'Doubt Search', explore: 'Explore Medicine', research: 'the Research Hub', understand: 'Understand Your Topic', learn: 'Learn', questions: 'the Question Lab',
+    home: 'Home', map: 'Doubt Search', explore: 'Explore Medicine', research: 'the Research Hub', understand: 'Understand Your Topic', learn: 'Learn', hub: 'the Topic Hub', questions: 'the Question Lab',
     cases: 'the Case Simulator', revise: 'Revise', tutor: 'the AI Tutor',
     progress: 'Progress', roadmap: 'Roadmap', profile: 'Profile',
   }
@@ -88,11 +146,12 @@ interface AppState {
   loadingProfile: boolean
   conceptFocus: string | null // concept explorer target
   learnFocus: { kind: 'subject' | 'topic'; id: string } | null // Learn study surfaces (PRODUCT 01)
+  hubFocus: { topicId: string; conceptId: string | null } | null // Topic Hub target (PRODUCT 02)
   searchOpen: boolean
   auditOpen: boolean
   shortcutsOpen: boolean // keyboard cheat-sheet overlay (?)
   mapScope: string | null // pending scope to apply in the map view (e.g. "subject:anatomy")
-  quizPreset: { subjectCode?: string; system?: string; conceptId?: string; count?: number; pairId?: string; pairLabel?: string } | null
+  quizPreset: { subjectCode?: string; system?: string; conceptId?: string; topicId?: string; count?: number; pairId?: string; pairLabel?: string } | null
   researchSeedQuery: string | null // query handed from Explore → Research Hub
   setView: (v: View) => void
   setProfile: (p: Profile | null) => void
@@ -101,6 +160,8 @@ interface AppState {
   closeConcept: () => void
   openLearn: (kind: 'subject' | 'topic', id: string) => void
   closeLearn: () => void
+  openHub: (topicId: string, conceptId?: string | null) => void
+  closeHub: () => void
   setSearchOpen: (v: boolean) => void
   setAuditOpen: (v: boolean) => void
   setShortcutsOpen: (v: boolean) => void
@@ -116,6 +177,7 @@ export const useAppStore = create<AppState>((set) => ({
   loadingProfile: true,
   conceptFocus: null,
   learnFocus: null,
+  hubFocus: null,
   searchOpen: false,
   auditOpen: false,
   shortcutsOpen: false,
@@ -134,6 +196,16 @@ export const useAppStore = create<AppState>((set) => ({
   closeConcept: () => set({ conceptFocus: null }),
   openLearn: (kind, id) => set({ learnFocus: { kind, id } }),
   closeLearn: () => set({ learnFocus: null }),
+  openHub: (topicId, conceptId = null) => {
+    writeHubKeys(topicId, conceptId)
+    writeHubHash(topicId, conceptId)
+    try { window.localStorage.setItem(LAST_VIEW_KEY, 'hub') } catch { /* private mode */ }
+    set({ view: 'hub', hubFocus: { topicId, conceptId } })
+  },
+  closeHub: () => {
+    writeHubKeys(null, null)
+    set({ hubFocus: null })
+  },
   setSearchOpen: (v) => set({ searchOpen: v }),
   setAuditOpen: (v) => set({ auditOpen: v }),
   setShortcutsOpen: (v) => set({ shortcutsOpen: v }),

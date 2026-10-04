@@ -10,6 +10,9 @@ export const dynamic = 'force-dynamic'
 // mix=random     → uniform shuffle (default)
 // subjects=MED,SURG → restrict the pool to these subject codes (composable with any mix;
 //                       only applied when the single `subjectCode` param is absent)
+// topicId=t-…    → topic-focused practice (PRODUCT 02): questions tied to the
+//                  topic's concepts (Question.topicId is an unkeyed string, so
+//                  the concept relation is the honest source of truth)
 // pair=cf-11     → confusion-pair drill: questions tagged to either concept of the
 //                  ConfusionPair, topped up from the pair's own subject if short
 type Mix = 'random' | 'high-yield' | 'weak'
@@ -23,6 +26,7 @@ export async function GET(req: NextRequest) {
   const subjectsParam = sp.get('subjects') ?? undefined
   const system = sp.get('system') ?? undefined
   const conceptId = sp.get('conceptId') ?? undefined
+  const topicId = sp.get('topicId') ?? undefined
   const qtype = sp.get('qtype') ?? undefined
   const pairId = sp.get('pair') ?? undefined
   const mix = (sp.get('mix') ?? 'random') as Mix
@@ -43,6 +47,13 @@ export async function GET(req: NextRequest) {
   }
   if (system) where.system = system
   if (conceptId) where.OR = [{ conceptId }, { concept: { edgesIn: { some: { fromId: conceptId } } } }]
+  if (topicId) {
+    // Topic pool = questions directly tied to the topic's concepts, plus the
+    // rare rows whose string topicId matches. Falls back cleanly when empty.
+    const topicConcepts = await db.concept.findMany({ where: { topicId }, select: { id: true } })
+    const topicOr: Record<string, unknown>[] = [{ topicId }, { conceptId: { in: topicConcepts.map((c) => c.id) } }]
+    where.OR = Array.isArray(where.OR) ? [...(where.OR as Record<string, unknown>[]), ...topicOr] : topicOr
+  }
   if (qtype) where.qtype = qtype
 
   // Confusion-pair drill: resolve the pair, then pull questions tied to either

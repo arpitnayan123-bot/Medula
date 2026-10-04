@@ -10,10 +10,10 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { motion, useReducedMotion } from 'framer-motion'
 import {
   ArrowRight,
+  BookMarked,
   BookOpen,
   Brain,
   CircleHelp,
-  FileText,
   FlaskConical,
   Layers,
   Library,
@@ -95,6 +95,7 @@ function ResultRow({
   tag,
   tone,
   onClick,
+  children,
 }: {
   icon: LucideIcon
   title: string
@@ -102,25 +103,31 @@ function ResultRow({
   tag?: string
   tone?: 'primary'
   onClick: () => void
+  /** Optional sibling actions rendered NEXT to the main button (never nested
+      inside it — nested <button> breaks hydration). */
+  children?: React.ReactNode
 }) {
   return (
-    <button
-      type="button"
-      onClick={onClick}
-      className="group flex min-h-12 w-full items-center gap-3 rounded-xl border border-line bg-card/70 px-3 py-2 text-left transition-colors hover:border-primary/40 hover:bg-primary/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-    >
-      <RowIcon icon={icon} tone={tone} />
-      <span className="min-w-0 flex-1">
-        <span className="block truncate text-sm font-medium text-foreground">{title}</span>
-        {sub && <span className="mt-0.5 block truncate text-xs text-ink-soft">{sub}</span>}
-      </span>
-      {tag && (
-        <span className="shrink-0 rounded-full border border-line bg-surface-2 px-2 py-0.5 text-[10px] uppercase tracking-wide text-ink-soft">
-          {tag}
+    <div className="group flex min-h-12 w-full items-center gap-2 rounded-xl border border-line bg-card/70 py-1 pl-1 pr-3 transition-colors focus-within:ring-2 focus-within:ring-ring hover:border-primary/40 hover:bg-primary/5">
+      <button
+        type="button"
+        onClick={onClick}
+        className="flex min-w-0 flex-1 items-center gap-3 py-1 text-left focus-visible:outline-none"
+      >
+        <RowIcon icon={icon} tone={tone} />
+        <span className="min-w-0 flex-1">
+          <span className="block truncate text-sm font-medium text-foreground">{title}</span>
+          {sub && <span className="mt-0.5 block truncate text-xs text-ink-soft">{sub}</span>}
         </span>
-      )}
-      <ArrowRight className="size-4 shrink-0 text-ink-soft opacity-0 transition-opacity group-hover:opacity-100" aria-hidden />
-    </button>
+        {tag && (
+          <span className="shrink-0 rounded-full border border-line bg-surface-2 px-2 py-0.5 text-[10px] uppercase tracking-wide text-ink-soft">
+            {tag}
+          </span>
+        )}
+        <ArrowRight className="size-4 shrink-0 text-ink-soft opacity-0 transition-opacity group-hover:opacity-100" aria-hidden />
+      </button>
+      {children}
+    </div>
   )
 }
 
@@ -129,6 +136,7 @@ function ResultRow({
 export function DoubtSearchView() {
   const setView = useAppStore((s) => s.setView)
   const openConcept = useAppStore((s) => s.openConcept)
+  const openHub = useAppStore((s) => s.openHub)
   const setQuizPreset = useAppStore((s) => s.setQuizPreset)
   const setResearchSeedQuery = useAppStore((s) => s.setResearchSeedQuery)
   const mapScope = useAppStore((s) => s.mapScope)
@@ -403,7 +411,18 @@ export function DoubtSearchView() {
                   onClick={() => {
                     openConcept(c.id)
                   }}
-                />
+                >
+                  {c.topicId && (
+                    <button
+                      type="button"
+                      onClick={(e) => { e.stopPropagation(); openHub(c.topicId!, c.id) }}
+                      className="ml-auto inline-flex shrink-0 items-center gap-1 rounded-full border border-primary/35 bg-primary/10 px-2.5 py-1 text-[10px] font-semibold text-primary transition-colors hover:bg-primary/15"
+                      aria-label={`Open ${c.name} in the Topic Hub`}
+                    >
+                      <BookMarked className="size-3" aria-hidden /> Topic Hub
+                    </button>
+                  )}
+                </ResultRow>
               ))}
             </section>
           )}
@@ -412,7 +431,14 @@ export function DoubtSearchView() {
             <section className="space-y-2">
               <GroupHeader label="Topics" count={results.topics.length} />
               {results.topics.slice(0, 4).map((t) => (
-                <ResultRow key={t.id} icon={FileText} title={t.name} sub={t.subject} tag="Learn" onClick={() => setView('learn')} />
+                <ResultRow
+                  key={t.id}
+                  icon={BookMarked}
+                  title={t.name}
+                  sub={`${t.subject} — everything for this topic in one hub`}
+                  tag="Topic Hub"
+                  onClick={() => openHub(t.id)}
+                />
               ))}
             </section>
           )}

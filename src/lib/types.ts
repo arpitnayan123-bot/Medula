@@ -18,7 +18,7 @@ export type CurriculumRecord = CurriculumRecordContract
 export type Phase = SubjectTaxonomyContract['phase']
 
 export type View =
-  | 'landing' | 'signin' | 'onboarding' | 'home' | 'map' | 'explore' | 'research' | 'understand' | 'learn' | 'questions'
+  | 'landing' | 'signin' | 'onboarding' | 'home' | 'map' | 'explore' | 'research' | 'understand' | 'learn' | 'hub' | 'questions'
   | 'cases' | 'revise' | 'tutor' | 'progress' | 'roadmap' | 'profile'
 
 export interface Profile {
@@ -190,7 +190,7 @@ export interface RevisionPayload {
 }
 
 export interface SearchResults {
-  concepts: { id: string; name: string; kind: string; summary: string; subject: string }[]
+  concepts: { id: string; name: string; kind: string; summary: string; subject: string; topicId?: string }[]
   subjects: { id: string; name: string; code: string; blurb: string }[]
   questions: { id: string; stem: string }[]
   flashcards: { id: string; front: string; subjectCode: string }[]
@@ -445,4 +445,109 @@ export interface TopicProgressPayload {
 export interface AllProgressPayload {
   topics: Record<string, { status: string; updatedAt: string }>
   concepts: Record<string, { status: string; updatedAt: string }>
+}
+
+// ───────────────── TOPIC HUB (PRODUCT 02 — ONE TOPIC, EVERYTHING) ─────────────────
+
+/** One honest external entry point — always a real search/deep link, never a fabricated embed. */
+export interface HubExternalResource {
+  label: string
+  provider: string
+  kind: 'video' | 'reference' | 'imaging'
+  url: string
+  note: string
+}
+
+/** A living-scene item matched from the platform's Understand library. */
+export interface HubWatchPlatform {
+  id: string
+  title: string
+  emoji: string
+  oneLiner: string
+  sceneId: string | null
+  anchor: boolean // true = the organ-system's primary scene
+}
+
+/** Concept.detail structured section surfaced as a note block. */
+export interface HubNoteSection {
+  conceptId: string
+  conceptName: string
+  heading: string
+  bullets: string[]
+  table?: { headers: string[]; rows: string[][] } | null
+}
+
+/** GET /api/hub/topic/<id> — the unified one-topic hub payload. */
+export interface HubTopicPayload {
+  topic: TopicStudyPayload['topic']
+  focusConcept: { id: string; name: string; summary: string; whyMatters: string } | null
+  progress: TopicStudyPayload['progress']
+  statusCounts: LearnStatusCounts
+  mastery: number
+  atGlance: {
+    concepts: number; lessons: number; scenes: number
+    notes: number; questions: number; cases: number
+    flashcards: number; dueCards: number; revisionItems: number
+  }
+  learn: {
+    concepts: TopicStudyPayload['concepts']
+    groups: TopicStudyPayload['groups']
+  }
+  watch: {
+    platform: HubWatchPlatform[]
+    external: HubExternalResource[]
+  }
+  read: {
+    sections: string[] // available lesson section keys, human labels
+    notes: HubNoteSection[] // concept.detail structured notes (max 6)
+    keyFacts: TopicStudyPayload['keyFacts']
+    external: HubExternalResource[]
+  }
+  practice: {
+    questions: number
+    byType: { qtype: string; label: string; count: number }[]
+    highYield: number // difficulty 3 questions
+    imageBased: number // questions tagged imaging/x-ray/ecg etc.
+    attempts: { total: number; correct: number; accuracy: number | null; lastAt: string | null }
+  }
+  cases: {
+    id: string; title: string; specialty: string; difficulty: number
+    attempted: boolean; bestScore: number | null
+  }[]
+  revise: {
+    flashcards: number
+    dueCards: number
+    revisionItems: { conceptId: string; conceptName: string; reason: string; dueAt: string; minutes: number }[]
+    confusionPairs: { id: string; a: string; b: string; mnemonic: string }[]
+    missedConcepts: { id: string; name: string; misses: number }[] // wrong answers on this topic's questions
+  }
+  performance: {
+    attemptsTotal: number
+    attemptsCorrect: number
+    accuracy: number | null
+    engagedConcepts: number
+    weakConcepts: { id: string; name: string; mastery: number }[]
+    dueCards: number
+    pendingRevision: number
+    recentActivity: { kind: string; label: string; at: string }[]
+  }
+  connected: TopicStudyPayload['connectedTopics']
+  evidence: TopicStudyPayload['evidence']
+  ai: { label: string; prompt: string; kind: 'ask' | 'explain' | 'analogy' | 'quiz' | 'cases' | 'summarize' | 'revise' }[]
+}
+
+/** GET /api/hub/home — hub landing suggestions. */
+export interface HubHomePayload {
+  suggested: {
+    id: string; name: string; systemLabel: string | null
+    subjectName: string; subjectColor: string
+    importance: number
+    concepts: number; questions: number; flashcards: number; cases: number
+    reason: string
+  }[]
+  continueTopics: {
+    id: string; name: string; subjectName: string; subjectColor: string
+    status: string; updatedAt: string
+  }[]
+  totals: { topics: number; concepts: number; questions: number; flashcards: number; cases: number }
 }

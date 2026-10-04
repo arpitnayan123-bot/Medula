@@ -52,6 +52,7 @@ interface RunParams {
   subjectCode?: string
   system?: string
   conceptId?: string
+  topicId?: string
   count?: number
   qtype?: string
   pairId?: string
@@ -75,6 +76,7 @@ interface QuizPresetParams {
   subjectCode?: string
   system?: string
   conceptId?: string
+  topicId?: string
   count?: number
   pairId?: string
   pairLabel?: string
@@ -511,6 +513,15 @@ export function QuizView() {
         (res) => setFocusLabel(res.name),
         () => setFocusLabel('Focused concept'),
       )
+    } else if (params.topicId) {
+      // Topic-focused run (Topic Hub / Learn hand-off) — label from the topic.
+      setFocusLabel('Focused topic')
+      fetch(`/api/learn/topic/${encodeURIComponent(params.topicId)}`)
+        .then((r) => (r.ok ? r.json() : null))
+        .then((d: { topic?: { name?: string } } | null) => {
+          if (d?.topic?.name) setFocusLabel(d.topic.name)
+        })
+        .catch(() => { /* label stays generic */ })
     } else {
       setFocusLabel(null)
     }
@@ -544,6 +555,7 @@ export function QuizView() {
         subjectCode: preset.subjectCode,
         system: preset.system,
         conceptId: preset.conceptId,
+        topicId: preset.topicId,
         count: preset.count ?? 6,
         pairId: preset.pairId,
         pairLabel: preset.pairLabel,

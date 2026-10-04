@@ -4,7 +4,9 @@ import type { SearchResults } from '@/lib/types'
 
 export const dynamic = 'force-dynamic'
 
-// Medical-language-aware search: abbreviations, synonyms, partial matching
+// Medical-language-aware search: abbreviations, synonyms, partial matching.
+// PRODUCT 02: expanded abbreviation coverage so the Topic Hub resolves the
+// way students actually type (NS, CHF, CKD…) — standard abbreviations only.
 const SYNONYMS: Record<string, string[]> = {
   raas: ['renin', 'angiotensin', 'aldosterone'],
   mi: ['myocardial infarction', 'heart attack'],
@@ -24,13 +26,30 @@ const SYNONYMS: Record<string, string[]> = {
   mcd: ['minimal change'],
   gn: ['glomerulonephritis'],
   hf: ['heart failure'],
+  chf: ['heart failure', 'congestive'],
   cvd: ['cardiovascular'],
   gynae: ['gynaecology', 'obstetrics'],
   obg: ['obstetrics'],
   'nephrotic syndrome': ['proteinuria'],
-  'nephritic': ['hematuria', 'rbc casts'],
+  nephrotic: ['proteinuria', 'hypoalbuminemia', 'glomerular'],
+  nephritic: ['hematuria', 'rbc casts', 'glomerular'],
+  glomerular: ['nephrotic', 'nephritic'],
+  'heart failure': ['cardiac', 'ejection'],
+  'heart attack': ['myocardial infarction'],
   edema: ['swelling'],
   anxiety: ['psychiatry'],
+  copd: ['chronic obstructive', 'emphysema'],
+  dka: ['diabetic ketoacidosis', 'ketoacidosis'],
+  sle: ['lupus'],
+  uti: ['urinary tract'],
+  arf: ['acute renal', 'acute kidney'],
+  ecg: ['electrocardiogram', 'ekg'],
+  arrhythmia: ['arrhythmias', 'conduction'],
+  anemia: ['anaemia', 'hemoglobin'],
+  anaemia: ['anemia', 'haemoglobin'],
+  thyroid: ['thyroid hormone', 'goiter'],
+  seizure: ['seizures', 'epilepsy'],
+  stroke: ['cerebrovascular', 'infarct'],
 }
 
 export async function GET(req: NextRequest) {
@@ -79,7 +98,7 @@ export async function GET(req: NextRequest) {
   ])
 
   const payload: SearchResults = {
-    concepts: concepts.map(c => ({ id: c.id, name: c.name, kind: c.kind, summary: c.summary, subject: c.topic.subject.name })),
+    concepts: concepts.map(c => ({ id: c.id, name: c.name, kind: c.kind, summary: c.summary, subject: c.topic.subject.name, topicId: c.topicId })),
     subjects: subjects.map(s => ({ id: s.id, name: s.name, code: s.code, blurb: s.blurb })),
     questions, flashcards, cases,
     topics: topics.map(t => ({ id: t.id, name: t.name, subject: t.subject.name })),

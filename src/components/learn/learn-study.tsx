@@ -227,6 +227,7 @@ function TopicStudy({ topicId, onBack, onOpenSubject, onOpenTopic }: {
   const setView = useAppStore((s) => s.setView)
   const setQuizPreset = useAppStore((s) => s.setQuizPreset)
   const closeLearn = useAppStore((s) => s.closeLearn)
+  const openHub = useAppStore((s) => s.openHub)
 
   const [data, setData] = useState<TopicStudyPayload | null>(null)
   const [loading, setLoading] = useState(true)
@@ -389,11 +390,21 @@ function TopicStudy({ topicId, onBack, onOpenSubject, onOpenTopic }: {
           </div>
           <div className="flex flex-wrap items-start justify-between gap-3">
             <h1 className="text-2xl font-semibold tracking-tight md:text-3xl">{t.name}</h1>
-            <ProgressMark
-              status={data.progress.status}
-              marked={data.progress.marked}
-              onSet={(s) => void markTopic(s)}
-            />
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => { closeLearn(); openHub(t.id) }}
+                className="inline-flex items-center gap-1.5 rounded-full border border-primary/35 bg-primary/10 px-3 py-1.5 text-xs font-semibold text-primary transition-colors hover:bg-primary/15"
+                aria-label={`Open ${t.name} in the Topic Hub`}
+              >
+                <Sparkles className="size-3.5" /> Full hub
+              </button>
+              <ProgressMark
+                status={data.progress.status}
+                marked={data.progress.marked}
+                onSet={(s) => void markTopic(s)}
+              />
+            </div>
           </div>
           {t.description && (
             <p className="max-w-2xl text-sm leading-relaxed text-ink-soft md:text-[15px]">{t.description}</p>

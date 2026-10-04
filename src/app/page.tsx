@@ -11,6 +11,7 @@ import { DashboardView } from '@/components/dashboard/dashboard-view'
 import { DoubtSearchView } from '@/components/search/doubt-search-view'
 import { UnderstandView } from '@/components/understand/understand-view'
 import { LearnView } from '@/components/learn/learn-view'
+import { HubView } from '@/components/hub/hub-view'
 import { QuestionsIndex } from '@/components/questions/questions-index'
 import { CasesView } from '@/components/cases/cases-view'
 import { ReviseView } from '@/components/revise/revise-view'
@@ -102,6 +103,7 @@ export default function Home() {
       {view === 'research' && <ResearchView initialQuery={researchSeedQuery ?? undefined} />}
       {view === 'understand' && <UnderstandView />}
       {view === 'learn' && <LearnView />}
+      {view === 'hub' && <HubView />}
       {view === 'questions' && <QuestionsIndex />}
       {view === 'cases' && <CasesView />}
       {view === 'revise' && <ReviseView />}

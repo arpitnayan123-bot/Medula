@@ -24,6 +24,7 @@ import type {
   LearnHomeClient, CurriculumBrowsePayload, SubjectTopicsPayload,
   AtlasListPayload, PapersListPayload,
   TopicStudyPayload, SubjectStudyPayload, TopicProgressPayload, LearnStatus,
+  HubTopicPayload, HubHomePayload,
 } from './types'
 
 export const api = {
@@ -44,7 +45,7 @@ export const api = {
   concept: (id: string) => get<ConceptDetail>(`/api/concepts/${id}`),
   subjects: () => get<{ subjects: import('./types').SubjectSummary[] }>('/api/subjects'),
   subject: (id: string) => get<{ subject: import('./types').SubjectSummary; topics: import('./types').TopicSummary[] }>(`/api/subjects/${id}`),
-  questions: (params: { subjectCode?: string; subjects?: string; system?: string; conceptId?: string; count?: number; qtype?: string; mode?: string; mix?: 'random' | 'high-yield' | 'weak'; pair?: string }) => {
+  questions: (params: { subjectCode?: string; subjects?: string; system?: string; conceptId?: string; topicId?: string; count?: number; qtype?: string; mode?: string; mix?: 'random' | 'high-yield' | 'weak'; pair?: string }) => {
     const q = new URLSearchParams(Object.entries(params).filter(([, v]) => v != null).map(([k, v]) => [k, String(v)])).toString()
     return get<{ questions: QuestionClient[] }>(`/api/questions?${q}`)
   },
@@ -105,4 +106,9 @@ export const api = {
     get<{ conceptId: string; name: string; marked: string | null; markedAt: string | null; status: LearnStatus }>(`/api/learn/progress?conceptId=${encodeURIComponent(conceptId)}`),
   setLearnProgress: (body: { kind: 'topic' | 'concept'; entityId: string; status: string | null }) =>
     post<{ ok: boolean; status: string | null; cleared?: boolean }>('/api/learn/progress', body),
+
+  // ── Topic Hub (PRODUCT 02 — ONE TOPIC, EVERYTHING) ──
+  hubTopic: (id: string, conceptId?: string | null) =>
+    get<HubTopicPayload>(`/api/hub/topic/${encodeURIComponent(id)}${conceptId ? `?concept=${encodeURIComponent(conceptId)}` : ''}`),
+  hubHome: () => get<HubHomePayload>('/api/hub/home'),
 }
