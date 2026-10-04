@@ -26,6 +26,8 @@ import type {
   TopicStudyPayload, SubjectStudyPayload, TopicProgressPayload, LearnStatus,
   HubTopicPayload, HubHomePayload,
   TutorContextPayload, TutorSessionSummary, TutorSessionDetail,
+  AdaptiveConfig, AdaptiveHomePayload, AdaptiveSessionStart, AdaptiveAnswerFeedback,
+  AdaptiveNextQuestion, AdaptiveReport,
 } from './types'
 
 export const api = {
@@ -127,4 +129,65 @@ export const api = {
   hubTopic: (id: string, conceptId?: string | null) =>
     get<HubTopicPayload>(`/api/hub/topic/${encodeURIComponent(id)}${conceptId ? `?concept=${encodeURIComponent(conceptId)}` : ''}`),
   hubHome: () => get<HubHomePayload>('/api/hub/home'),
+
+  // ── Adaptive MCQ Engine (PRODUCT 04) ──
+  // Shapes are the frozen contract in types.ts (Adaptive*). Saved-question and
+  // AI payloads are typed defensively — the backend ships in parallel.
+  adaptiveHome: () => get<AdaptiveHomePayload>('/api/adaptive/home'),
+  startAdaptiveSession: (body: { config: AdaptiveConfig }) =>
+    post<AdaptiveSessionStart>('/api/adaptive/session', body),
+  answerAdaptive: (body: { sessionId: string; questionId: string; selected: string; timeMs: number; confidence: number; marked?: boolean }) =>
+    post<AdaptiveAnswerFeedback>('/api/adaptive/answer', body),
+  adaptiveAnswerType: (body: { sessionId: string; questionId: string; errorType: string }) =>
+    post<{ ok: boolean }>('/api/adaptive/answer-type', body),
+  nextAdaptive: (body: { sessionId: string }) =>
+    post<AdaptiveNextQuestion>('/api/adaptive/next', body),
+  completeAdaptive: (body: { sessionId: string }) =>
+    post<AdaptiveReport>('/api/adaptive/complete', body),
+  adaptiveAi: (body: { action: 'explain' | 'simplify' | 'similar' | 'harder' | 'easier' | 'weakness'; questionId?: string; conceptId?: string }) =>
+    post<AdaptiveAiResponse>('/api/adaptive/ai', body),
+  getSavedQuestions: () =>
+    get<AdaptiveSavedPayload>('/api/adaptive/saved'),
+  saveQuestion: (body: { questionId: string }) =>
+    post<{ ok?: boolean; saved?: boolean }>('/api/adaptive/saved', body),
+  // DELETE carries both id and questionId — the backend keys bookmarks by
+  // profile+question, so questionId is the natural key; id kept as fallback.
+  unsaveQuestion: (id: string) =>
+    fetch(`/api/adaptive/saved?id=${encodeURIComponent(id)}&questionId=${encodeURIComponent(id)}`, { method: 'DELETE' })
+      .then(r => r.json()) as Promise<{ ok?: boolean }>,
+  reportAdaptiveQuestion: (body: { questionId: string; reason: string; detail?: string }) =>
+    post<{ ok?: boolean }>('/api/adaptive/report-question', body),
+}
+
+// ── Adaptive Engine aux payloads (defined here — types.ts is frozen) ──
+export interface AdaptiveAiTextResponse { text?: string }
+export interface AdaptiveAiQuestionOption { id?: string; text: string }
+export interface AdaptiveAiQuestionResult {
+  stem: string
+  options: (string | AdaptiveAiQuestionOption)[]
+  answer: string
+  explanation: string
+  teaching: string
+  difficulty: number
+}
+export interface AdaptiveAiQuestionResponse {
+  question?: AdaptiveAiQuestionResult
+  aiGenerated?: boolean
+  disclaimer?: string
+}
+export type AdaptiveAiResponse = AdaptiveAiTextResponse & AdaptiveAiQuestionResponse
+
+export interface AdaptiveSavedItem {
+  id?: string
+  questionId?: string
+  stem?: string
+  conceptName?: string
+  subjectCode?: string
+  savedAt?: string
+  question?: { id?: string; stem?: string; conceptName?: string; subjectCode?: string }
+}
+export interface AdaptiveSavedPayload {
+  saved?: AdaptiveSavedItem[]
+  questions?: AdaptiveSavedItem[]
+  items?: AdaptiveSavedItem[]
 }

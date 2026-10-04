@@ -1066,3 +1066,51 @@ Stage Summary:
 - Future-ready hooks: medq/flashcard structured-block conventions (voice/image can extend the same composer), TutorSession threads (Mistake/Revision engines can post-process), grounded-metadata strip (citation/source layer can replace the counts), quiz fallback chain (adaptive engine plugs into startPlatformQuiz).
 - Note: 6 AI-generated nephrotic/nephritic flashcards (medically vetted LLM output, saved through the real UI flow) now sit in the demo SRS as a live demonstration; delete ids starting 'ai-' if undesired.
 - Suggested next: voice input/output on the composer (Web Speech API), inline "explain this wrong answer" deep-link from quiz results into the tutor, ⌘K overlay "Ask tutor about <result>" row, tutor-initiated proactive check-in on Home ("You missed Nephrotic ×4 — 2-min drill?").
+
+---
+Task ID: 29 (PRODUCT 04 — phase 1: inspection + contract)
+Agent: Z.ai Code (main)
+Task: PRODUCT 04 — ADAPTIVE MCQ ENGINE: inspect existing question system, define architecture + shared contract
+
+Work Log:
+- Inspection (spec mandate step 1): Question model (182 Qs; qtype sba 94/vignette 66/rapid 20/integrated 2; difficulty d1 42/d2 97/d3 39/d4 4; 161 concept-linked; tags EMPTY — no PYQ flags; 7 image-ish stems), QuestionAttempt (268 attempts/193 correct/69 error-typed; 9 error types + timeMs + confidence), KnowledgeState (57 states), ConfusionPair (17), engine.ts (scoreCandidate NEXT-BEST-ACTION weights already exist: recallRisk .30/weakness .28/exam .22/year .10/errors .10), /api/questions (static per-run selection: mix random|high-yield|weak + subject/system/topic/concept/pair filters), /api/attempts (transaction: attempt + KnowledgeState update → explanation/teaching/mastery), /api/attempts/error-type (ErrorPattern + confusion→revision automation), /api/mistakes, Question Lab UI (Practice/Mock/Mistakes tabs).
+- Gap analysis vs PRODUCT 04: (1) no per-answer adaptive re-selection or difficulty staircase; (2) no "why this question" transparency; (3) no focus-lock after misses (random switching instead); (4) no PYQ-pattern tagging; (5) no image-based tagging; (6) no per-question timer in practice, no mark-for-review outside mocks; (7) no bookmark/report-question; (8) no option-level "why others are wrong" (explanation only) or AI per-question actions; (9) no session-level insight report (accuracy/speed/difficulty/strong-weak/recommended-next); (10) response time + confidence collected but never used for selection.
+- DECISION: build as a SEPARATE first-class section `#/adaptive` ("Adaptive Engine", Target icon, Daily-study nav group) — existing Question Lab untouched. Deterministic measurable engine (lib/adaptive.ts), LLM only for on-demand AI actions (clearly labeled, never authoritative). No chain-of-thought exposure — engine emits only human "whyThis" notes.
+- Shared contract written by main agent (no agent conflicts): types.ts += AdaptiveMode/ADAPTIVE_MODES/AdaptiveConfig/AdaptiveQuestion/AdaptiveSessionStart/AdaptiveAnswerFeedback/AdaptiveNextQuestion/AdaptiveTopicInsight/AdaptiveReport/AdaptiveHomePayload; store.ts += 'adaptive' View/APP_VIEWS/viewToLabel/adaptivePreset+setAdaptivePreset. tsc src/ clean.
+
+Stage Summary:
+- Contract frozen: POST /api/adaptive/session {config} → AdaptiveSessionStart; POST /api/adaptive/answer {sessionId,questionId,selected,timeMs,confidence,errorType?} → AdaptiveAnswerFeedback; POST /api/adaptive/next {sessionId} → AdaptiveNextQuestion (true AI-adaptive re-selection); POST /api/adaptive/complete {sessionId} → AdaptiveReport; GET /api/adaptive/home → AdaptiveHomePayload; POST /api/adaptive/ai {action: explain|simplify|similar|harder|easier|weakness} → structured (AI questions labeled non-authoritative); GET/POST/DELETE /api/adaptive/saved (bookmarks); POST /api/adaptive/report-question.
+- Schema plan (additive, non-destructive): AdaptiveSession {mode,config,state Json,total,answered,correct,report?,completedAt?}, SavedQuestion (@@unique profile+question), QuestionReport {reason,detail}. Question.tags repurposed additively: curated subset gets 'pyq-pattern' / 'image-based' via a NEW update-only seeder (no fabricated exam/year claims — honest "PYQ-pattern" labeling).
+- Engine plan: mode pools (weakness/pyq/rapid/clinical/image/exam/adaptive/custom) + weighted candidate scoring (weakness .30, recallRisk .25, errorHistory .20, exam .15, novelty .10) + difficulty staircase (2 right ↑ / 2 wrong ↓) + focus-lock (after a miss, next Q from same topic/adjacent edges) + whyThis from the winning weights.
+- Next: Task 2-a (backend) + Task 2-b (frontend) in parallel with frozen contract.
+
+---
+Task ID: 29-a
+Agent: full-stack-developer (backend) — record completed by main agent after subagent deadline cut-off
+Task: PRODUCT 04 backend — adaptive engine, APIs, schema, seeder
+
+Work Log:
+- Schema (additive, db:push non-destructive): AdaptiveSession {profileId, mode, config Json, state Json, total, answered, correct, report Json?, completedAt?}, SavedQuestion (@@unique profile+question), QuestionReport {reason, detail}. Verified: 182 questions unchanged.
+- Extracted src/lib/attempt-record.ts recordAttempt() from /api/attempts (pure refactor, zero behavior change — attempts route now calls it; adaptive answer shares the SAME knowledge-state update path as normal practice).
+- src/lib/adaptive.ts (367 LOC): mode pools (pyq=tags pyq-pattern; image=tags image-based + stem regex; rapid=qtype rapid + short-stem top-up; clinical=vignette|integrated; exam=NEET-weight sampling; weakness=weak/unstable states + recent wrongs; custom=filters) + weighted scoring (weakness .30, recallRisk .25, errorHistory .20, exam .15, novelty .10) + difficulty staircase (every 3 answered: ≥80% step up, ≤40% down) + one-shot focus lock (+0.25 same/adjacent topic after a miss, via ConceptEdge) + honest whyThis notes from winning weights. No chain-of-thought anywhere.
+- 9 routes under /api/adaptive: home, session, answer, answer-type, next, complete, ai (z-ai SDK: explain/simplify/similar/harder/easier/weakness; strict JSON, disclaimer on generated questions, no fabricated citations), saved (GET/POST/DELETE), report-question.
+- prisma/seed-adaptive.ts (UPDATE-ONLY): 30 questions tagged pyq-pattern, 7 image-based (curated by reading real stems; no fabricated exam names/years); package.json "db:seed-adaptive".
+
+Stage Summary:
+- All endpoints smoke-tested 200 by main agent: home (measured counts: bank 182, pyq 30, image 12, clinical 68, rapid 20, weakness pool 127, due 8; topWeak Graves 2%, topMissed Paediatric Fluids ×6), session (whyThis "Missed 4× recently"), answer (focusNote "Stays on Acute Abdomen & Appendicitis — one more angle" PROVES focus lock; relatedPyqCount; errorTypeSuggestion), answer-type, complete (report: accuracy/speedBand/difficulty/weakTopics/mistakes/repeatedWrong ×6s/recommended "Accuracy 0% — repair pass"), ai explain (psoas sign) + similar (valid 4-option MCQ + disclaimer), saved, report-question.
+- tsc src/ clean. Dev.log clean.
+
+---
+Task ID: 29-b
+Agent: full-stack-developer (frontend) — record completed by main agent after subagent deadline cut-off
+Task: PRODUCT 04 frontend — Adaptive Engine UI + wiring (folds in Task 3)
+
+Work Log:
+- src/components/adaptive/: adaptive-view.tsx (home|run|report state machine, adaptivePreset auto-start + clear), adaptive-home.tsx (hero + personalization strip w/ REPAIR RUN chip, resume banner, 8 mode cards w/ measured counts, custom builder subject/difficulty/count, recent runs, bookmarks), adaptive-run.tsx (minimal exam-like: sticky bar w/ quit-confirm + timers — rapid 45s ring, exam countdown, elapsed; WHY THIS ONE strip; PYQ/image badges; option radios; instant feedback w/ explanation + teaching + Concept chip (openConcept) + PYQ cross-link; WHY DID YOU MISS THIS? error picker (ERROR_TYPES, suggestion pre-highlighted) → logErrorType + answer-type; ASK THE AI row → explain/simplify/similar/harder/easier/weakness w/ amber "AI-generated practice — not platform-validated" badge + client-side grading note; ai-adaptive queue replacement + focusNote strip; mark-for-review), adaptive-report.tsx (score ring, accuracy, speed band vs 65s benchmark, BY DIFFICULTY bars, WEAK TOPICS w/ Drill, MISTAKE PROFILE repeated-misses ×N, WRONG QUESTIONS review, RECOMMENDED NEXT card + Start recommended, tutor hand-off via medos:tutor-question), adaptive-ai.tsx widgets.
+- Wiring: page.tsx renders AdaptiveView at #/adaptive; app-shell NAV "Adaptive" (Target) + Daily study group; api.ts adaptive client fns.
+- Lint fix by main agent: removed 2 synchronous setState-in-effect calls in adaptive-home.tsx (status/savedLoading initial states cover loading; refetches swap in place) → lint 0 errors, tsc 0.
+
+Stage Summary:
+- E2E verified by main agent (agent-browser): sign-in gate → #/adaptive home (measured counts + live personalization "Graves Disease · mastery 2% REPAIR RUN") → AI Adaptive 15 run (Q1/15, timer, chips, bookmark/flag) → answered correct (feedback + "1 PYQ-pattern question → Practise") → answered wrong (error picker + AI weakness reply personalized) → quit-confirm → custom 5-Q run → REPORT (0% accuracy, 4s FAST band, difficulty bars, Acute Kidney Injury 0/3 + Drill, repeated misses Nephritic/Nephrotic/Fluids ×6, wrong-question review, RECOMMENDED "Weakness — repair pass on AKI") → Start recommended → WEAKNESS run Q1/4 "WHY THIS ONE — MISSED 5× RECENTLY" on Acute Kidney Injury.
+- Mobile 390: scrollW 390 == innerW 390 (zero overflow on home + run + report). Desktop 1440 clean. Screenshots agent-ctx/p04-mobile-home.png, p04-mobile-run.png.
+- DoD met: "Here are 20 questions" → "Based on your performance, these are the questions you should solve next" (recommended card + engine-selected queue with honest whyThis reasons).

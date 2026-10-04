@@ -6,13 +6,34 @@
 
 import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { BookX, FlaskConical, GraduationCap } from 'lucide-react'
+import { BookX, FlaskConical, GraduationCap, Target } from 'lucide-react'
 import { QuizView } from '@/components/questions/quiz-view'
 import { MockTestView } from '@/components/questions/mock-test-view'
 import { MistakeBook } from '@/components/questions/mistake-book'
+import { useAppStore } from '@/lib/store'
 import { cn } from '@/lib/utils'
 
 type LabTab = 'practice' | 'mock' | 'mistakes'
+
+// Quiet one-row hand-off: the Question Lab is manual, the Adaptive Engine
+// picks for you. Additive only — no quiz/mock/mistake internals touched.
+function AdaptiveCrossLink() {
+  const setView = useAppStore((s) => s.setView)
+  return (
+    <div className="mx-auto max-w-3xl px-4 pb-6 md:px-6">
+      <button
+        type="button"
+        onClick={() => setView('adaptive')}
+        className="group flex min-h-11 w-full items-center gap-2.5 rounded-xl border border-line bg-surface-2/40 px-4 py-3 text-left text-sm transition-colors hover:border-primary/50"
+      >
+        <Target className="size-4 shrink-0 text-primary" />
+        <span className="min-w-0 flex-1 text-ink-soft">
+          Want the engine to pick for you? <span className="font-semibold text-primary">Open the Adaptive Engine →</span>
+        </span>
+      </button>
+    </div>
+  )
+}
 
 export function QuestionsIndex() {
   const [tab, setTab] = useState<LabTab>('practice')
@@ -63,7 +84,16 @@ export function QuestionsIndex() {
         </div>
       </div>
 
-      {tab === 'practice' ? <QuizView /> : tab === 'mock' ? <MockTestView /> : <MistakeBook onGoPractice={() => setTab('practice')} />}
+      {tab === 'practice' ? (
+        <>
+          <QuizView />
+          <AdaptiveCrossLink />
+        </>
+      ) : tab === 'mock' ? (
+        <MockTestView />
+      ) : (
+        <MistakeBook onGoPractice={() => setTab('practice')} />
+      )}
     </div>
   )
 }

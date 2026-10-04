@@ -8,7 +8,7 @@ import type { Profile, View } from './types'
 // the doctor back where they left off, and mirror to the URL hash (#/map)
 // so a reload keeps the same view.
 export const APP_VIEWS: readonly View[] = [
-  'home', 'map', 'explore', 'research', 'understand', 'learn', 'hub', 'questions', 'cases', 'revise', 'tutor', 'progress', 'roadmap', 'profile',
+  'home', 'map', 'explore', 'research', 'understand', 'learn', 'hub', 'questions', 'adaptive', 'cases', 'revise', 'tutor', 'progress', 'roadmap', 'profile',
 ] as const
 
 // ── Topic Hub deep links ────────────────────────────────────────────────
@@ -133,6 +133,7 @@ export function viewFromHash(hash?: string): View | null {
 export function viewToLabel(v: View): string {
   const labels: Partial<Record<View, string>> = {
     home: 'Home', map: 'Doubt Search', explore: 'Explore Medicine', research: 'the Research Hub', understand: 'Understand Your Topic', learn: 'Learn', hub: 'the Topic Hub', questions: 'the Question Lab',
+    adaptive: 'the Adaptive Engine',
     cases: 'the Case Simulator', revise: 'Revise', tutor: 'the AI Tutor',
     progress: 'Progress', roadmap: 'Roadmap', profile: 'Profile',
   }
@@ -152,6 +153,7 @@ interface AppState {
   shortcutsOpen: boolean // keyboard cheat-sheet overlay (?)
   mapScope: string | null // pending scope to apply in the map view (e.g. "subject:anatomy")
   quizPreset: { subjectCode?: string; system?: string; conceptId?: string; topicId?: string; count?: number; pairId?: string; pairLabel?: string } | null
+  adaptivePreset: { mode?: import('./types').AdaptiveMode; subjectCode?: string; topicId?: string; conceptId?: string; count?: number; autoStart?: boolean } | null // Adaptive Engine hand-off (PRODUCT 04)
   researchSeedQuery: string | null // query handed from Explore → Research Hub
   setView: (v: View) => void
   setProfile: (p: Profile | null) => void
@@ -167,6 +169,7 @@ interface AppState {
   setShortcutsOpen: (v: boolean) => void
   setMapScope: (s: string | null) => void
   setQuizPreset: (p: AppState['quizPreset']) => void
+  setAdaptivePreset: (p: AppState['adaptivePreset']) => void
   setResearchSeedQuery: (q: string | null) => void
 }
 
@@ -183,6 +186,7 @@ export const useAppStore = create<AppState>((set) => ({
   shortcutsOpen: false,
   mapScope: null,
   quizPreset: null,
+  adaptivePreset: null,
   researchSeedQuery: null,
   setView: (v) => {
     if (isAppView(v)) {
@@ -211,5 +215,6 @@ export const useAppStore = create<AppState>((set) => ({
   setShortcutsOpen: (v) => set({ shortcutsOpen: v }),
   setMapScope: (s) => set({ mapScope: s }),
   setQuizPreset: (p) => set({ quizPreset: p }),
+  setAdaptivePreset: (p) => set({ adaptivePreset: p }),
   setResearchSeedQuery: (q) => set({ researchSeedQuery: q }),
 }))

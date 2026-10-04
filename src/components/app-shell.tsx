@@ -9,7 +9,7 @@ import { cn } from '@/lib/utils'
 import {
   Home, Brain, BookMarked, BookOpen, CircleHelp, Stethoscope, RefreshCcw,
   Sparkles, UserRound, Search, Menu, X,
-  Keyboard, WifiOff, LayoutGrid, Compass, FlaskConical,
+  Keyboard, WifiOff, LayoutGrid, Compass, FlaskConical, Target,
 } from 'lucide-react'
 import type { View } from '@/lib/types'
 
@@ -20,6 +20,7 @@ const NAV: { id: View; label: string; icon: typeof Home; hint?: string }[] = [
   { id: 'hub', label: 'Topic Hub', icon: BookMarked },
   { id: 'learn', label: 'Learn', icon: BookOpen },
   { id: 'questions', label: 'Questions', icon: CircleHelp },
+  { id: 'adaptive', label: 'Adaptive', icon: Target },
   { id: 'revise', label: 'Revise', icon: RefreshCcw },
   { id: 'understand', label: 'Understand', icon: Brain },
   { id: 'cases', label: 'Cases', icon: Stethoscope },
@@ -33,7 +34,7 @@ const NAV: { id: View; label: string; icon: typeof Home; hint?: string }[] = [
 // rows — the library is assimilated, not scattered. Profile lives in the
 // sidebar footer card (desktop) and the More sheet (mobile), not the groups.
 const NAV_GROUPS: { title: string; items: View[] }[] = [
-  { title: 'Daily study', items: ['home', 'map', 'hub', 'learn', 'questions', 'revise'] },
+  { title: 'Daily study', items: ['home', 'map', 'hub', 'learn', 'questions', 'adaptive', 'revise'] },
   { title: 'Clinical & deep dives', items: ['understand', 'cases'] },
   { title: 'Discover', items: ['research', 'explore', 'tutor'] },
 ]

@@ -13,6 +13,7 @@ import { UnderstandView } from '@/components/understand/understand-view'
 import { LearnView } from '@/components/learn/learn-view'
 import { HubView } from '@/components/hub/hub-view'
 import { QuestionsIndex } from '@/components/questions/questions-index'
+import { AdaptiveView } from '@/components/adaptive/adaptive-view'
 import { CasesView } from '@/components/cases/cases-view'
 import { ReviseView } from '@/components/revise/revise-view'
 import { TutorView } from '@/components/tutor/tutor-view'
@@ -105,6 +106,7 @@ export default function Home() {
       {view === 'learn' && <LearnView />}
       {view === 'hub' && <HubView />}
       {view === 'questions' && <QuestionsIndex />}
+      {view === 'adaptive' && <AdaptiveView />}
       {view === 'cases' && <CasesView />}
       {view === 'revise' && <ReviseView />}
       {view === 'tutor' && <TutorView />}

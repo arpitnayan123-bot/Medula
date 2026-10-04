@@ -44,6 +44,9 @@ model StudentProfile {
   caseRuns        CaseRun[]
   resourceLogs    ResourceLog[]
   savedPapers     SavedPaper[]
+  adaptiveSessions AdaptiveSession[]
+  savedQuestions  SavedQuestion[]
+  questionReports QuestionReport[]
 }
 
 // ───────────────────────── CURRICULUM GRAPH ─────────────────────────
@@ -132,6 +135,8 @@ model Question {
   tags        Json    @default("[]")
   attempts    QuestionAttempt[]
   subject     Subject @relation(fields: [subjectCode], references: [code])
+  savedBy     SavedQuestion[]
+  reports     QuestionReport[]
 }
 
 model QuestionAttempt {
@@ -411,6 +416,49 @@ model TutorSession {
 // (Not Started / Learning / Completed / Needs Revision / Mastered)
 // resolves as: user mark (this table) ?? auto-derived from
 // KnowledgeState analytics — never the other way around.
+// ───────────────────── ADAPTIVE MCQ ENGINE (PRODUCT 04) ─────────────────────
+// Additive tables for the adaptive practice sessions (measured, deterministic
+// engine in src/lib/adaptive.ts — LLM never selects questions). Bookmarks and
+// question reports are per-profile so the demo profile owns its own lists.
+model AdaptiveSession {
+  id          String   @id @default(cuid())
+  profileId   String
+  profile     StudentProfile @relation(fields: [profileId], references: [id])
+  mode        String // AdaptiveMode id
+  config      Json // AdaptiveConfig as stored at start
+  state       Json // engine state: queue/answered/markedIds/missedConcepts (always written on create)
+  total       Int
+  answered    Int      @default(0)
+  correct     Int      @default(0)
+  report      Json? // AdaptiveReport snapshot after completion
+  completedAt DateTime?
+  createdAt   DateTime @default(now())
+
+  @@index([profileId])
+}
+
+model SavedQuestion {
+  id         String   @id @default(cuid())
+  profileId  String
+  profile    StudentProfile @relation(fields: [profileId], references: [id])
+  questionId String
+  question   Question @relation(fields: [questionId], references: [id])
+  createdAt  DateTime @default(now())
+
+  @@unique([profileId, questionId])
+}
+
+model QuestionReport {
+  id         String   @id @default(cuid())
+  profileId  String
+  profile    StudentProfile @relation(fields: [profileId], references: [id])
+  questionId String
+  question   Question @relation(fields: [questionId], references: [id])
+  reason     String
+  detail     String   @default("")
+  createdAt  DateTime @default(now())
+}
+
 model LearnProgress {
   id        String   @id @default(cuid())
   profileId String

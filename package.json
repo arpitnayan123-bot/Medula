@@ -9,6 +9,7 @@
     "lint": "eslint .",
     "db:push": "prisma db push --accept-data-loss",
     "db:seed-learn": "bun prisma/seed-learn.ts",
+    "db:seed-adaptive": "bun prisma/seed-adaptive.ts",
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate dev",
     "db:reset": "prisma migrate reset"

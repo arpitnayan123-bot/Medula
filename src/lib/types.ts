@@ -19,6 +19,7 @@ export type Phase = SubjectTaxonomyContract['phase']
 
 export type View =
   | 'landing' | 'signin' | 'onboarding' | 'home' | 'map' | 'explore' | 'research' | 'understand' | 'learn' | 'hub' | 'questions'
+  | 'adaptive'
   | 'cases' | 'revise' | 'tutor' | 'progress' | 'roadmap' | 'profile'
 
 export interface Profile {
@@ -102,6 +103,117 @@ export interface AttemptResult {
   knowledgeUpdated: boolean
   mastery?: number
   status?: string
+}
+
+// ─── ADAPTIVE MCQ ENGINE (PRODUCT 04) ─────────────────────────────
+// Selection is deterministic and measured — the engine never exposes its
+// chain of scoring, only honest human-readable "why this question" notes.
+export type AdaptiveMode =
+  | 'ai-adaptive' | 'adaptive' | 'weakness' | 'pyq' | 'rapid' | 'clinical' | 'image' | 'exam' | 'custom'
+
+export const ADAPTIVE_MODES: { id: AdaptiveMode; label: string; blurb: string }[] = [
+  { id: 'ai-adaptive', label: 'AI Adaptive', blurb: 'The engine picks every next question from your live performance' },
+  { id: 'adaptive', label: 'Adaptive Practice', blurb: 'Mixed set ordered by what you need most' },
+  { id: 'weakness', label: 'Weakness', blurb: 'Only your weak and missed concepts' },
+  { id: 'pyq', label: 'PYQ Pattern', blurb: 'Classic repeated exam themes' },
+  { id: 'rapid', label: 'Rapid Fire', blurb: '45 seconds a question — go on instinct' },
+  { id: 'clinical', label: 'Clinical', blurb: 'Case-vignette reasoning questions' },
+  { id: 'image', label: 'Image-Based', blurb: 'X-ray, ECG and visual-reasoning stems' },
+  { id: 'exam', label: 'Exam Mode', blurb: 'Timed NEET-PG-style paper — feedback at the end' },
+]
+
+export interface AdaptiveConfig {
+  mode: AdaptiveMode
+  count: number // 5..100
+  minutes?: number // total time budget (exam mode)
+  subjectCode?: string
+  system?: string
+  topicId?: string
+  conceptId?: string
+  difficulty?: number // exact filter (custom builder only)
+}
+
+export interface AdaptiveQuestion extends QuestionClient {
+  whyThis?: string // honest engine reason, shown on the question card
+  pyqPattern?: boolean
+  imageBased?: boolean
+}
+
+export interface AdaptiveSessionStart {
+  sessionId: string
+  mode: AdaptiveMode
+  label: string // "AI Adaptive · 20 questions"
+  blurb: string // measured plan description
+  questions: AdaptiveQuestion[]
+  timed: boolean // rapid (per-question) / exam (total)
+  secondsPerQuestion?: number // rapid = 45
+  totalSeconds?: number // exam budget
+}
+
+export interface AdaptiveAnswerFeedback extends AttemptResult {
+  sessionAnswered: number
+  sessionCorrect: number
+  avgTimeMs: number
+  focusNote?: string // "Staying on Glomerular Diseases — one more angle"
+  relatedPyqCount?: number // other PYQ-pattern questions on this concept
+}
+
+export interface AdaptiveNextQuestion {
+  question: AdaptiveQuestion | null
+  focusNote?: string
+}
+
+export interface AdaptiveTopicInsight {
+  name: string
+  subjectCode: string
+  correct: number
+  total: number
+  accuracy: number
+  topicId?: string | null
+}
+
+export interface AdaptiveReport {
+  sessionId: string
+  mode: AdaptiveMode
+  total: number
+  answered: number
+  correct: number
+  accuracy: number
+  avgTimeMs: number
+  speedBand: 'fast' | 'steady' | 'slow' // vs a 65 s/question exam benchmark
+  difficulty: { d: number; correct: number; total: number }[]
+  strongTopics: AdaptiveTopicInsight[]
+  weakTopics: AdaptiveTopicInsight[]
+  mistakes: { errorType: string; count: number }[] // self-reported types logged in this run
+  repeatedWrong: { conceptId: string; conceptName: string; misses: number }[] // all-time, measured
+  recommended: { mode: AdaptiveMode; config: AdaptiveConfig; reason: string } | null
+  wrongQuestions: { id: string; stem: string; conceptName?: string }[]
+}
+
+export interface AdaptiveHomePayload {
+  counts: {
+    bank: number
+    pyqPattern: number
+    imageBased: number
+    clinical: number
+    rapid: number
+    weaknessQuestions: number
+    dueConcepts: number
+  }
+  personalization: {
+    topWeak?: { conceptId: string; conceptName: string; mastery: number } | null
+    topMissed?: { conceptId: string; conceptName: string; misses: number } | null
+  }
+  recent: {
+    id: string
+    mode: AdaptiveMode
+    total: number
+    answered: number
+    correct: number
+    createdAt: string
+    completedAt: string | null
+  }[]
+  resumeId: string | null // incomplete session worth finishing
 }
 
 export interface PlanSegment { minutes: number; activity: string; detail: string }
