@@ -87,6 +87,7 @@ interface AppState {
   hydrated: boolean
   loadingProfile: boolean
   conceptFocus: string | null // concept explorer target
+  learnFocus: { kind: 'subject' | 'topic'; id: string } | null // Learn study surfaces (PRODUCT 01)
   searchOpen: boolean
   auditOpen: boolean
   shortcutsOpen: boolean // keyboard cheat-sheet overlay (?)
@@ -98,6 +99,8 @@ interface AppState {
   setHydrated: (v: boolean) => void
   openConcept: (id: string) => void
   closeConcept: () => void
+  openLearn: (kind: 'subject' | 'topic', id: string) => void
+  closeLearn: () => void
   setSearchOpen: (v: boolean) => void
   setAuditOpen: (v: boolean) => void
   setShortcutsOpen: (v: boolean) => void
@@ -112,6 +115,7 @@ export const useAppStore = create<AppState>((set) => ({
   hydrated: false,
   loadingProfile: true,
   conceptFocus: null,
+  learnFocus: null,
   searchOpen: false,
   auditOpen: false,
   shortcutsOpen: false,
@@ -128,6 +132,8 @@ export const useAppStore = create<AppState>((set) => ({
   setHydrated: (v) => set({ hydrated: v }),
   openConcept: (id) => set({ conceptFocus: id }),
   closeConcept: () => set({ conceptFocus: null }),
+  openLearn: (kind, id) => set({ learnFocus: { kind, id } }),
+  closeLearn: () => set({ learnFocus: null }),
   setSearchOpen: (v) => set({ searchOpen: v }),
   setAuditOpen: (v) => set({ auditOpen: v }),
   setShortcutsOpen: (v) => set({ shortcutsOpen: v }),

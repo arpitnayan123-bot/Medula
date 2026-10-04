@@ -23,6 +23,7 @@ import type {
   RevisionPayload, ProgressPayload, RoadmapPayload, SearchResults,
   LearnHomeClient, CurriculumBrowsePayload, SubjectTopicsPayload,
   AtlasListPayload, PapersListPayload,
+  TopicStudyPayload, SubjectStudyPayload, TopicProgressPayload, LearnStatus,
 } from './types'
 
 export const api = {
@@ -96,4 +97,12 @@ export const api = {
   // Grounded research-paper explainers (optional field filter).
   learnPapers: (field?: string) =>
     get<PapersListPayload>(`/api/learn/papers${field ? `?field=${encodeURIComponent(field)}` : ''}`),
+  // ── Learn study surfaces (PRODUCT 01) ──
+  learnTopic: (id: string) => get<TopicStudyPayload>(`/api/learn/topic/${encodeURIComponent(id)}`),
+  learnSubject: (id: string) => get<SubjectStudyPayload>(`/api/learn/subject/${encodeURIComponent(id)}`),
+  learnTopicProgress: (topicId: string) => get<TopicProgressPayload>(`/api/learn/progress?topicId=${encodeURIComponent(topicId)}`),
+  learnConceptProgress: (conceptId: string) =>
+    get<{ conceptId: string; name: string; marked: string | null; markedAt: string | null; status: LearnStatus }>(`/api/learn/progress?conceptId=${encodeURIComponent(conceptId)}`),
+  setLearnProgress: (body: { kind: 'topic' | 'concept'; entityId: string; status: string | null }) =>
+    post<{ ok: boolean; status: string | null; cleared?: boolean }>('/api/learn/progress', body),
 }

@@ -19,6 +19,7 @@ import { ProgressView } from '@/components/progress/progress-view'
 import { RoadmapView } from '@/components/roadmap/roadmap-view'
 import { ProfileView } from '@/components/profile/profile-view'
 import { ConceptExplorer } from '@/components/concept/concept-explorer'
+import { LearnStudyOverlay } from '@/components/learn/learn-study'
 import { SearchOverlay } from '@/components/search/search-overlay'
 import { ShortcutsOverlay } from '@/components/shortcuts/shortcuts-overlay'
 import { AuditView } from '@/components/audit/audit-view'
@@ -108,7 +109,8 @@ export default function Home() {
       {view === 'progress' && <ProgressView />}
       {view === 'roadmap' && <RoadmapView />}
       {view === 'profile' && <ProfileView />}
-      {/* Global overlays */}
+      {/* Global overlays — Learn study first so the concept explorer stacks above it */}
+      <LearnStudyOverlay />
       <ConceptExplorer />
       <SearchOverlay />
       <AuditView />

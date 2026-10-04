@@ -348,3 +348,101 @@ export const SYSTEMS = [
   { id: 'infectious', label: 'Infectious Disease', icon: 'Bug' },
   { id: 'musculoskeletal', label: 'Musculoskeletal', icon: 'Bone' },
 ]
+
+// ───────────────── LEARN STUDY SURFACES (PRODUCT 01) ─────────────────
+
+/** The five user-facing study states. Resolution: user mark ?? auto-derived. */
+export type LearnStatus =
+  | 'not-started' | 'learning' | 'completed' | 'needs-revision' | 'mastered'
+
+export type LearnStatusCounts = Record<LearnStatus, number>
+
+/** GET /api/learn/topic/<id> — the topic study surface payload. */
+export interface TopicStudyPayload {
+  topic: {
+    id: string; name: string
+    system: string | null; systemLabel: string | null
+    importance: number; description: string
+    subject: { id: string; code: string; name: string; color: string; year: number; phase: string }
+  }
+  concepts: {
+    id: string; name: string; kind: string; oneLiner: string
+    hasLesson: boolean; mnemonic: string
+    examWeight: number; difficulty: number
+    mastery: number; learnStatus: LearnStatus; marked: boolean
+    questionCount: number; flashcardCount: number
+  }[]
+  groups: { kind: string; label: string; concepts: string[] }[]
+  statusCounts: LearnStatusCounts
+  flow: {
+    learn: { concepts: number; lessons: number }
+    understand: { lessons: number }
+    explore: { assets3d: number }
+    clinical: { cases: number; reasoningSteps: number; crossLinks: number }
+    practice: { questions: number }
+    revise: { flashcards: number }
+  }
+  assets3d: { id: string; title: string; handcrafted: boolean; conceptIds: string[] }[]
+  cases: { id: string; title: string; specialty: string; difficulty: number }[]
+  keyFacts: {
+    numbers: { label: string; value: string; note?: string }[]
+    differentials: { name: string; key: string }[]
+    mistakes: string[]
+    mnemonics: { hook: string; expands: string }[]
+  }
+  sections: {
+    mechanism: boolean; presentation: boolean; diagnosis: boolean; management: boolean
+    differentials: boolean; complications: boolean; reasoning: boolean; global: boolean
+    numbers: boolean; drugs: boolean; procedures: boolean; imaging: boolean; firstPrinciples: boolean
+  }
+  connectedTopics: {
+    id: string; name: string; subjectName: string; subjectColor: string
+    system: string | null; reason: string
+  }[]
+  evidence: {
+    levels: Record<string, number>
+    lastReviewed: string | null
+    sourcesCount: number
+    sourceInstitutions: string[]
+  }
+  progress: { status: LearnStatus | null; marked: boolean; updatedAt: string | null }
+}
+
+/** GET /api/learn/subject/<id> — the subject study surface payload. */
+export interface SubjectStudyPayload {
+  subject: {
+    id: string; code: string; name: string; latinName: string | null
+    year: number; phase: string; color: string; blurb: string
+    neetWeight: number; systems: string[]; systemsCovered: string[]
+  }
+  topics: {
+    id: string; name: string; system: string | null; systemLabel: string | null
+    importance: number; description: string
+    conceptCount: number; lessonCoverage: number
+    questionCount: number; flashcardCount: number
+    mastery: number
+    statusCounts: LearnStatusCounts
+    marked: string | null
+  }[]
+  statusCounts: LearnStatusCounts
+  mastery: number
+  counts: {
+    topics: number; concepts: number; lessons: number
+    questions: number; flashcards: number; assets3d: number
+  }
+  registry: { authority: string; country: string; scope: string; version: string; alignment: string; lastReviewed: string }[]
+}
+
+/** GET /api/learn/progress — resolved statuses inside a topic. */
+export interface TopicProgressPayload {
+  topicId: string
+  topicMark: { status: string; updatedAt: string } | null
+  statusCounts: LearnStatusCounts
+  concepts: Record<string, LearnStatus>
+}
+
+/** GET /api/learn/progress (no params) — all explicit marks. */
+export interface AllProgressPayload {
+  topics: Record<string, { status: string; updatedAt: string }>
+  concepts: Record<string, { status: string; updatedAt: string }>
+}

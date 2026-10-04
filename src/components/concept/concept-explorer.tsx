@@ -18,7 +18,9 @@ import type { ConceptDetail } from '@/lib/types'
 import { useAppStore } from '@/lib/store'
 import { Concept3D } from '@/components/concept/concept-3d'
 import { LessonSections } from '@/components/learn/lesson-sections'
+import { ProgressMark } from '@/components/learn/learn-study'
 import { cn } from '@/lib/utils'
+import type { LearnStatus } from '@/lib/types'
 
 const KIND_ICONS: Record<string, LucideIcon> = {
   concept: Lightbulb,
@@ -275,6 +277,9 @@ export function ConceptExplorer() {
   const [visited, setVisited] = useState<{ id: string; name: string }[]>([])
   const [flipped, setFlipped] = useState<Record<string, boolean>>({})
   const [show3d, setShow3d] = useState(false)
+  // 5-state study progress (Learn layer) — resolved from the progress API
+  const [learnStatus, setLearnStatus] = useState<LearnStatus>('not-started')
+  const [learnMarked, setLearnMarked] = useState(false)
 
   const scrollRef = useRef<HTMLDivElement>(null)
   const navRef = useRef<{ mode: 'push'; from: { id: string; name: string } } | { mode: 'pop' } | null>(null)
@@ -291,6 +296,10 @@ export function ConceptExplorer() {
       setDetail(d)
       setFlipped({})
       setShow3d(false)
+      // resolved 5-state status (mark ?? analytics) — non-fatal if it fails
+      api.learnConceptProgress(id)
+        .then((p) => { setLearnStatus(p.status); setLearnMarked(p.marked !== null) })
+        .catch(() => { /* explorer still renders without the mark */ })
     } catch (e) {
       navRef.current = null
       setError(e instanceof Error ? e.message : 'Failed to load concept')
@@ -344,6 +353,13 @@ export function ConceptExplorer() {
     setView('questions')
     closeConcept()
   }, [detail, setQuizPreset, setView, closeConcept])
+
+  const markConcept = useCallback((status: Exclude<LearnStatus, 'not-started'> | null) => {
+    if (!detail) return
+    setLearnMarked(status !== null)
+    if (status) setLearnStatus(status)
+    api.setLearnProgress({ kind: 'concept', entityId: detail.id, status }).catch(() => { /* silent — analytics state remains */ })
+  }, [detail])
 
   // 'Test me' from the 30-second lesson card — 5 questions per the lesson spec
   const lessonQuizMe = useCallback(() => {
@@ -456,6 +472,11 @@ export function ConceptExplorer() {
                       <Button variant="outline" onClick={askTutor}>
                         <MessageCircle className="size-4" /> Ask AI Tutor
                       </Button>
+                      <ProgressMark
+                        status={learnStatus}
+                        marked={learnMarked}
+                        onSet={markConcept}
+                      />
                     </div>
                     <div className="flex flex-wrap gap-2">
                       <MetaChip label="Difficulty" value={detail.difficulty} />

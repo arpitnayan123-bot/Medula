@@ -18,8 +18,8 @@ import {
 import { api } from '@/lib/api'
 import { useAppStore } from '@/lib/store'
 import type {
-  AtlasListItem, CurriculumBrowsePayload, GraphPayload, LearnHomeClient,
-  PaperExplainer, PapersListPayload, SubjectTopicsPayload,
+  AtlasListItem, CurriculumBrowsePayload, LearnHomeClient,
+  PaperExplainer, PapersListPayload,
 } from '@/lib/types'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -29,10 +29,6 @@ import { Progress } from '@/components/ui/progress'
 import { cn } from '@/lib/utils'
 
 // ── presentation-only helpers ────────────────────────────────────────────────
-
-const statusDot: Record<string, string> = {
-  strong: 'bg-sev-ok', unstable: 'bg-sev-warn', weak: 'bg-sev-crit', new: 'bg-muted-foreground/40',
-}
 
 // Canonical SYSTEMS keys (src/lib/curriculum/taxonomy.ts) — emoji only lives
 // in the presentation layer.
@@ -96,7 +92,7 @@ function scrollToId(id: string) {
 // ── main view ────────────────────────────────────────────────────────────────
 
 export function LearnView() {
-  const { openConcept, setQuizPreset, setView } = useAppStore()
+  const { openConcept, setQuizPreset, setView, openLearn } = useAppStore()
   const reduceMotion = useReducedMotion()
 
   // ── data states (each section owns its lifecycle) ──
@@ -113,13 +109,8 @@ export function LearnView() {
   const [papersNote, setPapersNote] = useState<string | null>(null)
   const [papersError, setPapersError] = useState(false)
 
-  // ── curriculum explorer accordion ──
-  const [expandedSubject, setExpandedSubject] = useState<string | null>(null)
-  const [subjectCache, setSubjectCache] = useState<Record<string, SubjectTopicsPayload>>({})
-  const [subjectError, setSubjectError] = useState<Record<string, boolean>>({})
-  const [openTopicId, setOpenTopicId] = useState<string | null>(null)
-  const [topicConcepts, setTopicConcepts] = useState<Record<string, GraphPayload['nodes']>>({})
-  const [topicLoading, setTopicLoading] = useState<string | null>(null)
+  // ── MBBS year filter — subjects open the focused study surface ──
+  const [yearFilter, setYearFilter] = useState<number | 'all'>('all')
 
   // ── organ-system dim filter ──
   const [activeSystem, setActiveSystem] = useState<string | null>(null)
@@ -162,37 +153,8 @@ export function LearnView() {
     loadPapers()
   }, [loadHome, loadCurriculum, loadAtlas, loadPapers])
 
-  // Lazy subject topics on accordion expand — fetch once, cache forever.
-  // Loading state is DERIVED (no cache entry yet + no error) so the effect
-  // never calls setState synchronously.
-  useEffect(() => {
-    if (!expandedSubject || subjectCache[expandedSubject] || subjectError[expandedSubject]) return
-    const sid = expandedSubject
-    let ok = true
-    api.learnCurriculum(sid)
-      .then((r) => {
-        if (!ok) return
-        setSubjectCache((prev) => ({ ...prev, [sid]: r as SubjectTopicsPayload }))
-      })
-      .catch(() => { if (ok) setSubjectError((prev) => ({ ...prev, [sid]: true })) })
-    return () => { ok = false }
-  }, [expandedSubject, subjectCache, subjectError])
-
-  // Lazy topic concepts via the existing graph API — fetched on first open.
-  const toggleTopic = (topicId: string) => {
-    if (openTopicId === topicId) { setOpenTopicId(null); return }
-    setOpenTopicId(topicId)
-    if (topicConcepts[topicId] || topicLoading === topicId) return
-    setTopicLoading(topicId)
-    api.graph(`topic:${topicId}`)
-      .then((g) => setTopicConcepts((prev) => ({ ...prev, [topicId]: g.nodes })))
-      .catch(() => setTopicConcepts((prev) => ({ ...prev, [topicId]: [] })))
-      .finally(() => setTopicLoading((cur) => (cur === topicId ? null : cur)))
-  }
-
   const openPathway = () => {
-    setExpandedSubject('ai-medicine')
-    setOpenTopicId(null)
+    openLearn('subject', 'ai-medicine')
     scrollToId('learn-curriculum')
   }
 
@@ -203,14 +165,16 @@ export function LearnView() {
 
   const openAiSubject = curriculum?.subjects.find((s) => s.id === 'ai-medicine')
 
-  // Derived: is the expanded subject's topic list still loading?
-  const subjectLoading = (sid: string) =>
-    expandedSubject === sid && !subjectCache[sid] && !subjectError[sid]
+  // Year filter applies across phases; subjects with year 0 (spanning) show in "All".
+  const yearFilteredSubjects = (phase: string) =>
+    (curriculum?.subjects ?? []).filter(
+      (s) => s.phase === phase && (yearFilter === 'all' || s.year === yearFilter || s.year === 0),
+    )
 
   // Group curriculum subjects into rendered phases (skip phases with no subjects).
   const phaseOrder = (curriculum?.phases ?? [])
     .map((p) => p.phase)
-    .filter((phase) => (curriculum?.subjects ?? []).some((s) => s.phase === phase))
+    .filter((phase) => yearFilteredSubjects(phase).length > 0)
   const phaseLabel: Record<string, string> = Object.fromEntries(
     (curriculum?.phases ?? []).map((p) => [p.phase, p.label]),
   )
@@ -470,9 +434,31 @@ export function LearnView() {
         </section>
       )}
 
-      {/* ── 4 · PHASED CURRICULUM EXPLORER ──────────────────────────────── */}
-      <section id="learn-curriculum" aria-label="Curriculum by phase">
-        <SectionHeader icon={BookOpen} title="The curriculum" sub="tap a subject to open its topics" />
+      {/* ── 4 · CURRICULUM — MBBS YEARS → SUBJECTS → STUDY SURFACES ─────── */}
+      <section id="learn-curriculum" aria-label="Curriculum by MBBS year">
+        <SectionHeader icon={BookOpen} title="The curriculum" sub="pick a year, open a subject, study it properly" />
+
+        {/* MBBS year filter */}
+        <div className="med-scroll -mx-1 mt-4 flex gap-2 overflow-x-auto px-1 pb-1" role="tablist" aria-label="Filter subjects by MBBS year">
+          {(['all', 1, 2, 3, 4] as const).map((y) => (
+            <button
+              key={String(y)}
+              type="button"
+              role="tab"
+              aria-selected={yearFilter === y}
+              onClick={() => setYearFilter(y)}
+              className={cn(
+                'min-h-9 shrink-0 rounded-full border px-4 text-xs font-semibold transition-all',
+                yearFilter === y
+                  ? 'border-primary/50 bg-primary/10 text-primary'
+                  : 'border-line bg-card text-ink-soft hover:border-primary/40 hover:text-foreground',
+              )}
+            >
+              {y === 'all' ? 'All years' : `Year ${y}`}
+            </button>
+          ))}
+        </div>
+
         {curricError && !curriculum ? (
           <div className="mt-4"><InlineError message="Could not load the curriculum map." onRetry={loadCurriculum} /></div>
         ) : !curriculum ? (
@@ -488,7 +474,7 @@ export function LearnView() {
           </div>
         ) : (
           phaseOrder.map((phase) => {
-            const subjects = curriculum.subjects.filter((s) => s.phase === phase)
+            const subjects = yearFilteredSubjects(phase)
             return (
               <div key={phase} className="mt-8">
                 <div className="flex items-center gap-2">
@@ -499,7 +485,6 @@ export function LearnView() {
 
                 <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
                   {subjects.map((s, i) => {
-                    const expanded = expandedSubject === s.id
                     const dimmed = activeSystem !== null && !s.systems.includes(activeSystem)
                     return (
                       <motion.button
@@ -508,18 +493,21 @@ export function LearnView() {
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: Math.min(i * 0.03, 0.2) }}
-                        aria-expanded={expanded}
-                        onClick={() => { setExpandedSubject(expanded ? null : s.id); setOpenTopicId(null) }}
+                        onClick={() => openLearn('subject', s.id)}
+                        aria-label={`Open ${s.name} study page`}
                         className={cn(
-                          'group rounded-2xl border bg-card p-5 text-left transition-all hover:border-primary/45 hover:shadow-lg hover:shadow-primary/5',
-                          expanded ? 'border-primary/50' : 'border-line',
+                          'group min-w-0 rounded-2xl border bg-card p-5 text-left transition-all hover:border-primary/45 hover:shadow-lg hover:shadow-primary/5',
+                          'border-line',
                           dimmed && 'opacity-35 saturate-50',
                         )}
                       >
                         <div className="flex items-center gap-2.5">
                           <span className="size-3 shrink-0 rounded-full" style={{ background: s.color }} />
                           <span className="truncate font-medium group-hover:text-primary">{s.name}</span>
-                          <ChevronRight className={cn('ml-auto size-4 shrink-0 text-ink-soft transition-transform', expanded && 'rotate-90')} />
+                          <Badge variant="outline" className="ml-auto shrink-0 text-[9px] uppercase tracking-wider">
+                            {s.year > 0 ? `Y${s.year}` : 'all'}
+                          </Badge>
+                          <ChevronRight className="size-4 shrink-0 text-ink-soft transition-transform group-hover:translate-x-0.5" />
                         </div>
                         {s.latinName && <p className="mt-1 text-xs italic text-muted-foreground">{s.latinName}</p>}
                         <div className="mt-2.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-ink-soft">
@@ -532,145 +520,6 @@ export function LearnView() {
                     )
                   })}
                 </div>
-
-                {/* expanded subject panel — full width, lazy topics */}
-                <AnimatePresence initial={false}>
-                  {expandedSubject && subjects.some((s) => s.id === expandedSubject) && (
-                    <motion.div
-                      key={expandedSubject}
-                      initial={{ height: 0, opacity: 0 }}
-                      animate={{ height: 'auto', opacity: 1 }}
-                      exit={{ height: 0, opacity: 0 }}
-                      transition={{ duration: 0.25 }}
-                      className="overflow-hidden"
-                    >
-                      <div className="mt-3 rounded-2xl border border-primary/35 bg-card p-4 md:p-5">
-                        {(() => {
-                          const subject = curriculum.subjects.find((s) => s.id === expandedSubject)!
-                          const cached = subjectCache[expandedSubject]
-                          const failed = subjectError[expandedSubject]
-                          return (
-                            <>
-                              <div className="flex flex-wrap items-center gap-2">
-                                <span className="size-3 rounded-full" style={{ background: subject.color }} />
-                                <p className="text-base font-semibold">{subject.name}</p>
-                                {subject.latinName && <span className="text-xs italic text-muted-foreground">{subject.latinName}</span>}
-                                <Badge variant="outline" className="ml-auto">Year {subject.year > 0 ? subject.year : 'spanning'}</Badge>
-                                <Button
-                                  variant="outline"
-                                  size="sm"
-                                  className="min-h-9"
-                                  onClick={() => { setQuizPreset({ subjectCode: subject.code, count: 10 }); setView('questions') }}
-                                >
-                                  <Sparkles className="mr-1.5 size-3.5" /> Quiz this subject
-                                </Button>
-                              </div>
-                              <p className="mt-2 max-w-3xl text-sm leading-relaxed text-ink-soft">{subject.blurb}</p>
-
-                              <div className="mt-4">
-                                {subjectLoading(expandedSubject) && (
-                                  <div className="space-y-2.5">
-                                    {Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-16 w-full rounded-xl" />)}
-                                  </div>
-                                )}
-                                {!subjectLoading(expandedSubject) && failed && (
-                                  <InlineError
-                                    message="Could not load topics for this subject."
-                                    onRetry={() => setSubjectError((prev) => { const n = { ...prev }; delete n[expandedSubject]; return n })}
-                                  />
-                                )}
-                                {!subjectLoading(expandedSubject) && cached && cached.topics.length === 0 && (
-                                  <p className="rounded-xl border border-line bg-surface-2 p-4 text-sm text-ink-soft">
-                                    Topics for this subject are being curated.
-                                  </p>
-                                )}
-                                {cached && cached.topics.length > 0 && (
-                                  <div className="med-scroll max-h-96 space-y-2.5 overflow-y-auto pr-1">
-                                    {cached.topics.map((t) => {
-                                      const topicOpen = openTopicId === t.id
-                                      const concepts = topicConcepts[t.id]
-                                      return (
-                                        <div key={t.id} className={cn('overflow-hidden rounded-xl border transition-colors', topicOpen ? 'border-primary/40' : 'border-line')}>
-                                          <button
-                                            type="button"
-                                            onClick={() => toggleTopic(t.id)}
-                                            aria-expanded={topicOpen}
-                                            className="flex min-h-11 w-full items-center gap-3 p-3.5 text-left transition-colors hover:bg-accent/40"
-                                          >
-                                            <div className="min-w-0 flex-1">
-                                              <div className="flex flex-wrap items-center gap-2">
-                                                <span className="text-sm font-medium">{t.name}</span>
-                                                {t.system && (
-                                                  <Badge variant="secondary" className="text-[10px]">
-                                                    {SYSTEM_EMOJI[t.system] ? <span aria-hidden>{SYSTEM_EMOJI[t.system]}</span> : null}
-                                                    {t.system === 'frontier-ai' ? 'Frontier AI' : prettyKey(t.system)}
-                                                  </Badge>
-                                                )}
-                                              </div>
-                                              {t.description && (
-                                                <p className="mt-0.5 line-clamp-1 text-xs text-ink-soft">{t.description}</p>
-                                              )}
-                                            </div>
-                                            <ImportanceDots n={t.importance} />
-                                            <span className="hidden shrink-0 rounded-full border border-line bg-surface px-2 py-0.5 text-[10px] tabular-nums text-ink-soft sm:inline">
-                                              {t.lessonCoverage}/{t.conceptCount} lessons
-                                            </span>
-                                            <ChevronDown className={cn('size-4 shrink-0 text-ink-soft transition-transform', topicOpen && 'rotate-180')} />
-                                          </button>
-
-                                          <AnimatePresence initial={false}>
-                                            {topicOpen && (
-                                              <motion.div
-                                                initial={{ height: 0, opacity: 0 }}
-                                                animate={{ height: 'auto', opacity: 1 }}
-                                                exit={{ height: 0, opacity: 0 }}
-                                                transition={{ duration: 0.22 }}
-                                                className="overflow-hidden"
-                                              >
-                                                <div className="border-t border-line p-3.5">
-                                                  {topicLoading === t.id && (
-                                                    <div className="grid gap-3 sm:grid-cols-2">
-                                                      {Array.from({ length: 2 }).map((_, i) => <Skeleton key={i} className="h-20 rounded-xl" />)}
-                                                    </div>
-                                                  )}
-                                                  {topicLoading !== t.id && (concepts ?? []).length === 0 && (
-                                                    <p className="text-sm text-ink-soft">No concepts mapped yet.</p>
-                                                  )}
-                                                  <div className="grid gap-3 sm:grid-cols-2">
-                                                    {(concepts ?? []).map((c) => (
-                                                      <button
-                                                        key={c.id}
-                                                        type="button"
-                                                        onClick={() => openConcept(c.id)}
-                                                        className="group rounded-xl border border-line bg-surface-2 p-3.5 text-left transition-all hover:border-primary/50"
-                                                      >
-                                                        <span className="truncate text-sm font-medium group-hover:text-primary">{c.name}</span>
-                                                        <p className="mt-1 line-clamp-2 text-xs text-ink-soft">{c.summary}</p>
-                                                        <div className="mt-2 flex items-center gap-2">
-                                                          <span className={cn('size-2 rounded-full', statusDot[c.status] ?? 'bg-muted-foreground/40')} />
-                                                          <span className="text-[11px] capitalize text-ink-soft">{c.status}</span>
-                                                          <div className="ml-auto w-20"><MasteryBar value={c.mastery} /></div>
-                                                        </div>
-                                                      </button>
-                                                    ))}
-                                                  </div>
-                                                </div>
-                                              </motion.div>
-                                            )}
-                                          </AnimatePresence>
-                                        </div>
-                                      )
-                                    })}
-                                  </div>
-                                )}
-                              </div>
-                            </>
-                          )
-                        })()}
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
               </div>
             )
           })

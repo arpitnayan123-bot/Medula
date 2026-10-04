@@ -383,3 +383,23 @@ model LearningModule {
   stepsJson Json     @default("[]") // [{conceptId,label,note}] ordered
   createdAt DateTime @default(now())
 }
+
+// ───────────────────── LEARN STUDY PROGRESS ─────────────────────
+// Explicit per-entity progress marks from the Learn study surfaces
+// (PRODUCT 01 — Medical Learn). Standalone (no FK) like the other
+// engine models → db:push stays non-destructive. The 5-state UI
+// (Not Started / Learning / Completed / Needs Revision / Mastered)
+// resolves as: user mark (this table) ?? auto-derived from
+// KnowledgeState analytics — never the other way around.
+model LearnProgress {
+  id        String   @id @default(cuid())
+  profileId String
+  kind      String // 'topic' | 'concept'
+  entityId  String // Topic.id or Concept.id
+  status    String // 'learning' | 'completed' | 'needs-revision' | 'mastered'
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([profileId, kind, entityId])
+  @@index([profileId])
+}
