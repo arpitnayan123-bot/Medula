@@ -974,3 +974,20 @@ Stage Summary:
 - Dev server healthy on :3000; homepage serves the sky-blue light theme build (Task 25 work from prior session intact).
 - Use `(bun run dev > /dev/null 2>&1 &)` for future restarts; plain nohup/setsid without subshell gets killed in this sandbox.
 - Cron #435696 will pick up Task 25 verification + polish loop every 15 min.
+
+---
+Task ID: 25-c
+Agent: Z.ai Code (main)
+Task: Push current codebase to GitHub (user request: "push the latest one")
+
+Work Log:
+- Working tree clean; HEAD = 2245355 (4 unpushed commits: Task 22 mobile UX, simplify pass 2, Task 24/25 sky-blue redesign bundle, worklog entry).
+- Safety scan before push: git grep for PAT pattern across recent history → clean; .env contains only local DATABASE_URL (no secrets); db/custom.db intentionally tracked (seeded demo data, 2.0 MB).
+- Pushed with inline PAT (redacted output, nothing written to git config/disk): 19b765f..2245355 main → main.
+- Verified via GitHub API: remote branch SHA == local HEAD (2245355236b0…), recursive tree = 224 blobs == local `git ls-files` 224, truncated=false.
+- Key-file spot check: doubt-search-view.tsx + subject-index.tsx present; medical-map-view.tsx + branch-galaxy.tsx correctly absent (deleted in Task 24/25); raw layout.tsx on GitHub shows forcedTheme="light" + themeColor #ddf1fc (sky-blue pin confirmed live on remote).
+
+Stage Summary:
+- GitHub main is byte-identical to local HEAD 2245355 (224 files, tree SHA match = full content identity).
+- Repo now reflects: sky-blue light theme pinned, Medical Map → Doubt Search, simplified All Subjects, strict homepage redesign, live top-journal research feeds.
+- PAT remains inline-only; rotation still recommended for the user.
