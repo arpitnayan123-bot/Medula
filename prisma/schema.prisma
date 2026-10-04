@@ -384,6 +384,26 @@ model LearningModule {
   createdAt DateTime @default(now())
 }
 
+// ───────────────────── AI TUTOR SESSIONS ─────────────────────
+// PRODUCT 03 — AI Medical Tutor. Persisted tutoring threads so the tutor is
+// a continuing relationship (Ask → Understand → Practice → Feedback → Learn
+// again), not a disposable chat. Standalone (no FK relations) like the other
+// engine models → db:push stays non-destructive. `topicId` mirrors the Topic
+// the session was launched from (context-aware tutoring); messages is the
+// serialized [{role, content}] thread.
+model TutorSession {
+  id        String   @id @default(cuid())
+  profileId String
+  title     String   @default("New tutoring session")
+  mode      String   @default("explain")
+  topicId   String   @default("")
+  messages  Json     @default("[]")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([profileId])
+}
+
 // ───────────────────── LEARN STUDY PROGRESS ─────────────────────
 // Explicit per-entity progress marks from the Learn study surfaces
 // (PRODUCT 01 — Medical Learn). Standalone (no FK) like the other

@@ -25,6 +25,7 @@ import type {
   AtlasListPayload, PapersListPayload,
   TopicStudyPayload, SubjectStudyPayload, TopicProgressPayload, LearnStatus,
   HubTopicPayload, HubHomePayload,
+  TutorContextPayload, TutorSessionSummary, TutorSessionDetail,
 } from './types'
 
 export const api = {
@@ -65,8 +66,23 @@ export const api = {
     post<{ correct: boolean; answerId: number; teaching: string }>(`/api/cases/${id}/step`, body),
   caseComplete: (id: string, body: { correctSteps: number; totalSteps: number; detail: unknown[] }) =>
     post<{ score: number }>(`/api/cases/${id}/complete`, body),
-  tutor: (body: { messages: { role: 'user' | 'assistant'; content: string }[]; mode: string; conceptId?: string; pairId?: string }) =>
-    post<{ reply: string }>('/api/tutor', body),
+  tutor: (body: { messages: { role: 'user' | 'assistant'; content: string }[]; mode: string; conceptId?: string; pairId?: string; topicId?: string; depth?: string }) =>
+    post<{ reply: string; grounded?: { concepts: number; questions: number; cases: number } | null }>('/api/tutor', body),
+  // ── AI Tutor (PRODUCT 03) ──
+  // What the tutor knows about this student — weak areas, mistake patterns,
+  // due revision, optional active-topic teaching context.
+  tutorContext: (topicId?: string | null) =>
+    get<TutorContextPayload>(`/api/tutor/context${topicId ? `?topicId=${encodeURIComponent(topicId)}` : ''}`),
+  tutorSessions: () => get<{ sessions: TutorSessionSummary[] }>('/api/tutor/sessions'),
+  tutorSession: (id: string) =>
+    get<{ session: TutorSessionDetail }>(`/api/tutor/sessions?id=${encodeURIComponent(id)}`),
+  saveTutorSession: (body: { id?: string; title: string; mode: string; topicId?: string; messages: { role: 'user' | 'assistant'; content: string }[] }) =>
+    post<{ id: string }>('/api/tutor/sessions', body),
+  deleteTutorSession: (id: string) =>
+    fetch(`/api/tutor/sessions?id=${encodeURIComponent(id)}`, { method: 'DELETE' }).then(r => r.json()) as Promise<{ ok: boolean }>,
+  // Save AI-generated flashcards into the real SRS (Flashcard + due review).
+  saveTutorFlashcards: (body: { cards: { front: string; back: string }[]; subjectCode?: string; conceptId?: string }) =>
+    post<{ saved: number; reason?: string }>('/api/tutor/flashcards', body),
   drillComplete: (body: { pairId: string; probes: number }) =>
     post<{ ok: boolean; reason?: string; updated: { conceptId: string; mastery: number; status: string }[]; minutes?: number; label?: string }>('/api/tutor-drill', body),
   auditStart: () => post<import('./types').AuditPayload>('/api/audit', {}),

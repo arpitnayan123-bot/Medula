@@ -74,7 +74,7 @@ export async function GET(req: NextRequest) {
     pairSubject = pair.subjectCode
   }
 
-  const all = await db.question.findMany({ where, take: 500 })
+  const all = await db.question.findMany({ where, take: 500, include: { concept: { select: { name: true } } } })
 
   const shuffle = <T,>(arr: T[]) => {
     for (let i = arr.length - 1; i > 0; i--) {
@@ -136,6 +136,7 @@ export async function GET(req: NextRequest) {
     const filler = await db.question.findMany({
       where: { subjectCode: pairSubject, id: { notIn: [...have] } },
       take: count - pool.length,
+      include: { concept: { select: { name: true } } },
     })
     pool = [...pool, ...shuffle(filler)]
   }
@@ -145,6 +146,7 @@ export async function GET(req: NextRequest) {
     options: (q.options as { id: string; text: string }[]),
     difficulty: q.difficulty, qtype: q.qtype, subjectCode: q.subjectCode, system: q.system,
     conceptId: q.conceptId ?? undefined,
+    conceptName: q.concept?.name ?? undefined,
   }))
   return NextResponse.json({ questions, available: all.length })
 }

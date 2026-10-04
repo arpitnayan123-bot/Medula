@@ -12,7 +12,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
 import {
-  Activity, ArrowLeft, ArrowRight, BarChart3, BookOpen, Boxes, BrainCircuit, CheckCircle2,
+  Activity, ArrowLeft, ArrowRight, BarChart3, BookOpen, Boxes, BrainCircuit, CheckCircle2, MessagesSquare,
   ChevronRight, CircleDashed, FlaskConical, GraduationCap, Layers, Lightbulb,
   MonitorPlay, Pause, Play, RotateCcw, Scale, ShieldCheck, Sparkles, Stethoscope, Target,
   TriangleAlert, Zap, type LucideIcon,
@@ -31,6 +31,9 @@ import { ALL_UNDERSTAND } from '@/lib/understand-registry'
 
 const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1]
 const TUTOR_QUESTION_KEY = 'medos:tutor-question'
+// PRODUCT 03 — the AI Tutor reads this on boot: the WHOLE session becomes
+// topic-aware (platform-note grounding, topic MCQs, misconception signals).
+const TUTOR_TOPIC_KEY = 'medula:tutor-topic'
 
 type SectionKey =
   | 'overview' | 'learn' | 'watch' | 'read' | 'practice'
@@ -108,10 +111,12 @@ export function TopicHub({ topicId, conceptId, onClose }: {
   }, [])
 
   const askTutor = useCallback((prompt: string) => {
-    // The tutor consumes this key from sessionStorage on mount.
+    // The tutor consumes these keys from sessionStorage on mount — the topic
+    // key makes the entire session context-aware, not just the first answer.
+    try { window.sessionStorage.setItem(TUTOR_TOPIC_KEY, topicId) } catch { /* private mode */ }
     try { window.sessionStorage.setItem(TUTOR_QUESTION_KEY, prompt) } catch { /* private mode */ }
     setView('tutor')
-  }, [setView])
+  }, [setView, topicId])
 
   const practice = useCallback((extra?: { qtype?: string; count?: number }) => {
     setQuizPreset({
@@ -1007,8 +1012,24 @@ function AiSection({ data, onAsk, onQuiz }: {
           </button>
         ))}
       </div>
+      <button
+        type="button"
+        onClick={() => onAsk(`I want to keep working on ${data.topic.name} — continue our session with teaching modes, quizzes and revision.`)}
+        className="flex w-full items-center gap-3 rounded-2xl border border-primary/40 bg-primary/5 p-3.5 text-left transition-all hover:bg-primary/10"
+      >
+        <span className="grid size-9 shrink-0 place-items-center rounded-xl bg-primary/15">
+          <MessagesSquare className="size-4 text-primary" />
+        </span>
+        <span className="min-w-0">
+          <span className="block truncate text-sm font-semibold text-primary">Open the full AI Tutor</span>
+          <span className="block truncate text-[11px] text-muted-foreground">
+            Topic-aware chat with Explain · Socratic · Quiz · Clinical · Rapid Revision · Exam modes
+          </span>
+        </span>
+        <ArrowRight className="ml-auto size-4 shrink-0 text-primary" />
+      </button>
       <p className="rounded-xl border border-line bg-surface-2 p-3 text-[11px] leading-relaxed text-muted-foreground">
-        The AI Tutor is a learning tool, not a clinical advisor — it can be wrong. Verify against standard textbooks. (Voice learning, adaptive MCQs and the mistake engine plug into this section as they ship.)
+        The AI Tutor is a learning tool, not a clinical advisor — it can be wrong. Verify against standard textbooks. Every action above opens it with this topic as teaching context. (Voice learning and the knowledge graph plug into this section as they ship.)
       </p>
     </div>
   )

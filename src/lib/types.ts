@@ -90,6 +90,7 @@ export interface QuestionClient {
   options: { id: string; text: string }[]
   difficulty: number; qtype: string; subjectCode: string; system: string
   conceptId?: string
+  conceptName?: string
 }
 
 export interface AttemptResult {
@@ -550,4 +551,39 @@ export interface HubHomePayload {
     status: string; updatedAt: string
   }[]
   totals: { topics: number; concepts: number; questions: number; flashcards: number; cases: number }
+}
+
+// ─── AI MEDICAL TUTOR (PRODUCT 03) ───
+
+/** Teaching modes per the AI Tutor spec. Legacy ids ('simple'|'deep') map onto explain+depth. */
+export type TutorMode = 'explain' | 'socratic' | 'quiz' | 'clinical' | 'rapid' | 'exam' | 'eli5' | 'hinglish'
+export type TutorDepth = 'simple' | 'mbbs' | 'deep'
+
+/** GET /api/tutor/context — what the tutor knows about THIS student (measured data only). */
+export interface TutorContextPayload {
+  profile: { yearLabel: string; prepStage: string; learningStyles: string[]; attemptsTotal: number }
+  weak: { conceptId: string; name: string; mastery: number; attempts: number; status: string }[]
+  missed: { conceptId: string | null; name: string; count: number }[]
+  errorTypes: { type: string; count: number }[]
+  revision: { due: number; top: string[] }
+  drills: number
+  topic?: {
+    id: string; name: string; subjectName: string; subjectCode: string
+    system: string | null; importance: number
+    mark: string | null
+    questions: number; cases: number; cards: number
+    weak?: { conceptId: string; name: string; mastery: number } | null
+  }
+}
+
+/** GET /api/tutor/sessions — persisted tutoring threads (list view). */
+export interface TutorSessionSummary {
+  id: string; title: string; mode: string; topicId: string
+  messageCount: number; updatedAt: string
+}
+
+/** GET /api/tutor/sessions?id= — full thread for resume. */
+export interface TutorSessionDetail extends TutorSessionSummary {
+  createdAt: string
+  messages: { role: 'user' | 'assistant'; content: string }[]
 }
