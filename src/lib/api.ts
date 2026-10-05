@@ -33,6 +33,8 @@ import type {
   RevisionMode, RevisionBlockKind, RevisionSmartHome, RevisionSessionStart,
   RevisionSessionResume, RevisionBlockResult, RevisionSessionSummary, RevisionAiResponse,
   PlannerHome, PlannerPlanSaveResult, PlannerAiResponse,
+  GraphHome, GraphSearchResult, GraphHub, GraphPath, GraphExplorePayload,
+  GraphAiResponse, GraphFeedbackBody, GraphAiAction,
 } from './types'
 
 export const api = {
@@ -207,6 +209,22 @@ export const api = {
     post<{ ok: boolean }>('/api/planner/task', body),
   plannerAi: (action: 'why' | 'rebalance' | 'shrink' | 'realism' | 'next') =>
     post<PlannerAiResponse>('/api/planner/ai', { action }),
+
+  // ── Medical Knowledge Graph (PRODUCT 08) ──
+  graphHome: (recentIds?: string[]) =>
+    get<GraphHome>(`/api/graph/home${recentIds?.length ? `?recent=${encodeURIComponent(recentIds.join(','))}` : ''}`),
+  graphSearch: (q: string) =>
+    get<GraphSearchResult>(`/api/graph/search?q=${encodeURIComponent(q)}`),
+  graphHub: (id: string) =>
+    get<GraphHub>(`/api/graph/hub?id=${encodeURIComponent(id)}`),
+  graphPath: (id: string) =>
+    get<GraphPath>(`/api/graph/path?id=${encodeURIComponent(id)}`),
+  graphExplore: (subject?: string) =>
+    get<GraphExplorePayload>(`/api/graph/explore${subject ? `?subject=${encodeURIComponent(subject)}` : ''}`),
+  graphAi: (body: { action: GraphAiAction; conceptId?: string; otherId?: string; edgeType?: string }) =>
+    post<GraphAiResponse>('/api/graph/ai', body),
+  graphFeedback: (body: GraphFeedbackBody) =>
+    post<{ ok: boolean }>('/api/graph/feedback', body),
 }
 
 // ── Adaptive Engine aux payloads (defined here — types.ts is frozen) ──

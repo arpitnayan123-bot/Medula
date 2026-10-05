@@ -23,6 +23,7 @@ export type View =
   | 'mistakes'
   | 'revision'
   | 'planner'
+  | 'graph'
   | 'cases' | 'revise' | 'tutor' | 'progress' | 'roadmap' | 'profile'
 
 export interface Profile {
@@ -1295,4 +1296,179 @@ export interface PlannerAiResponse {
   bullets: string[]
   fallback: boolean
   disclaimer: string
+}
+
+// ─── MEDICAL KNOWLEDGE GRAPH (PRODUCT 08) ───────────────────────────────
+// The intelligence layer connecting Subject → System → Topic → Concept →
+// Condition → Investigation → Treatment → Drug → Case → MCQ → PYQ. The
+// student-facing contract stays small and calm; the underlying graph can
+// be complex. All numbers are measured — never invented.
+
+/** Normalised display grouping for an edge — direction noise in legacy data
+ *  is resolved by the engine, the UI only ever sees these groups. */
+export type GraphGroupKind =
+  | 'prerequisite' | 'unlocks' | 'related' | 'confusable' | 'causes' | 'caused_by'
+  | 'mechanism' | 'manifestation' | 'investigation' | 'treatment' | 'complication' | 'application'
+
+export const GRAPH_GROUP_META: Record<GraphGroupKind, { label: string; blurb: string }> = {
+  prerequisite: { label: 'Prerequisites', blurb: 'Understand these first — they make this concept click' },
+  unlocks: { label: 'Unlocks', blurb: 'Concepts this opens the door to' },
+  related: { label: 'Related', blurb: 'Worth seeing side by side' },
+  confusable: { label: 'Often confused', blurb: 'Classic exam mix-ups — learn the differences' },
+  causes: { label: 'Causes / leads to', blurb: 'What this produces downstream' },
+  caused_by: { label: 'Caused by', blurb: 'What explains why this happens' },
+  mechanism: { label: 'Mechanisms', blurb: 'How it actually works' },
+  manifestation: { label: 'Clinical features', blurb: 'How it shows up in a patient' },
+  investigation: { label: 'Investigations', blurb: 'How it is confirmed' },
+  treatment: { label: 'Treatments & drugs', blurb: 'What is done about it' },
+  complication: { label: 'Complications', blurb: 'What can go wrong if missed' },
+  application: { label: 'Clinical application', blurb: 'Where the theory meets the ward' },
+}
+
+export interface GraphNeighbor {
+  id: string
+  name: string
+  kind: string
+  summary: string
+  subjectCode: string
+  subjectName: string
+  subjectColor: string
+  edgeType: string
+  edgeLabel: string
+  edgeSource: string // curated | ai-suggested | imported
+  mastery: number // 0..100, 0 = not started
+  status: 'new' | 'weak' | 'unstable' | 'strong'
+  questionCount: number
+}
+
+export interface GraphGroup {
+  kind: GraphGroupKind
+  label: string
+  blurb: string
+  items: GraphNeighbor[]
+  hidden: number // items beyond the cap — UI shows "+N more"
+}
+
+export interface GraphHub {
+  concept: {
+    id: string; name: string; kind: string; summary: string; whyMatters: string
+    mnemonic: string; difficulty: number; examRelevance: number; clinicalRelevance: number
+  }
+  topic: { id: string; name: string; system: string | null }
+  subject: { code: string; name: string; color: string }
+  mastery: { score: number; status: string; estRecall: number; attemptCount: number; lastReviewed: string | null } | null
+  learnStatus: string | null // LearnProgress mark, if any
+  groups: GraphGroup[]
+  questionStats: { total: number; pyq: number }
+  caseCount: number
+  flashcardCount: number
+  minimap: {
+    center: { id: string; name: string; mastery: number; status: string }
+    nodes: { id: string; name: string; kind: string; group: GraphGroupKind; mastery: number; status: string; subjectColor: string }[]
+  }
+  personal: {
+    missingPrerequisites: { id: string; name: string; mastery: number; status: string; reason: string }[]
+    weakNeighbors: { id: string; name: string; mastery: number; edgeType: string; reason: string }[]
+    repeatedConfusion: { pairId: string | null; otherId: string; otherName: string; wrongCount: number; reason: string }[]
+    recommendedNext: { id: string; name: string; kind: string; reason: string }[]
+    strongZones: { id: string; name: string; mastery: number }[]
+  }
+  insufficientData: boolean
+}
+
+export type GraphPathStage = 'why' | 'mechanism' | 'clinical' | 'diagnosis' | 'treatment'
+
+export interface GraphPathStep {
+  stage: GraphPathStage
+  label: string
+  question: string // the question this stage answers ("Why does this happen?")
+  items: {
+    id: string; name: string; kind: string; summary: string
+    edgeType: string; edgeLabel: string
+    mastery: number; status: string
+    subjectCode: string; subjectColor: string
+  }[]
+}
+
+/** Concept → Why? → Mechanism → Clinical effect → Diagnosis → Treatment. */
+export interface GraphPath {
+  concept: { id: string; name: string; kind: string; summary: string; whyMatters: string }
+  subject: { code: string; name: string; color: string }
+  steps: GraphPathStep[]
+  narrative: string[] // measured cause→effect sentences built from edges + labels
+}
+
+export interface GraphHome {
+  stats: {
+    concepts: number
+    connected: number
+    edges: number
+    crossSubject: number
+    subjects: number
+    topics: number
+    questions: number
+    cases: number
+  }
+  topHubs: {
+    id: string; name: string; kind: string; degree: number
+    subjectCode: string; subjectName: string; subjectColor: string
+    mastery: number; status: string; questionCount: number
+  }[]
+  personal: {
+    missingPrerequisites: { fromId: string; fromName: string; toId: string; toName: string; mastery: number; reason: string }[]
+    confusionHotspots: { pairId: string; aId: string; aName: string; bId: string; bName: string; mnemonic: string; bothWeak: boolean }[]
+    isolatedWeak: { id: string; name: string; mastery: number; subjectCode: string; subjectName: string }[]
+    strongZones: { id: string; name: string; mastery: number; degree: number }[]
+    recommendedToday: { id: string; name: string; kind: string; reason: string }[]
+  }
+  subjects: { code: string; name: string; color: string; conceptCount: number; edgeCount: number }[]
+  recentIds: string[] // last hubs opened this device (client supplies storage; server echoes ids it knows)
+  insufficientData: boolean
+}
+
+export interface GraphSearchResult {
+  query: string
+  concepts: {
+    id: string; name: string; kind: string; summary: string
+    subjectCode: string; subjectName: string; subjectColor: string
+    mastery: number; status: string
+    degree: number; questionCount: number
+    matchedVia: 'name' | 'synonym' | 'summary'
+    matchedTerm?: string
+  }[]
+  topics: { id: string; name: string; subjectCode: string; subjectName: string; conceptCount: number }[]
+  subjects: { id: string; name: string; color: string; conceptCount: number }[]
+  synonymHits: { term: string; refId: string; name: string }[]
+}
+
+export interface GraphExplorePayload {
+  subject: { code: string; name: string; color: string; neetWeight: number } | null
+  systems: {
+    system: string
+    topics: {
+      id: string; name: string; conceptCount: number; edgeCount: number
+      mastery: number
+      concepts: { id: string; name: string; kind: string; mastery: number; status: string; degree: number }[]
+    }[]
+  }[]
+}
+
+/** POST /api/graph/ai — grounded AI actions over the graph. */
+export type GraphAiAction = 'explain-relationship' | 'why-path' | 'study-order'
+
+export interface GraphAiResponse {
+  ok: boolean
+  action: GraphAiAction
+  text: string
+  fallback: boolean
+  disclaimer: string
+}
+
+/** POST /api/graph/feedback — student review of a relationship. */
+export interface GraphFeedbackBody {
+  fromId: string
+  toId: string
+  type: string
+  vote: 'wrong' | 'helpful' | 'unsure'
+  note?: string
 }

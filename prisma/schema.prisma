@@ -111,11 +111,17 @@ model ConceptEdge {
   from  Concept @relation("fromEdge", fields: [fromId], references: [id])
   toId  String
   to    Concept @relation("toEdge", fields: [toId], references: [id])
-  type  String // prerequisite_of|related_to|causes|caused_by|treated_by|diagnosed_by|complication_of|differential_of|commonly_tested_with|clinical_application_of
+  // prerequisite_of|related_to|causes|caused_by|treated_by|diagnosed_by|complication_of|differential_of|commonly_tested_with|clinical_application_of|mechanism_of|manifestation_of
+  type  String
   label String @default("")
+  // ── Knowledge Graph (PRODUCT 08, additive) — data-quality provenance so
+  // relationships can be reviewed, corrected and updated over time.
+  source   String  @default("curated") // curated | ai-suggested | imported
+  verified Boolean @default(true) // false = flagged, awaiting review
 
   @@index([fromId])
   @@index([toId])
+  @@index([type])
 }
 
 // ───────────────────────── QUESTIONS ─────────────────────────
@@ -581,6 +587,40 @@ model PlannerDayLog {
 
   @@unique([profileId, dayKey])
   @@index([profileId, dayKey])
+}
+
+// ───────────────────── MEDICAL KNOWLEDGE GRAPH (PRODUCT 08) ─────────────────
+// Additive, STANDALONE tables (no FK relations) → db:push stays non-destructive.
+//
+// GraphSynonym — natural medical terminology variants ("HF", "heart attack",
+//                "IHD") resolved to canonical concepts during search so a
+//                student's own words find the right hub.
+// GraphFeedback — students flag a relationship as wrong/helpful. Feedback is
+//                reviewed and edges corrected; wrong-flagged edges are marked
+//                ConceptEdge.verified=false until fixed.
+model GraphSynonym {
+  id     String @id
+  term   String @unique // lowercase natural term, e.g. "hf", "heart attack"
+  kind   String // concept | topic | subject
+  refId  String // canonical Concept.id / Topic.id / Subject.id
+  weight Int    @default(1) // ranking boost for exact abbreviations
+
+  @@index([refId])
+}
+
+model GraphFeedback {
+  id        String   @id @default(cuid())
+  profileId String
+  fromId    String
+  toId      String
+  type      String
+  vote      String // wrong | helpful | unsure
+  note      String   @default("")
+  status    String   @default("open") // open | reviewed | fixed
+  createdAt DateTime @default(now())
+
+  @@index([profileId])
+  @@index([status])
 }
 
 model PlannerTask {

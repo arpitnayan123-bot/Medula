@@ -17,6 +17,7 @@ import { AdaptiveView } from '@/components/adaptive/adaptive-view'
 import { MistakeIntelligenceView } from '@/components/mistakes/mistake-intelligence-view'
 import { SmartRevisionView } from '@/components/revision/smart-revision-view'
 import { PlannerView } from '@/components/planner/planner-view'
+import { GraphView } from '@/components/graph/graph-view'
 import { CasesView } from '@/components/cases/cases-view'
 import { ReviseView } from '@/components/revise/revise-view'
 import { TutorView } from '@/components/tutor/tutor-view'
@@ -113,6 +114,7 @@ export default function Home() {
       {view === 'mistakes' && <MistakeIntelligenceView />}
       {view === 'revision' && <SmartRevisionView />}
       {view === 'planner' && <PlannerView />}
+      {view === 'graph' && <GraphView />}
       {view === 'cases' && <CasesView />}
       {view === 'revise' && <ReviseView />}
       {view === 'tutor' && <TutorView />}
