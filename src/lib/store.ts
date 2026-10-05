@@ -8,7 +8,7 @@ import type { Profile, View } from './types'
 // the doctor back where they left off, and mirror to the URL hash (#/map)
 // so a reload keeps the same view.
 export const APP_VIEWS: readonly View[] = [
-  'home', 'map', 'explore', 'research', 'understand', 'learn', 'hub', 'questions', 'adaptive', 'mistakes', 'revision', 'planner', 'graph', 'cases', 'lab', 'revise', 'tutor', 'progress', 'roadmap', 'profile',
+  'home', 'map', 'explore', 'research', 'understand', 'learn', 'hub', 'questions', 'adaptive', 'mistakes', 'revision', 'planner', 'graph', 'cases', 'lab', 'voice', 'revise', 'tutor', 'progress', 'roadmap', 'profile',
 ] as const
 
 // ── Topic Hub deep links ────────────────────────────────────────────────
@@ -140,6 +140,7 @@ export function viewToLabel(v: View): string {
     graph: 'the Knowledge Graph',
     cases: 'the Case Simulator', lab: 'the Image Lab', revise: 'Revise', tutor: 'the AI Tutor',
     progress: 'Progress', roadmap: 'Roadmap', profile: 'Profile',
+    voice: 'the Voice Tutor',
   }
   return labels[v] ?? v
 }
@@ -160,6 +161,7 @@ interface AppState {
   adaptivePreset: { mode?: import('./types').AdaptiveMode; subjectCode?: string; topicId?: string; conceptId?: string; count?: number; autoStart?: boolean } | null // Adaptive Engine hand-off (PRODUCT 04)
   simFocus: { caseId: string } | null // Case Simulator deep-link hand-off (PRODUCT 09)
   labFocus: { imageId: string } | null // Image Lab deep-link hand-off (PRODUCT 10)
+  voicePreset: { mode: import('./types').VoiceMode; topicId?: string } | null // Voice Tutor hand-off (PRODUCT 11)
   researchSeedQuery: string | null // query handed from Explore → Research Hub
   setView: (v: View) => void
   setProfile: (p: Profile | null) => void
@@ -180,6 +182,8 @@ interface AppState {
   closeSim: () => void
   openLab: (imageId: string) => void
   closeLab: () => void
+  openVoice: (mode: import('./types').VoiceMode, topicId?: string) => void
+  clearVoicePreset: () => void
   setResearchSeedQuery: (q: string | null) => void
 }
 
@@ -199,6 +203,7 @@ export const useAppStore = create<AppState>((set) => ({
   adaptivePreset: null,
   simFocus: null,
   labFocus: null,
+  voicePreset: null,
   researchSeedQuery: null,
   setView: (v) => {
     if (isAppView(v)) {
@@ -232,5 +237,7 @@ export const useAppStore = create<AppState>((set) => ({
   closeSim: () => set({ simFocus: null }),
   openLab: (imageId) => set({ labFocus: { imageId }, view: 'lab' }),
   closeLab: () => set({ labFocus: null }),
+  openVoice: (mode, topicId) => set({ voicePreset: { mode, topicId }, view: 'voice' }),
+  clearVoicePreset: () => set({ voicePreset: null }),
   setResearchSeedQuery: (q) => set({ researchSeedQuery: q }),
 }))

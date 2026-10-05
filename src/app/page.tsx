@@ -20,6 +20,7 @@ import { PlannerView } from '@/components/planner/planner-view'
 import { GraphView } from '@/components/graph/graph-view'
 import { SimView } from '@/components/sim/sim-view'
 import { LabView } from '@/components/lab/lab-view'
+import { VoiceView } from '@/components/voice/voice-view'
 import { ReviseView } from '@/components/revise/revise-view'
 import { TutorView } from '@/components/tutor/tutor-view'
 import { ProgressView } from '@/components/progress/progress-view'
@@ -118,6 +119,7 @@ export default function Home() {
       {view === 'graph' && <GraphView />}
       {view === 'cases' && <SimView />}
       {view === 'lab' && <LabView />}
+      {view === 'voice' && <VoiceView />}
       {view === 'revise' && <ReviseView />}
       {view === 'tutor' && <TutorView />}
       {view === 'progress' && <ProgressView />}

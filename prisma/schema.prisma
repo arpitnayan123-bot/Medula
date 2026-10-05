@@ -760,3 +760,33 @@ model PlannerTask {
   @@unique([profileId, dayKey, slot, kind, refId])
   @@index([profileId, dayKey])
 }
+
+// ──────────────── MEDICAL VOICE TUTOR (PRODUCT 11) ────────────────
+// Additive table for hands-free conversational learning. STANDALONE engine
+// model: profileId is a plain string (no FK) — db:push stays non-destructive,
+// existing tables untouched (same pattern as SimCaseAttempt / LabAttempt).
+//
+// VoiceSession — one spoken learning session. The transcript is an
+//               append-only log ({role:'tutor'|'student', text, at}) and
+//               evals logs structured spoken-answer verdicts
+//               ({concept, verdict:'correct'|'partial'|'missed', note, at})
+//               parsed from the tutor's fenced blocks — the raw block never
+//               reaches the client. Counters (questions/correct) drive the
+//               debrief and the platform-wide feeds.
+model VoiceSession {
+  id          String    @id @default(cuid())
+  profileId   String
+  mode        String // listen | rapid | viva | revision | clinical | doubt
+  topicId     String    @default("")
+  topicLabel  String    @default("")
+  status      String    @default("active") // active | completed | abandoned
+  transcript  Json      @default("[]") // append-only spoken transcript
+  evals       Json      @default("[]") // append-only graded-answer verdicts
+  questions   Int       @default(0) // graded spoken answers so far
+  correct     Int       @default(0) // verdict === 'correct'
+  startedAt   DateTime  @default(now())
+  completedAt DateTime?
+
+  @@index([profileId, status])
+  @@index([profileId, startedAt])
+}

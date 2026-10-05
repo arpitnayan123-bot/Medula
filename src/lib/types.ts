@@ -24,7 +24,7 @@ export type View =
   | 'revision'
   | 'planner'
   | 'graph'
-  | 'cases' | 'lab' | 'revise' | 'tutor' | 'progress' | 'roadmap' | 'profile'
+  | 'cases' | 'lab' | 'voice' | 'revise' | 'tutor' | 'progress' | 'roadmap' | 'profile'
 
 export interface Profile {
   id: string
@@ -1873,4 +1873,95 @@ export interface LabAiResponse {
   fallback: boolean
   disclaimer: string
   aiBadge: string
+}
+
+// ──────────────── MEDICAL VOICE TUTOR (PRODUCT 11) ────────────────
+// Frozen client↔server contract for hands-free conversational learning.
+// «Listen → Speak → Answer → Get feedback → Learn»
+// The tutor speaks; the client always mirrors supporting text. Graded-answer
+// verdicts arrive ONLY as structured evals — the tutor's internal grading
+// block is stripped server-side and never shipped (no chain-of-thought).
+
+export type VoiceMode = 'listen' | 'rapid' | 'viva' | 'revision' | 'clinical' | 'doubt'
+
+export interface VoiceModeInfo {
+  id: VoiceMode
+  name: string
+  tagline: string
+  speak: string // what the student says to start it (voice-first affordance)
+  expectsAnswer: boolean // modes where the tutor asks and waits for spoken answers
+}
+
+/** One measured «why this now» suggestion on the voice home. */
+export interface VoiceSuggestion {
+  mode: VoiceMode
+  line: string
+  topicId: string | null
+}
+
+/** GET /api/voice/home — measured home (stats, modes, suggestions, resume). */
+export interface VoiceHome {
+  modes: VoiceModeInfo[]
+  stats: {
+    sessions: number
+    minutes: number // total spoken study time
+    questions: number // graded spoken answers
+    accuracy: number | null // correct/questions, null when nothing graded yet
+    lastSessionAt: string | null
+  }
+  suggestions: VoiceSuggestion[] // measured «why this now»
+  revisionDue: number
+  weak: { name: string; mastery: number }[] // top weak concepts (measured)
+  resume: { sessionId: string; mode: VoiceMode; topicLabel: string; startedAt: string } | null
+  micSupported: boolean // client overrides after capability probe (SSR-safe default)
+}
+
+/** POST /api/voice/session — start (or resume) a spoken session. */
+export interface VoiceStartResult {
+  ok: true
+  sessionId: string
+  mode: VoiceMode
+  resumed: boolean
+  greeting: string // tutor's opening line — speak it
+  display: string // optional longer supporting text (may equal greeting)
+  state: VoiceSessionState
+}
+
+export interface VoiceSessionState {
+  turns: number // tutor+student exchanges so far
+  questions: number
+  correct: number
+}
+
+/** One transcript entry (mirrored under the orb, always text-visible). */
+export interface VoiceTranscriptEntry {
+  role: 'tutor' | 'student'
+  text: string
+  at: string
+}
+
+/** POST /api/voice/turn — one spoken (or typed) student turn. */
+export interface VoiceTurnResult {
+  ok: true
+  reply: string // speakable reply — the tutor says this
+  display: string // supporting text (may include structure; never eval blocks)
+  transcript: VoiceTranscriptEntry[] // full session transcript (server-owned)
+  state: VoiceSessionState
+  ended: boolean // tutor signalled the session arc is complete (viva/rapid sets)
+}
+
+/** POST /api/voice/complete — debrief + honest feed report. */
+export interface VoiceDebrief {
+  sessionId: string
+  mode: VoiceMode
+  topicLabel: string
+  durationMs: number
+  turns: number
+  questions: number
+  correct: number
+  accuracy: number | null
+  concepts: { name: string; verdict: 'correct' | 'partial' | 'missed'; note: string }[]
+  weakTouched: { name: string; mastery: number }[] // measured weak areas revisited this session
+  fed: { studySession: boolean; errorPattern: boolean; revisionItem: boolean; reason: string }
+  handoffs: { revision: boolean; mistakes: boolean; planner: boolean }
 }

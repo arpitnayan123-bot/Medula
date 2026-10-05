@@ -37,6 +37,7 @@ import type {
   GraphAiResponse, GraphFeedbackBody, GraphAiAction,
   SimHome, SimCaseDetail, SimActResponse, SimDebrief, SimAiResponse, SimAiMessage,
   LabHome, LabImageDetail, LabAttemptStart, LabActResponse, LabRapidStart, LabDebrief, LabAiResponse, LabMode, LabPin,
+  VoiceHome, VoiceMode, VoiceStartResult, VoiceTurnResult, VoiceDebrief,
 } from './types'
 
 export const api = {
@@ -263,6 +264,36 @@ export const api = {
     post<LabRapidStart>('/api/lab/rapid', body),
   labAi: (body: { imageId: string; question: string }) =>
     post<LabAiResponse>('/api/lab/ai', body),
+
+  // ── Medical Voice Tutor (PRODUCT 11) ──
+  // Audio endpoints return raw bytes / plain JSON — fetched outside `get()`
+  // so the TTS blob can be played directly.
+  voiceHome: () => get<VoiceHome>('/api/voice/home'),
+  voiceStart: (body: { mode: VoiceMode; topicId?: string } | { sessionId: string }) =>
+    post<VoiceStartResult & { transcript?: { role: 'tutor' | 'student'; text: string; at: string }[] }>('/api/voice/session', body),
+  voiceTurn: (sessionId: string, text: string) =>
+    post<VoiceTurnResult>('/api/voice/turn', { sessionId, text }),
+  voiceComplete: (sessionId: string) =>
+    post<VoiceDebrief>('/api/voice/complete', { sessionId }),
+  voiceTts: async (text: string): Promise<Blob> => {
+    const res = await fetch('/api/voice/tts', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text }),
+    })
+    if (!res.ok) throw new Error(`POST /api/voice/tts → ${res.status}`)
+    return res.blob()
+  },
+  voiceAsr: async (audioBase64: string): Promise<string> => {
+    const res = await fetch('/api/voice/asr', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ audioBase64 }),
+    })
+    if (!res.ok) throw new Error(`POST /api/voice/asr → ${res.status}`)
+    const data = (await res.json()) as { text?: string }
+    return (data.text ?? '').trim()
+  },
 }
 
 // ── Adaptive Engine aux payloads (defined here — types.ts is frozen) ──
