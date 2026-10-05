@@ -1472,3 +1472,188 @@ export interface GraphFeedbackBody {
   vote: 'wrong' | 'helpful' | 'unsure'
   note?: string
 }
+
+// ═══════════════════════════════════════════════════════════════════════════
+// PRODUCT 09 — CLINICAL CASE SIMULATOR («Learn → encounter → reason → decide»)
+// Contract FROZEN for Task 9-a (backend engine + /api/sim/**) and 9-b (UI).
+// Grading is always DETERMINISTIC against the curated brief — the AI never
+// grades, and the brief's answer key never reaches the client.
+// ═══════════════════════════════════════════════════════════════════════════
+
+export type SimDifficulty = 'beginner' | 'mbbs' | 'neetpg' | 'advanced'
+
+export const SIM_DIFFICULTY_META: Record<SimDifficulty, { label: string; blurb: string }> = {
+  beginner: { label: 'Beginner', blurb: 'Pattern recognition — guided reasoning' },
+  mbbs: { label: 'MBBS', blurb: 'Final-year ward-level reasoning' },
+  neetpg: { label: 'NEET-PG', blurb: 'Exam-level traps, timing and sequencing' },
+  advanced: { label: 'Advanced', blurb: 'Advanced clinical reasoning under pressure' },
+}
+
+export const SIM_SPECIALTIES = [
+  'Medicine', 'Surgery', 'Paediatrics', 'Obstetrics & Gynaecology', 'Psychiatry',
+  'Dermatology', 'Ophthalmology', 'ENT', 'Orthopaedics', 'Radiology', 'Pathology',
+  'Emergency Medicine', 'Cardiology',
+] as const
+
+export type SimStageKind =
+  | 'patient' | 'history' | 'exam' | 'investigations'
+  | 'differential' | 'diagnosis' | 'management' | 'followup'
+
+export type SimInteractionKind = 'explore' | 'key' | 'choice' | 'multi'
+
+/** Client-safe option — verdict/why/finding/key/cost are stripped by the engine. */
+export interface SimOptionPublic {
+  id: string
+  label: string
+}
+
+export interface SimInteractionPublic {
+  id: string
+  kind: SimInteractionKind
+  prompt: string
+  instruction?: string // e.g. "Pick up to four domains — you cannot ask everything."
+  options: SimOptionPublic[]
+  minSelect?: number
+  maxSelect?: number
+  imageKey?: string // key into the platform-owned clinical image set
+  imageCaption?: string
+}
+
+export interface SimStagePublic {
+  id: string
+  kind: SimStageKind
+  label: string
+  intro: string[]
+  interactions: SimInteractionPublic[]
+}
+
+export interface SimPatient {
+  age: string
+  sex: string
+  occupation: string
+  complaint: string
+  scene: string // one-paragraph opening vignette
+}
+
+export interface SimCaseSummary {
+  id: string
+  title: string
+  specialty: string
+  system: string
+  difficulty: SimDifficulty
+  minutes: number
+  imageKey: string | null
+  aiReady: boolean
+  stageCount: number
+  interactionCount: number
+  attempted: boolean
+  bestScore: number | null
+  lastScore: number | null
+  lastAt: string | null
+  diagnosisCorrect: boolean | null
+  source: string // curated | imported-legacy
+}
+
+export interface SimCaseDetail {
+  summary: SimCaseSummary
+  patient: SimPatient
+  stages: SimStagePublic[]
+}
+
+/** GET /api/sim/home */
+export interface SimHome {
+  stats: {
+    completed: number
+    attempted: number
+    diagnosticAccuracy: number | null // % of completed runs with the right diagnosis
+    avgScore: number | null
+    minutesPractised: number
+  }
+  specialties: { name: string; count: number; completed: number; accuracy: number | null }[]
+  cases: SimCaseSummary[]
+  weakAreas: { label: string; detail: string; accuracy: number | null }[] // measured <70% areas
+  repeatedErrors: { label: string; count: number; lastCaseTitle: string }[] // same miss ≥2 runs
+  recommended: { caseId: string; title: string; reason: string } | null
+  recommendedDifficulty: SimDifficulty
+  recent: { caseId: string; title: string; specialty: string; score: number; diagnosisCorrect: boolean; at: string; mode: string }[]
+  resume: { attemptId: string; caseId: string; caseTitle: string; stageIndex: number; mode: string } | null
+}
+
+/** POST …/act — deterministic feedback for ONE interaction. */
+export interface SimFeedbackOption {
+  id: string
+  label: string
+  verdict: 'correct' | 'acceptable' | 'wrong' | 'harmful'
+  why: string
+  finding?: string // explore: what the item revealed when pursued
+}
+export interface SimFeedback {
+  correct: boolean
+  score: number // 0..100 for this interaction
+  headline: string
+  perOption: SimFeedbackOption[] // chosen items (+ keys always explained)
+  missed: { id: string; label: string; why: string }[] // essential items not chosen
+}
+
+export interface SimActResponse {
+  ok: true
+  feedback: SimFeedback
+  stageIndex: number
+  stageDone: boolean
+  allDone: boolean
+}
+
+/** POST …/complete */
+export interface SimDebriefTimelineItem {
+  stageId: string
+  stageLabel: string
+  stageKind: SimStageKind
+  interactionId: string
+  prompt: string
+  chosenLabels: string[]
+  correct: boolean
+  score: number
+  headline: string
+  verdicts: SimFeedbackOption[]
+  missed: { id: string; label: string; why: string }[]
+}
+
+export interface SimDebrief {
+  attemptId: string
+  caseId: string
+  caseTitle: string
+  specialty: string
+  difficulty: SimDifficulty
+  mode: string // guided | ai
+  diagnosis: string
+  diagnosisCorrect: boolean
+  scores: {
+    total: number
+    diagnosis: number
+    reasoning: number
+    investigations: number
+    management: number
+    timeMs: number
+    estimateMinutes: number
+  }
+  timeline: SimDebriefTimelineItem[]
+  learning: string[]
+  concepts: { id: string; name: string; primary: boolean; mastery: number | null; status: string | null }[]
+  related: { kind: string; label: string; blurb: string; items: { id: string; name: string; edgeLabel: string }[] }[] | null
+  mistakeFed: { errorPattern: boolean; revisionItem: boolean; reason: string } | null
+  handoffs: { conceptId: string | null; topicId: string | null; subjectCode: string | null }
+  aiNote?: string
+}
+
+/** POST /api/sim/ai — grounded AI Case Mode (patient roleplay). */
+export interface SimAiMessage {
+  role: 'user' | 'assistant'
+  content: string
+}
+export interface SimAiResponse {
+  ok: boolean
+  reply: string
+  fallback: boolean
+  disclaimer: string
+  aiBadge: string
+}

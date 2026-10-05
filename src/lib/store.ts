@@ -158,6 +158,7 @@ interface AppState {
   mapScope: string | null // pending scope to apply in the map view (e.g. "subject:anatomy")
   quizPreset: { subjectCode?: string; system?: string; conceptId?: string; topicId?: string; count?: number; pairId?: string; pairLabel?: string } | null
   adaptivePreset: { mode?: import('./types').AdaptiveMode; subjectCode?: string; topicId?: string; conceptId?: string; count?: number; autoStart?: boolean } | null // Adaptive Engine hand-off (PRODUCT 04)
+  simFocus: { caseId: string } | null // Case Simulator deep-link hand-off (PRODUCT 09)
   researchSeedQuery: string | null // query handed from Explore → Research Hub
   setView: (v: View) => void
   setProfile: (p: Profile | null) => void
@@ -174,6 +175,8 @@ interface AppState {
   setMapScope: (s: string | null) => void
   setQuizPreset: (p: AppState['quizPreset']) => void
   setAdaptivePreset: (p: AppState['adaptivePreset']) => void
+  openSim: (caseId: string) => void
+  closeSim: () => void
   setResearchSeedQuery: (q: string | null) => void
 }
 
@@ -191,6 +194,7 @@ export const useAppStore = create<AppState>((set) => ({
   mapScope: null,
   quizPreset: null,
   adaptivePreset: null,
+  simFocus: null,
   researchSeedQuery: null,
   setView: (v) => {
     if (isAppView(v)) {
@@ -220,5 +224,7 @@ export const useAppStore = create<AppState>((set) => ({
   setMapScope: (s) => set({ mapScope: s }),
   setQuizPreset: (p) => set({ quizPreset: p }),
   setAdaptivePreset: (p) => set({ adaptivePreset: p }),
+  openSim: (caseId) => set({ simFocus: { caseId }, view: 'cases' }),
+  closeSim: () => set({ simFocus: null }),
   setResearchSeedQuery: (q) => set({ researchSeedQuery: q }),
 }))

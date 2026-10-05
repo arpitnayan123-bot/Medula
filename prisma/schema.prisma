@@ -540,6 +540,61 @@ model MistakeRecord {
   @@index([profileId, lastWrongAt])
 }
 
+// ───────────────────── CLINICAL CASE SIMULATOR (PRODUCT 09) ─────────────────────
+// First-class case simulator beside the legacy ClinicalCase/CaseRun pair
+// (both preserved untouched — legacy routes/views keep working). STANDALONE
+// engine model: profileId is a plain string (no FK), like Planner*/Graph* —
+// db:push stays non-destructive.
+//
+// SimCase        — the case + its HIDDEN answer key (brief). The brief never
+//                  leaves the server: /api/sim/cases/[id] strips verdicts,
+//                  whys, findings and keys before responding.
+// SimCaseAttempt — one student run (guided or AI mode). `events` is the
+//                  append-only interaction log [ {stageId, interactionId,
+//                  chosen[], correct, score, ts, chat?} ] so an attempt can
+//                  always be resumed and every score is MEASURED, not
+//                  client-reported.
+model SimCase {
+  id              String   @id
+  title           String
+  specialty       String // Medicine | Surgery | Paediatrics | Obstetrics & Gynaecology | Psychiatry | Dermatology | Ophthalmology | ENT | Orthopaedics | Radiology | Pathology | Emergency Medicine | Cardiology
+  system          String   @default("")
+  difficulty      String   @default("mbbs") // beginner | mbbs | neetpg | advanced
+  patient         Json // {age, sex, occupation, complaint, scene}
+  brief           Json // answer key: stages/interactions/verdicts/findings/learning/conceptIds/aiBrief
+  estimateMinutes Int      @default(12)
+  imageKey        String? // key into the platform-owned clinical image set (public/questions/*)
+  imageCaption    String   @default("")
+  aiReady         Boolean  @default(false) // AI Case Mode available (curated aiBrief in brief)
+  source          String   @default("curated") // curated | imported-legacy
+  attempts        SimCaseAttempt[]
+  createdAt       DateTime @default(now())
+
+  @@index([specialty])
+}
+
+model SimCaseAttempt {
+  id               String    @id @default(cuid())
+  profileId        String
+  caseId           String
+  case             SimCase   @relation(fields: [caseId], references: [id])
+  status           String    @default("active") // active | completed | abandoned
+  mode             String    @default("guided") // guided | ai
+  stageIndex       Int       @default(0)
+  events           Json      @default("[]") // append-only interaction + chat log
+  score            Int       @default(0)
+  diagnosisCorrect Boolean   @default(false)
+  reasoning        Int       @default(0)
+  investigations   Int       @default(0)
+  management       Int       @default(0)
+  timeMs           Int       @default(0)
+  startedAt        DateTime  @default(now())
+  completedAt      DateTime?
+
+  @@index([profileId, status])
+  @@index([caseId])
+}
+
 // ───────────────────── AI STUDY PLANNER (PRODUCT 07) ─────────────────────
 // Additive tables for the personalized study planner. STANDALONE (no FK
 // relations) like the other engine models → db:push stays non-destructive.

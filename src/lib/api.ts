@@ -35,6 +35,7 @@ import type {
   PlannerHome, PlannerPlanSaveResult, PlannerAiResponse,
   GraphHome, GraphSearchResult, GraphHub, GraphPath, GraphExplorePayload,
   GraphAiResponse, GraphFeedbackBody, GraphAiAction,
+  SimHome, SimCaseDetail, SimActResponse, SimDebrief, SimAiResponse, SimAiMessage,
 } from './types'
 
 export const api = {
@@ -75,6 +76,23 @@ export const api = {
     post<{ correct: boolean; answerId: number; teaching: string }>(`/api/cases/${id}/step`, body),
   caseComplete: (id: string, body: { correctSteps: number; totalSteps: number; detail: unknown[] }) =>
     post<{ score: number }>(`/api/cases/${id}/complete`, body),
+
+  // ── Clinical Case Simulator (PRODUCT 09) ──
+  simHome: () => get<SimHome>('/api/sim/home'),
+  simCase: (id: string) =>
+    get<{ case: SimCaseDetail; resume: { attemptId: string; stageIndex: number; mode: string; startedAt: string; events: unknown[] } | null }>(`/api/sim/cases/${id}`),
+  simStart: (caseId: string, mode: 'guided' | 'ai') =>
+    post<{ attemptId: string }>(`/api/sim/cases/${caseId}/attempt`, { mode }),
+  simAct: (attemptId: string, body: { stageId: string; interactionId: string; chosen: string[] }) =>
+    post<SimActResponse>(`/api/sim/attempt/${attemptId}/act`, body),
+  simAdvance: (attemptId: string, body: { stageIndex: number }) =>
+    post<{ ok: true }>(`/api/sim/attempt/${attemptId}/stage`, body),
+  simComplete: (attemptId: string) =>
+    post<SimDebrief>(`/api/sim/attempt/${attemptId}/complete`, {}),
+  simAbandon: (attemptId: string) =>
+    post<{ ok: true }>(`/api/sim/attempt/${attemptId}/abandon`, {}),
+  simAi: (attemptId: string, body: { message: string; messages: SimAiMessage[] }) =>
+    post<SimAiResponse>('/api/sim/ai', body),
   tutor: (body: { messages: { role: 'user' | 'assistant'; content: string }[]; mode: string; conceptId?: string; pairId?: string; topicId?: string; depth?: string }) =>
     post<{ reply: string; grounded?: { concepts: number; questions: number; cases: number } | null }>('/api/tutor', body),
   // ── AI Tutor (PRODUCT 03) ──
