@@ -25,6 +25,28 @@ const SAFETY = `SAFETY RULES (non-negotiable):
 
 const JSON_RULE = `OUTPUT: Respond with ONE JSON object and nothing else — no prose before or after, no markdown fences needed (but if you use them, keep the JSON intact).`
 
+// Truncated-output salvage: when the model's JSON is cut off (token cap),
+// regex-rebuild the MCQ fields from the raw text instead of discarding it.
+// Mirrors the duplicate-key "id"/"text" pattern the model is known to emit.
+function salvageMcq(raw: string): Record<string, unknown> | null {
+  const unescape = (s: string) => s.replace(/\\"/g, '"').replace(/\\n/g, '\n').replace(/\\\\/g, '\\').trim()
+  const str = (key: string) => {
+    const m = raw.match(new RegExp(`"${key}"\\s*:\\s*"((?:[^"\\\\]|\\\\.)*)"`, 'i'))
+    return m ? unescape(m[1]) : ''
+  }
+  const stem = str('stem')
+  if (!stem) return null
+  const options: { id: string; text: string }[] = []
+  const pairRe = /"id"\s*:\s*"([a-dA-D])"\s*,\s*"text"\s*:\s*"((?:[^"\\\\]|\\\\.)*)"/g
+  let m: RegExpExecArray | null
+  while ((m = pairRe.exec(raw)) !== null) {
+    const id = m[1].toLowerCase()
+    if (!options.some((o) => o.id === id)) options.push({ id, text: unescape(m[2]) })
+  }
+  if (options.length < 4) return null
+  return { stem, options, answer: str('answer').toLowerCase(), explanation: str('explanation'), teaching: str('teaching') }
+}
+
 // Robust parse: direct JSON → fenced ```json block → first-{ to last-} slice.
 function parseLooseJson(text: string): Record<string, unknown> | null {
   const tryParse = (s: string): Record<string, unknown> | null => {
@@ -46,7 +68,7 @@ function parseLooseJson(text: string): Record<string, unknown> | null {
     const sliced = tryParse(text.slice(first, last + 1))
     if (sliced) return sliced
   }
-  return null
+  return salvageMcq(text)
 }
 
 interface GroundQuestion {
@@ -195,7 +217,9 @@ ${SAFETY}`
         { role: 'user', content: 'Perform the TASK now. Reply with the JSON object only.' },
       ],
       temperature: action === 'similar' || action === 'harder' || action === 'easier' ? 0.6 : 0.4,
-      maxTokens: 1200,
+      // MCQ JSON (4 options + explanation + teaching) can exceed 1200 tokens and
+      // truncate mid-string, which makes the output unparseable — allow headroom.
+      maxTokens: 2800,
     })
     const content = completion.choices[0]?.message?.content ?? ''
     const parsed = parseLooseJson(content)

@@ -11,7 +11,7 @@ export const dynamic = 'force-dynamic'
 export async function GET() {
   const profile = await getDemoProfile()
 
-  const [bank, dueConcepts, counts, topWeakRows, wrongAttempts, recentSessions] = await Promise.all([
+  const [bank, dueConcepts, counts, topWeakRows, wrongAttempts, recentSessions, questionRows, topics] = await Promise.all([
     db.question.count(),
     db.knowledgeState.count({ where: { profileId: profile.id, status: 'unstable' } }),
     measureAdaptiveCounts(),
@@ -33,6 +33,13 @@ export async function GET() {
       take: 5,
       select: { id: true, mode: true, total: true, answered: true, correct: true, createdAt: true, completedAt: true },
     }),
+    // Builder facets — measured from the live bank (systems, topics, concepts)
+    db.question.findMany({
+      select: { system: true, concept: { select: { topicId: true, topic: { select: { id: true, name: true, subject: { select: { code: true } } } } } } },
+    }),
+    db.topic.findMany({
+      select: { id: true, name: true, system: true, subject: { select: { code: true } }, concepts: { select: { id: true, name: true } } },
+    }),
   ])
 
   const missedMap = new Map<string, { conceptId: string; conceptName: string; misses: number }>()
@@ -51,6 +58,21 @@ export async function GET() {
     orderBy: { createdAt: 'desc' },
     select: { id: true },
   })
+
+  // Facets: only topics/concepts that actually carry questions in the bank.
+  const systemCounts = new Map<string, number>()
+  const topicsWithQs = new Set<string>()
+  for (const row of questionRows) {
+    if (row.system) systemCounts.set(row.system, (systemCounts.get(row.system) ?? 0) + 1)
+    if (row.concept) topicsWithQs.add(row.concept.topicId)
+  }
+  const systems = [...systemCounts.entries()].map(([name, count]) => ({ name, count })).sort((a, b) => b.count - a.count)
+  const topicFacets = topics
+    .filter((t) => topicsWithQs.has(t.id))
+    .map((t) => ({ id: t.id, name: t.name, subjectCode: t.subject.code, system: t.system ?? '' }))
+  const conceptFacets = topics
+    .filter((t) => topicsWithQs.has(t.id))
+    .flatMap((t) => t.concepts.map((c) => ({ id: c.id, name: c.name, topicId: t.id })))
 
   const payload: AdaptiveHomePayload = {
     counts: {
@@ -78,6 +100,7 @@ export async function GET() {
       completedAt: s.completedAt ? s.completedAt.toISOString() : null,
     })),
     resumeId: resume?.id ?? null,
+    facets: { systems, topics: topicFacets, concepts: conceptFacets },
   }
   return NextResponse.json(payload)
 }

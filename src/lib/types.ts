@@ -20,6 +20,8 @@ export type Phase = SubjectTaxonomyContract['phase']
 export type View =
   | 'landing' | 'signin' | 'onboarding' | 'home' | 'map' | 'explore' | 'research' | 'understand' | 'learn' | 'hub' | 'questions'
   | 'adaptive'
+  | 'mistakes'
+  | 'revision'
   | 'cases' | 'revise' | 'tutor' | 'progress' | 'roadmap' | 'profile'
 
 export interface Profile {
@@ -137,6 +139,28 @@ export interface AdaptiveQuestion extends QuestionClient {
   whyThis?: string // honest engine reason, shown on the question card
   pyqPattern?: boolean
   imageBased?: boolean
+  imageUrl?: string // schematic illustration for image-based stems
+  optionNotes?: Record<string, string> // {optionId: why this option is wrong} — curated platform notes
+}
+
+// ── Mistake families (brief's five patterns) ────────────────────────────
+// Granular self-reported error types roll up into five families so the
+// report speaks the language of the Mistake Engine, not tag ids.
+export type ErrorFamily = 'conceptual' | 'recall' | 'careless' | 'misinterpretation' | 'repeated'
+
+export const ERROR_FAMILY_OF: Record<string, Exclude<ErrorFamily, 'repeated'>> = {
+  reasoning: 'conceptual', confused: 'conceptual', calculation: 'conceptual',
+  didnt_know: 'recall', forgot: 'recall', guess: 'recall',
+  changed: 'careless', time: 'careless',
+  misread: 'misinterpretation',
+}
+
+export const ERROR_FAMILY_META: Record<ErrorFamily, { label: string; hint: string }> = {
+  conceptual: { label: 'Conceptual', hint: 'The chain of reasoning itself broke' },
+  recall: { label: 'Recall', hint: 'Knew it once — memory did not hold' },
+  careless: { label: 'Careless', hint: 'Knew it and still lost the mark' },
+  misinterpretation: { label: 'Misinterpretation', hint: 'Read the stem or options wrong' },
+  repeated: { label: 'Repeated', hint: 'Missed again after missing before' },
 }
 
 export interface AdaptiveSessionStart {
@@ -156,6 +180,7 @@ export interface AdaptiveAnswerFeedback extends AttemptResult {
   avgTimeMs: number
   focusNote?: string // "Staying on Glomerular Diseases — one more angle"
   relatedPyqCount?: number // other PYQ-pattern questions on this concept
+  relatedPyqs?: { id: string; stem: string; subjectCode: string }[] // up to 3 inline for review
 }
 
 export interface AdaptiveNextQuestion {
@@ -185,6 +210,8 @@ export interface AdaptiveReport {
   strongTopics: AdaptiveTopicInsight[]
   weakTopics: AdaptiveTopicInsight[]
   mistakes: { errorType: string; count: number }[] // self-reported types logged in this run
+  errorFamilies?: { family: ErrorFamily; count: number }[] // granular types rolled into the five families
+  topPatterns?: { errorType: string; count: number; conceptName?: string }[] // all-time ErrorPattern records
   repeatedWrong: { conceptId: string; conceptName: string; misses: number }[] // all-time, measured
   recommended: { mode: AdaptiveMode; config: AdaptiveConfig; reason: string } | null
   wrongQuestions: { id: string; stem: string; conceptName?: string }[]
@@ -214,6 +241,364 @@ export interface AdaptiveHomePayload {
     completedAt: string | null
   }[]
   resumeId: string | null // incomplete session worth finishing
+  // Measured filter facets for the custom-run builder (subject select is fed
+  // by /api/subjects; systems/topics/concepts come from the live bank).
+  facets?: {
+    systems: { name: string; count: number }[]
+    topics: { id: string; name: string; subjectCode: string; system: string }[]
+    concepts: { id: string; name: string; topicId: string }[]
+  }
+}
+
+// ─────────────────────── PRODUCT 05 · MISTAKE INTELLIGENCE ───────────────────────
+// «Things I must stop getting wrong.» One aggregate per question the student
+// has ever answered wrong, plus a measured priority and a lifecycle. Every
+// number below is computed from the attempt feed / knowledge states — nothing
+// estimated, nothing fabricated. Where evidence is thin we say so.
+
+export type MistakeStatus = 'unresolved' | 'revising' | 'retested' | 'resolved'
+
+export const MISTAKE_STATUS_LABELS: Record<MistakeStatus, string> = {
+  unresolved: 'Unresolved',
+  revising: 'Revising',
+  retested: 'Retested — once right',
+  resolved: 'Resolved',
+}
+
+export type MistakeMode = 'today' | 'repeated' | 'impact' | 'unresolved' | 'forgotten' | 'exam'
+
+export const MISTAKE_MODES: { id: MistakeMode; label: string; blurb: string }[] = [
+  { id: 'today', label: 'Today', blurb: 'Mistakes made in the last 24 hours' },
+  { id: 'repeated', label: 'Most repeated', blurb: 'Missed more than once — the genome core' },
+  { id: 'impact', label: 'High impact', blurb: 'Highest measured priority first' },
+  { id: 'unresolved', label: 'Unresolved', blurb: 'Not yet fixed by a retest' },
+  { id: 'forgotten', label: 'Forgotten', blurb: 'Estimated recall has dropped since the miss' },
+  { id: 'exam', label: 'Exam relevant', blurb: 'Repeated exam themes and hard stems' },
+]
+
+// Why a mistake ranks where it does — one honest note per factor.
+export interface MistakeFactor {
+  id: 'frequency' | 'exam' | 'weakness' | 'recency' | 'forgetting' | 'careless'
+  label: string
+  note: string // human sentence, e.g. "missed 4×" — measured, never modelled
+  points: number // contribution to the 0..100 priority
+}
+
+export interface MistakeRow {
+  recordId: string
+  questionId: string
+  stem: string
+  subjectCode: string
+  subjectName: string
+  topicName: string | null
+  conceptId: string | null
+  conceptName: string | null
+  difficulty: number
+  qtype: string
+  pyqPattern: boolean
+  imageUrl: string | null
+  wrongCount: number
+  firstWrongAt: string
+  lastWrongAt: string
+  lastSelected: string
+  lastSelectedText: string
+  answerText: string
+  errorType: string | null
+  errorLabel: string | null
+  confidence: number
+  timeMs: number
+  status: MistakeStatus
+  revisionPending: boolean // an open revision item exists for the concept
+  resolvedAt: string | null
+  resolvedBy: string | null // 'retest' | 'manual'
+  priority: number // 0..100 measured score
+  factors: MistakeFactor[]
+  flags: string[] // 'repeated' | 'fast-miss' | 'overconfident' | 'today' | 'forgotten' | 'exam'
+}
+
+export interface MistakePatternCard {
+  id: string
+  kind: 'confusion' | 'concept' | 'paradox' | 'speed' | 'confidence' | 'difficulty'
+  title: string
+  detail: string // one measured sentence — evidence first
+  evidence: { label: string; value: string }[]
+  action: {
+    kind: 'drill' | 'compare' | 'slow' | 'retest'
+    label: string
+    mode?: AdaptiveMode // drill hand-off (Adaptive Engine)
+    conceptId?: string
+    subjectCode?: string
+    pairId?: string // ConfusionPair id for the compare view
+  }
+}
+
+export interface MistakeGenomePayload {
+  totals: {
+    open: number
+    resolved: number
+    repeated: number
+    todayCount: number
+    mistakeRate: number // % of all attempts that were wrong
+    resolvedThisWeek: number
+  }
+  doNext: MistakeRow | null // single highest-priority open mistake
+  patterns: MistakePatternCard[]
+  counts: Record<MistakeMode, number>
+  filters: {
+    subjects: { code: string; name: string; count: number }[]
+    types: { id: string; label: string; count: number }[]
+    difficulties: { level: number; count: number }[]
+  }
+  insufficientData: boolean
+}
+
+export interface MistakeListPayload {
+  rows: MistakeRow[]
+  total: number // after filters
+  mode: MistakeMode
+}
+
+export interface MistakeDetailPayload {
+  record: MistakeRow
+  options: { id: string; text: string; isAnswer?: boolean; isWrongPick?: boolean; note?: string }[]
+  answer: string
+  explanation: string
+  teaching: string
+  attempts: {
+    at: string
+    selectedText: string
+    correct: boolean
+    errorType: string | null
+    errorLabel: string | null
+    timeMs: number
+    confidence: number
+  }[]
+  confusionPair: { a: string; b: string; mnemonic: string; aPoints: string[]; bPoints: string[] } | null
+  drillAvailable: number // more platform questions on the same concept
+}
+
+export interface MistakeRetestQuestion {
+  recordId: string
+  questionId: string
+  stem: string
+  options: { id: string; text: string }[]
+  difficulty: number
+  qtype: string
+  subjectCode: string
+  imageUrl: string | null
+  attemptNo: number // which retest this is (1 = first)
+}
+
+export interface MistakeRetestResult {
+  correct: boolean
+  answerText: string
+  selectedText: string
+  explanation: string
+  status: MistakeStatus
+  resolvedNow: boolean
+  wrongCount: number
+}
+
+// ─────────────────────── PRODUCT 06 · SMART REVISION ENGINE ───────────────────────
+// «What should I revise today, and why?» One adaptive queue per day, assembled
+// from measured signals only: knowledge states (forgetting risk), the attempt
+// feed (accuracy, mistakes), open revision items, due flashcards, topic exam
+// weight and exam proximity. No fixed schedule for everyone — every block
+// carries a human, measured reason. No chain-of-thought anywhere.
+
+export type RevisionMode =
+  | 'daily' | 'rapid' | 'weak' | 'mistake' | 'pyq' | 'flashcard' | 'high-yield' | 'custom'
+
+export const REVISION_MODES: { id: RevisionMode; label: string; blurb: string }[] = [
+  { id: 'daily', label: 'Daily Revision', blurb: 'Your mixed queue for today — chosen by the engine' },
+  { id: 'rapid', label: 'Rapid Revision', blurb: '10-minute sprint: key facts, due cards, rapid MCQs' },
+  { id: 'weak', label: 'Weak Topic Revision', blurb: 'Only weak and decaying concepts' },
+  { id: 'mistake', label: 'Mistake Revision', blurb: 'Retest the mistakes you keep making' },
+  { id: 'pyq', label: 'PYQ Revision', blurb: 'Repeated exam themes you have missed or not touched' },
+  { id: 'flashcard', label: 'Flashcard Revision', blurb: 'Everything due in your card deck' },
+  { id: 'high-yield', label: 'High-Yield Revision', blurb: 'Highest exam-weight topics at risk first' },
+  { id: 'custom', label: 'Custom Revision', blurb: 'Pick subjects, block kinds and time yourself' },
+]
+
+export type RevisionBlockKind =
+  | 'concept'    // key facts + short explanation for one concept
+  | 'flashcards' // batch of due flashcards, graded AGAIN/HARD/GOOD/EASY
+  | 'mcq'        // 3-5 platform MCQs on weak topics
+  | 'pyq'        // PYQ-pattern MCQs
+  | 'mistake'    // one previous mistake, re-tested inline
+  | 'compare'    // curated confusion pair A vs B
+  | 'case'       // clinical case hand-off on a weak system
+
+export const REVISION_BLOCK_KIND_LABELS: Record<RevisionBlockKind, string> = {
+  concept: 'Concept',
+  flashcards: 'Flashcards',
+  mcq: 'MCQs',
+  pyq: 'PYQs',
+  mistake: 'Mistake',
+  compare: 'Compare',
+  case: 'Clinical case',
+}
+
+// Why a block was selected — one measured chip per factor, honest notes only.
+export interface RevisionWhy {
+  label: string
+  note: string // e.g. "recall est 41%", "missed 3×", "PYQ-pattern", "mastery 22%"
+}
+
+export interface RevisionBlock {
+  id: string // stable within the plan: `${kind}:${refId}`
+  kind: RevisionBlockKind
+  title: string
+  subtitle: string // e.g. "Pathology · Renal"
+  minutes: number // estimated minutes
+  reason: string // one measured sentence — why this was selected
+  why: RevisionWhy[]
+  conceptId?: string
+  topicId?: string // hub deep link for concept blocks
+  flashcardIds?: string[]
+  questionIds?: string[]
+  recordId?: string // mistake record for kind 'mistake'
+  pairId?: string // ConfusionPair id for kind 'compare'
+  caseId?: string
+  done: boolean
+}
+
+export interface RevisionExamClock {
+  daysLeft: number
+  label: string // exam label or "NEET-PG (estimated)"
+  isEstimate: boolean
+  near: boolean // <= 60 days — priorities shift toward weak/high-yield/PYQ
+}
+
+export interface RevisionQueuePlan {
+  mode: RevisionMode
+  minutes: number // requested budget
+  blocks: RevisionBlock[]
+  generatedAt: string
+  headline: string // "5 concepts at high forgetting risk · 8 mistakes · 15 high-yield MCQs"
+  exam: RevisionExamClock | null
+  note: string // one honest line about how the queue was built
+}
+
+// ── Materialised content for a session (ids only in the plan; the runner
+//    renders from this map. Answers/explanations are NOT included — grading
+//    always goes through /api/attempts.) ──
+export interface RevisionQuestionContent {
+  id: string
+  stem: string
+  options: { id: string; text: string }[]
+  difficulty: number
+  qtype: string
+  subjectCode: string
+  conceptId: string | null
+  conceptName: string | null
+  imageUrl: string | null
+  pyqPattern: boolean
+}
+
+export interface RevisionConceptContent {
+  id: string
+  name: string
+  summary: string
+  whyMatters: string
+  mnemonic: string
+  examRelevance: number
+  topicId: string
+  topicName: string
+  subjectName: string
+  detail: { h: string; body: string[]; table?: { head: string[]; rows: string[][] } }[] | null
+  keyFacts: string[] // derived from detail sections (short bullets, max 6)
+}
+
+export interface RevisionFlashcardContent {
+  id: string
+  front: string
+  back: string
+  subjectCode: string
+}
+
+export interface RevisionPairContent {
+  id: string
+  a: string
+  b: string
+  aPoints: string[]
+  bPoints: string[]
+  mnemonic: string
+  subjectCode: string
+}
+
+export interface RevisionCaseContent {
+  id: string
+  title: string
+  specialty: string
+  system: string
+  difficulty: number
+}
+
+export interface RevisionSessionContent {
+  questions: Record<string, RevisionQuestionContent>
+  concepts: Record<string, RevisionConceptContent>
+  flashcards: Record<string, RevisionFlashcardContent>
+  pairs: Record<string, RevisionPairContent>
+  cases: Record<string, RevisionCaseContent>
+}
+
+// Concept-level Revision Status — the intelligence panel
+export interface RevisionIntelligence {
+  overdue: { conceptId: string; name: string; recall: number; daysSince: number | null }[]
+  forgotten: { conceptId: string; name: string; forgotCount: number; recall: number }[]
+  repeatedMistakes: { questionId: string; conceptId: string | null; conceptName: string | null; topic: string; wrongCount: number }[]
+  strong: { conceptId: string; name: string; score: number }[]
+  gaps: { conceptId: string; name: string; attempts: number; lastReviewed: string | null }[]
+  highRisk: { conceptId: string; name: string; mastery: number; examWeight: number }[]
+  counts: { overdue: number; forgotten: number; repeated: number; strong: number; gaps: number; highRisk: number }
+}
+
+export interface RevisionSmartHome {
+  today: RevisionQueuePlan
+  modes: { id: RevisionMode; label: string; blurb: string; count: number }[]
+  intelligence: RevisionIntelligence
+  resume: { sessionId: string; mode: RevisionMode; done: number; total: number } | null
+  recent: { id: string; mode: RevisionMode; done: number; total: number; minutes: number; status: string; createdAt: string; completedAt: string | null }[]
+  stats: { blocksToday: number; minutesThisWeek: number; lastRevisedAt: string | null }
+  insufficientData: boolean
+}
+
+export interface RevisionSessionStart {
+  sessionId: string
+  plan: RevisionQueuePlan
+  content: RevisionSessionContent
+}
+
+export interface RevisionSessionResume {
+  session: { id: string; mode: RevisionMode; minutes: number; done: number; total: number; status: string; createdAt: string }
+  plan: RevisionQueuePlan
+  content: RevisionSessionContent
+}
+
+export interface RevisionBlockResult {
+  ok: boolean
+  done: number
+  total: number
+  knowledgeTouched: boolean // concept/compare blocks strengthened the SRS state
+}
+
+export interface RevisionSessionSummary {
+  sessionId: string
+  mode: RevisionMode
+  done: number
+  total: number
+  minutes: number
+  accuracy: { answered: number; correct: number } | null // measured from attempts in the session window
+  next: { title: string; reason: string; kind: RevisionBlockKind } | null
+  message: string
+}
+
+export interface RevisionAiResponse {
+  text?: string
+  questions?: { question: string; answer: string }[]
+  aiGenerated?: boolean
+  disclaimer?: string
 }
 
 export interface PlanSegment { minutes: number; activity: string; detail: string }

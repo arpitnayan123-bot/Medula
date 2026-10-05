@@ -28,6 +28,10 @@ import type {
   TutorContextPayload, TutorSessionSummary, TutorSessionDetail,
   AdaptiveConfig, AdaptiveHomePayload, AdaptiveSessionStart, AdaptiveAnswerFeedback,
   AdaptiveNextQuestion, AdaptiveReport,
+  MistakeGenomePayload, MistakeListPayload, MistakeDetailPayload,
+  MistakeMode, MistakeRetestQuestion, MistakeRetestResult, MistakeStatus,
+  RevisionMode, RevisionBlockKind, RevisionSmartHome, RevisionSessionStart,
+  RevisionSessionResume, RevisionBlockResult, RevisionSessionSummary, RevisionAiResponse,
 } from './types'
 
 export const api = {
@@ -157,6 +161,39 @@ export const api = {
       .then(r => r.json()) as Promise<{ ok?: boolean }>,
   reportAdaptiveQuestion: (body: { questionId: string; reason: string; detail?: string }) =>
     post<{ ok?: boolean }>('/api/adaptive/report-question', body),
+
+  // ── Mistake Intelligence (PRODUCT 05) ──
+  mistakeHome: () => get<MistakeGenomePayload>('/api/mistakes-intel/home'),
+  mistakeList: (params: { mode: MistakeMode; subject?: string; type?: string; difficulty?: string }) => {
+    const qs = new URLSearchParams({ mode: params.mode })
+    if (params.subject) qs.set('subject', params.subject)
+    if (params.type) qs.set('type', params.type)
+    if (params.difficulty) qs.set('difficulty', params.difficulty)
+    return get<MistakeListPayload>(`/api/mistakes-intel/list?${qs.toString()}`)
+  },
+  mistakeDetail: (id: string) =>
+    get<MistakeDetailPayload>(`/api/mistakes-intel/detail?id=${encodeURIComponent(id)}`),
+  mistakeAction: (body: { recordId: string; action: 'resolve' | 'revising' | 'reopen' }) =>
+    post<{ ok: boolean; status: MistakeStatus }>('/api/mistakes-intel/action', body),
+  mistakeRetest: (body: { recordId: string }) =>
+    post<MistakeRetestQuestion>('/api/mistakes-intel/retest', body),
+  mistakeRetestAnswer: (body: { recordId: string; selected: string; timeMs: number }) =>
+    post<MistakeRetestResult>('/api/mistakes-intel/retest/answer', body),
+
+  // ── Smart Revision Engine (PRODUCT 06) ──
+  // Shapes are the frozen contract in types.ts (Revision*). The plan carries
+  // ids only; block content is hydrated once per session (RevisionSessionContent).
+  revisionHome: () => get<RevisionSmartHome>('/api/revision/smart/home'),
+  startRevisionSession: (body: { mode: RevisionMode; minutes?: number; subjects?: string[]; kinds?: RevisionBlockKind[] }) =>
+    post<RevisionSessionStart>('/api/revision/smart/session', body),
+  resumeRevisionSession: (id: string) =>
+    get<RevisionSessionResume>(`/api/revision/smart/session?id=${encodeURIComponent(id)}`),
+  completeRevisionBlock: (body: { sessionId: string; blockId: string; minutes?: number }) =>
+    post<RevisionBlockResult>('/api/revision/smart/block', body),
+  completeRevisionSession: (body: { sessionId: string }) =>
+    post<RevisionSessionSummary>('/api/revision/smart/complete', body),
+  revisionAi: (body: { action: 'rapid-notes' | 'recall' | 'compare'; conceptId?: string; pairId?: string }) =>
+    post<RevisionAiResponse>('/api/revision/smart/ai', body),
 }
 
 // ── Adaptive Engine aux payloads (defined here — types.ts is frozen) ──

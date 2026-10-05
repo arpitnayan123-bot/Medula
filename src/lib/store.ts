@@ -8,7 +8,7 @@ import type { Profile, View } from './types'
 // the doctor back where they left off, and mirror to the URL hash (#/map)
 // so a reload keeps the same view.
 export const APP_VIEWS: readonly View[] = [
-  'home', 'map', 'explore', 'research', 'understand', 'learn', 'hub', 'questions', 'adaptive', 'cases', 'revise', 'tutor', 'progress', 'roadmap', 'profile',
+  'home', 'map', 'explore', 'research', 'understand', 'learn', 'hub', 'questions', 'adaptive', 'mistakes', 'revision', 'cases', 'revise', 'tutor', 'progress', 'roadmap', 'profile',
 ] as const
 
 // ── Topic Hub deep links ────────────────────────────────────────────────
@@ -134,6 +134,8 @@ export function viewToLabel(v: View): string {
   const labels: Partial<Record<View, string>> = {
     home: 'Home', map: 'Doubt Search', explore: 'Explore Medicine', research: 'the Research Hub', understand: 'Understand Your Topic', learn: 'Learn', hub: 'the Topic Hub', questions: 'the Question Lab',
     adaptive: 'the Adaptive Engine',
+    mistakes: 'Mistake Intelligence',
+    revision: 'Smart Revision',
     cases: 'the Case Simulator', revise: 'Revise', tutor: 'the AI Tutor',
     progress: 'Progress', roadmap: 'Roadmap', profile: 'Profile',
   }

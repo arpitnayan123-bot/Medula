@@ -106,14 +106,20 @@ export async function POST(req: NextRequest) {
     },
   })
 
-  // Other PYQ-pattern questions sharing this concept (for the "more like this" cue)
+  // Other PYQ-pattern questions sharing this concept (for the "more like this" cue).
+  // Up to 3 stems are shipped inline for immediate review; the count covers all.
   let relatedPyqCount = 0
+  let relatedPyqs: AdaptiveAnswerFeedback['relatedPyqs'] | undefined
   if (question.conceptId) {
     const siblings = await db.question.findMany({
       where: { conceptId: question.conceptId, id: { not: questionId } },
-      select: { tags: true },
+      select: { id: true, stem: true, subjectCode: true, tags: true },
     })
-    relatedPyqCount = siblings.filter((s) => Array.isArray(s.tags) && (s.tags as string[]).includes('pyq-pattern')).length
+    const pyqSiblings = siblings.filter((s) => Array.isArray(s.tags) && (s.tags as string[]).includes('pyq-pattern'))
+    relatedPyqCount = pyqSiblings.length
+    if (pyqSiblings.length > 0) {
+      relatedPyqs = pyqSiblings.slice(0, 3).map((s) => ({ id: s.id, stem: s.stem, subjectCode: s.subjectCode }))
+    }
   }
 
   const feedback: AdaptiveAnswerFeedback = {
@@ -130,6 +136,7 @@ export async function POST(req: NextRequest) {
     avgTimeMs,
     focusNote,
     relatedPyqCount: relatedPyqCount > 0 ? relatedPyqCount : undefined,
+    relatedPyqs,
   }
   return NextResponse.json(feedback)
 }

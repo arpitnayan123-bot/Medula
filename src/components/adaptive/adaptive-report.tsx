@@ -8,7 +8,7 @@
 import { useState, type ReactNode } from 'react'
 import { motion, useReducedMotion } from 'framer-motion'
 import {
-  ArrowLeft, ArrowRight, BookOpen, CheckCircle2, ChevronDown, Crosshair, Flag, Landmark,
+  ArrowLeft, ArrowRight, Bandage, BookOpen, CheckCircle2, ChevronDown, Crosshair, Flag, Landmark,
   MessageCircle, Sparkles, Target, Timer, TrendingUp, XCircle, Zap,
 } from 'lucide-react'
 
@@ -353,6 +353,13 @@ export function AdaptiveReportView({ report, markedIds, onStart, onHome }: Adapt
               <BookOpen className="size-4 text-primary" /> Open weakest topic in the Hub
             </Button>
           )}
+          <Button
+            variant="outline"
+            className="min-h-11 flex-1 gap-1.5 text-xs font-semibold"
+            onClick={() => setView('mistakes')}
+          >
+            <Bandage className="size-4 text-primary" /> Review every miss in Mistake Intelligence
+          </Button>
         </div>
         {report.weakTopics.length > 0 && (
           <p className="flex items-center gap-1.5 text-[11px] text-ink-soft">

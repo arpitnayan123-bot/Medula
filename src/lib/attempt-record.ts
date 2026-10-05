@@ -74,6 +74,40 @@ export async function recordAttempt(
     return { mastery, status }
   })
 
+  // ── PRODUCT 05 · automatic mistake capture ──
+  // Every wrong attempt from EVERY source (practice, mock, PYQ, image,
+  // adaptive, tutor quizzes) lands in the MistakeRecord bank. Correct answers
+  // leave the record untouched — resolution is a deliberate retest (or manual),
+  // never an accident. Best-effort: a failure here must never fail the attempt.
+  if (!correct) {
+    try {
+      const existing = await db.mistakeRecord.findUnique({
+        where: { profileId_questionId: { profileId, questionId } },
+      })
+      if (existing) {
+        await db.mistakeRecord.update({
+          where: { id: existing.id },
+          data: {
+            wrongCount: { increment: 1 },
+            lastWrongAt: new Date(),
+            lastSelected: selected,
+          },
+        })
+      } else {
+        await db.mistakeRecord.create({
+          data: {
+            profileId,
+            questionId,
+            conceptId: question.conceptId,
+            lastSelected: selected,
+          },
+        })
+      }
+    } catch {
+      // capture is additive — the attempt itself already succeeded
+    }
+  }
+
   return { correct, mastery, status }
 }
 

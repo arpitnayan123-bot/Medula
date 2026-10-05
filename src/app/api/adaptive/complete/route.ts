@@ -3,6 +3,7 @@ import { db } from '@/lib/db'
 import { getDemoProfile } from '@/lib/profile'
 import { asTrimmed, readJson } from '@/lib/http'
 import { parseSessionState } from '@/lib/adaptive'
+import { ERROR_FAMILY_OF } from '@/lib/types'
 import type { AdaptiveConfig, AdaptiveMode, AdaptiveReport, AdaptiveTopicInsight } from '@/lib/types'
 
 export const dynamic = 'force-dynamic'
@@ -83,6 +84,16 @@ export async function POST(req: NextRequest) {
     .map(([errorType, count]) => ({ errorType, count }))
     .sort((a, b) => b.count - a.count)
 
+  // The five Mistake-Engine families: granular self-reports rolled up, plus a
+  // 'repeated' count for concepts missed in THIS run that were already all-time
+  // repeat offenders.
+  const familyMap = new Map<string, number>()
+  for (const a of answered) {
+    if (!a.errorType) continue
+    const fam = ERROR_FAMILY_OF[a.errorType]
+    if (fam) familyMap.set(fam, (familyMap.get(fam) ?? 0) + 1)
+  }
+
   // All-time repeated misses by concept (measured, top 5)
   const wrongAttempts = await db.questionAttempt.findMany({
     where: { profileId: profile.id, correct: false, question: { conceptId: { not: null } } },
@@ -97,6 +108,33 @@ export async function POST(req: NextRequest) {
     wrongMap.set(c.id, entry)
   }
   const repeatedWrong = [...wrongMap.values()].sort((a, b) => b.misses - a.misses).slice(0, 5)
+  const repeatedOffenderIds = new Set(repeatedWrong.map((r) => r.conceptId))
+  const repeatedThisRun = answered.filter((a) => {
+    if (a.correct) return false
+    const q = qById.get(a.questionId)
+    return q?.concept?.id ? repeatedOffenderIds.has(q.concept.id) : false
+  }).length
+  if (repeatedThisRun > 0) familyMap.set('repeated', repeatedThisRun)
+  const errorFamilies = [...familyMap.entries()]
+    .map(([family, count]) => ({ family: family as AdaptiveReport['errorFamilies'] extends (infer R)[] | undefined ? R extends { family: infer F } ? F : never : never, count }))
+    .sort((a, b) => b.count - a.count)
+
+  // All-time logged patterns (ErrorPattern table) — top 5 with concept names.
+  // ErrorPattern stores a bare conceptId (no relation), so resolve names via Concept table.
+  const patternRows = await db.errorPattern.findMany({
+    where: { profileId: profile.id },
+    orderBy: [{ count: 'desc' }, { lastAt: 'desc' }],
+    take: 8,
+  })
+  const patternConceptIds = [...new Set(patternRows.map((p) => p.conceptId).filter((id): id is string => Boolean(id)))]
+  const patternConceptNames = patternConceptIds.length
+    ? await db.concept.findMany({ where: { id: { in: patternConceptIds } }, select: { id: true, name: true } })
+    : []
+  const patternConceptMap = new Map(patternConceptNames.map((c) => [c.id, c.name]))
+  const topPatterns = patternRows
+    .filter((p) => p.count >= 2)
+    .slice(0, 5)
+    .map((p) => ({ errorType: p.errorType, count: p.count, conceptName: p.conceptId ? patternConceptMap.get(p.conceptId) : undefined }))
 
   const wrongQuestions = answered
     .filter((a) => !a.correct)
@@ -153,6 +191,8 @@ export async function POST(req: NextRequest) {
     strongTopics,
     weakTopics,
     mistakes,
+    errorFamilies,
+    topPatterns,
     repeatedWrong,
     recommended,
     wrongQuestions,

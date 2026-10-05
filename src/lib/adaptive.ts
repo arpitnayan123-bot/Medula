@@ -156,6 +156,8 @@ interface QRow {
   id: string; stem: string; options: unknown; answer: string
   difficulty: number; qtype: string; subjectCode: string; system: string; topicId: string | null; conceptId: string | null
   tags: unknown
+  imageUrl?: string | null
+  optionNotes?: unknown
   concept: { name: string } | null
 }
 
@@ -173,6 +175,15 @@ function tagsOf(q: QRow): string[] {
 function isPyq(q: QRow): boolean { return tagsOf(q).includes('pyq-pattern') }
 function isImage(q: QRow): boolean { return tagsOf(q).includes('image-based') || IMG_STEM_RE.test(q.stem) }
 
+function optionNotesOf(q: QRow): Record<string, string> | undefined {
+  if (!q.optionNotes || typeof q.optionNotes !== 'object' || Array.isArray(q.optionNotes)) return undefined
+  const out: Record<string, string> = {}
+  for (const [k, v] of Object.entries(q.optionNotes as Record<string, unknown>)) {
+    if (typeof v === 'string' && v.trim()) out[k] = v
+  }
+  return Object.keys(out).length > 0 ? out : undefined
+}
+
 function toAdaptiveQuestion(q: QRow, whyThis?: string): AdaptiveQuestion {
   return {
     id: q.id, stem: q.stem,
@@ -183,6 +194,8 @@ function toAdaptiveQuestion(q: QRow, whyThis?: string): AdaptiveQuestion {
     whyThis,
     pyqPattern: isPyq(q) || undefined,
     imageBased: isImage(q) || undefined,
+    imageUrl: q.imageUrl ?? undefined,
+    optionNotes: optionNotesOf(q),
   }
 }
 

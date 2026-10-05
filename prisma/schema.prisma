@@ -47,6 +47,8 @@ model StudentProfile {
   adaptiveSessions AdaptiveSession[]
   savedQuestions  SavedQuestion[]
   questionReports QuestionReport[]
+  mistakeRecords  MistakeRecord[]
+  revisionSessions RevisionSession[]
 }
 
 // ───────────────────────── CURRICULUM GRAPH ─────────────────────────
@@ -133,10 +135,14 @@ model Question {
   difficulty  Int     @default(2) // 1..3
   qtype       String  @default("sba") // sba|vignette|assertion|rapid|integrated
   tags        Json    @default("[]")
+  // ── Adaptive MCQ Engine (PRODUCT 04, additive) ──
+  imageUrl    String? // schematic illustration served with image-based stems
+  optionNotes Json?   // { optionId: "why this option is wrong" } curated per-option notes
   attempts    QuestionAttempt[]
   subject     Subject @relation(fields: [subjectCode], references: [code])
   savedBy     SavedQuestion[]
   reports     QuestionReport[]
+  mistakes    MistakeRecord[]
 }
 
 model QuestionAttempt {
@@ -221,6 +227,27 @@ model RevisionItem {
   cleared    Boolean  @default(false)
   clearedAt  DateTime?
   minutes    Int      @default(15)
+
+  @@index([profileId])
+}
+
+// ── Smart Revision Engine (PRODUCT 06, additive) ──
+// A generated queue snapshot. The plan stores block ids + reasons only;
+// content is re-hydrated server-side on resume so answers never live in
+// the stored JSON.
+model RevisionSession {
+  id          String   @id @default(cuid())
+  profileId   String
+  profile     StudentProfile @relation(fields: [profileId], references: [id])
+  mode        String   // daily|rapid|weak|mistake|pyq|flashcard|high-yield|custom
+  config      Json // {minutes, subjects?, kinds?} — always written on create
+  plan        Json // RevisionBlock[] snapshot (ids + reasons, no answers) — always written on create
+  total       Int      @default(0)
+  done        Int      @default(0)
+  minutes     Int      @default(15)
+  status      String   @default("active") // active|completed
+  createdAt   DateTime @default(now())
+  completedAt DateTime?
 
   @@index([profileId])
 }
@@ -470,4 +497,39 @@ model LearnProgress {
 
   @@unique([profileId, kind, entityId])
   @@index([profileId])
+}
+
+// ───────────────────── MISTAKE INTELLIGENCE (PRODUCT 05) ─────────────────────
+// One aggregate row per (profile, question) the student has ever answered
+// wrong. The attempt feed (QuestionAttempt) stays the event log; this table is
+// the MISTAKE BANK: lifecycle status + repetition + review bookkeeping. Rows
+// are synced from attempts by lib/mistake-intel.ts (ensureMistakeRecords) and
+// written on the fly by recordAttempt for every source that answers MCQs
+// (practice, mocks, PYQ, image, adaptive, tutor quizzes).
+model MistakeRecord {
+  id             String   @id @default(cuid())
+  profileId      String
+  profile        StudentProfile @relation(fields: [profileId], references: [id])
+  questionId     String
+  question       Question @relation(fields: [questionId], references: [id])
+  conceptId      String?
+  wrongCount     Int      @default(1)
+  firstWrongAt   DateTime @default(now())
+  lastWrongAt    DateTime @default(now())
+  lastSelected   String   @default("") // option id of the latest wrong pick
+  lastErrorType  String?  // latest self-reported tag, if any
+  // lifecycle: unresolved → revising (revision item open) → retested (one
+  // correct retest) → resolved (two consecutive correct retests, or manual)
+  status         String   @default("unresolved")
+  retestCount    Int      @default(0) // retests attempted
+  retestCorrect  Int      @default(0) // consecutive correct retests (0..2)
+  resolvedAt     DateTime?
+  resolvedBy     String?  // 'retest' | 'manual'
+  lastReviewedAt DateTime? // last time the student opened this mistake
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@unique([profileId, questionId])
+  @@index([profileId, status])
+  @@index([profileId, lastWrongAt])
 }
