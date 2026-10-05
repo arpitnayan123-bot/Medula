@@ -1241,3 +1241,21 @@ Stage Summary:
 - SMART REVISION is live as a first-class section: open → "Your Revision for Today" queue built from measured signals (forgetting risk, mistakes, due cards, exam weight, open revision items) → every block carries WHY (recall est %, missed N×, PYQ-pattern, mastery %) → run block-by-block (retest mistakes, revise concepts, grade cards, solve MCQs/PYQs, compare confusions, open cases) → summary with MEASURED accuracy + next recommendation → quit/resume preserved → 8 modes + custom builder → intelligence panel (overdue/forgotten/repeated/strong/gaps/high-risk) with cross-section hand-offs → AI rapid-notes/recall grounded + disclaimered.
 - DoD met: «Remember to revise» → «Here are the exact concepts you should revise today because you are most likely to forget them» (queue headline + per-block measured reasons + intelligence statuses + exam-proximity shifting when examDate set).
 - Every learning signal feeds revision: KnowledgeState (SRS), MistakeRecord, FlashcardReview, QuestionAttempt accuracy, RevisionItem, Topic importance, exam clock. Revision output feeds back through the same endpoints (/api/attempts, /api/revision/review, touchConceptReview → KnowledgeState) — one knowledge engine.
+
+---
+Task ID: GIT-PUSH-1
+Agent: Z.ai Code (main)
+Task: Push Product 04–06 codebase state to GitHub repo arpitnayan123-bot/Medula
+
+Work Log:
+- Inspected local state: no .git (container git history was reset), but remote repo had full history through "PRODUCT 04 — ADAPTIVE MCQ ENGINE" (commit 1621dff)
+- Verified .gitignore coverage (node_modules/.env*/dev.log/tool-results/agent-ctx excluded), .env contains only local SQLite path (no secrets), no files >5MB besides none, db/custom.db 2.2MB
+- git init -b main → fetched remote main → git reset --mixed FETCH_HEAD to inherit upstream history (Products 01–04 preserved)
+- Staged 44 files: Product 05 (mistake-intel lib + 6 API routes + 2 components) and Product 06 (revision-engine lib + 5 API routes + 4 components), prisma schema, seed-mcq-engine, question images, adaptive route updates
+- Committed as 4a83249 with detailed Product 05+06 message; pushed main via inline-token URL (token NOT persisted to .git/config)
+- Verified via GitHub API: remote HEAD = 4a83249, 44 files changed
+
+Stage Summary:
+- Remote repo now up to date through Product 06 (Smart Revision Engine); full commit history Products 01→06 preserved
+- origin remote added as plain https URL (no embedded credentials)
+- Recommended: user should revoke/rotate the shared PAT since it was pasted in chat
