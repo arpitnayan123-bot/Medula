@@ -40,6 +40,7 @@ import type {
   VoiceHome, VoiceMode, VoiceStartResult, VoiceTurnResult, VoiceDebrief,
   ExamMode, ExamConfig, ExamHome, ExamStartResult, ExamAttemptState,
   ExamAnalysis, ExamReviewPayload, ExamAiAction, ExamAiResponse, ExamHistoryPayload,
+  PerformancePayload, PerformanceAiAction, PerformanceAiResponse,
 } from './types'
 
 export const api = {
@@ -315,6 +316,14 @@ export const api = {
   examReview: (id: string) => get<ExamReviewPayload>(`/api/exam/review/${encodeURIComponent(id)}`),
   examAi: (body: { action: ExamAiAction; attemptId: string }) => post<ExamAiResponse>('/api/exam/ai', body),
   examHistory: () => get<ExamHistoryPayload>('/api/exam/history'),
+
+  // ── Performance & Readiness Intelligence (PRODUCT 13) ──
+  // The unified performance profile (indicators · readiness · trends ·
+  // weaknesses · strengths · insights · exam readiness) and its grounded
+  // AI Analyst.
+  performanceHome: () => get<PerformancePayload>('/api/performance/home'),
+  performanceAi: (body: { action: PerformanceAiAction; question?: string }) =>
+    post<PerformanceAiResponse>('/api/performance/ai', body),
 }
 
 // ── Adaptive Engine aux payloads (defined here — types.ts is frozen) ──

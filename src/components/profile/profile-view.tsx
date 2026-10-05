@@ -403,12 +403,20 @@ function ReadinessCard() {
       id="pf-readiness"
       title="Readiness snapshot"
       action={
-        <button
-          onClick={() => setView('progress')}
-          className="inline-flex min-h-9 items-center gap-1.5 rounded-lg px-2 text-xs font-medium text-primary transition-colors hover:bg-primary/10"
-        >
-          Full breakdown <ArrowRight className="size-3.5" aria-hidden />
-        </button>
+        <span className="inline-flex items-center gap-1">
+          <button
+            onClick={() => setView('performance')}
+            className="inline-flex min-h-9 items-center gap-1.5 rounded-lg px-2 text-xs font-medium text-primary transition-colors hover:bg-primary/10"
+          >
+            Performance <ArrowRight className="size-3.5" aria-hidden />
+          </button>
+          <button
+            onClick={() => setView('progress')}
+            className="inline-flex min-h-9 items-center gap-1.5 rounded-lg px-2 text-xs font-medium text-primary transition-colors hover:bg-primary/10"
+          >
+            Full breakdown <ArrowRight className="size-3.5" aria-hidden />
+          </button>
+        </span>
       }
     >
       {state === 'loading' && <DigestSkeleton rows={4} />}

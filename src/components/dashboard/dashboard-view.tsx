@@ -406,6 +406,12 @@ export function DashboardView() {
             </button>
           </p>
         )}
+        <p className="px-1 text-xs text-ink-soft">
+          Full picture — what limits you and what to do next ·{' '}
+          <button type="button" onClick={() => setView('performance')} className="font-medium text-primary hover:underline">
+            open Performance Intelligence
+          </button>
+        </p>
       </Reveal>
 
       {/* 3b · First-run audit banner — only when nothing is mapped yet */}

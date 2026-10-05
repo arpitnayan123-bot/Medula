@@ -25,6 +25,7 @@ export type View =
   | 'revision'
   | 'planner'
   | 'graph'
+  | 'performance'
   | 'cases' | 'lab' | 'voice' | 'revise' | 'tutor' | 'progress' | 'roadmap' | 'profile'
 
 export interface Profile {
@@ -2216,5 +2217,199 @@ export interface ExamHome {
     topics: { id: string; name: string; subjectCode: string; count: number }[]
   }
   bank: { total: number; pyq: number; image: number }
+  disclaimer: string
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// PERFORMANCE & READINESS INTELLIGENCE (PRODUCT 13)
+// «Measure → Understand → Predict → Improve» — an honest, explainable,
+// action-oriented read of the student's real preparation signals.
+// Every number is measured, every score explains what moves it, every
+// insight leads to an action. Never a rank or outcome prediction.
+// ═══════════════════════════════════════════════════════════════════════════
+
+/** Direction of a measured change. */
+export type PerformanceDirection = 'up' | 'down' | 'flat'
+
+/** One weekly bucket in a trend series (value null = no data in that bucket). */
+export interface PerformanceTrendPoint {
+  label: string // e.g. "Nov 24"
+  value: number | null
+}
+
+/** A measured time-series with honest semantics (improved respects the metric: fewer mistakes = improved). */
+export interface PerformanceTrend {
+  key: 'accuracy' | 'mock' | 'revision' | 'mistakes' | 'speed' | 'coverage'
+  label: string
+  unit: string // '%' | 'pts' | 'items' | 's'
+  direction: PerformanceDirection
+  delta: number | null // latest vs previous bucket, same unit
+  improved: boolean | null // null = not enough data to judge
+  series: PerformanceTrendPoint[]
+  note: string // one measured sentence explaining the change
+  insufficient: boolean // true when <2 buckets have data
+}
+
+/** Cross-section action hand-off — the client maps `kind` to store setters. */
+export interface PerformanceHandoff {
+  kind: 'adaptive' | 'quiz' | 'exam' | 'learn' | 'hub' | 'mistakes' | 'revision' | 'planner' | 'map' | 'concept'
+  label: string
+  detail?: string
+  adaptive?: { mode?: AdaptiveMode; subjectCode?: string; topicId?: string; conceptId?: string; count?: number }
+  quiz?: { subjectCode?: string; conceptId?: string; topicId?: string; count?: number; pairId?: string; pairLabel?: string }
+  exam?: { mode?: ExamMode; subjectCode?: string; topicId?: string; conceptId?: string }
+  learn?: { kind: 'subject' | 'topic'; id: string }
+  hub?: { topicId: string; conceptId?: string | null }
+  map?: { scope: string }
+  conceptId?: string
+}
+
+/** One readiness dimension — transparent weight, basis and "how to move it". */
+export interface PerformanceDimension {
+  key: 'knowledge' | 'accuracy' | 'recall' | 'speed' | 'revision' | 'test' | 'consistency'
+  label: string
+  weight: number // nominal weight in the composite (points of 100)
+  effectiveWeight: number // after renormalising out data-poor dimensions
+  value: number | null // 0..100 (null = not enough data → excluded)
+  note: string // what the number is made of
+  basis: string // measured basis, e.g. "last 200 attempts"
+  suggestion: string // concrete way to move it
+  lacksData: boolean
+}
+
+/** The explainable NEET-PG readiness composite. */
+export interface PerformanceReadiness {
+  overall: number | null
+  band: string
+  dimensions: PerformanceDimension[]
+  methodology: string // formula sentence with actual weights used
+  excluded: string[] // dimension labels excluded for missing data
+  disclaimer: string
+}
+
+/** A prioritized weakness — importance-ranked, never a flat dump. */
+export interface PerformanceWeakItem {
+  id: string
+  kind: 'subject' | 'topic' | 'concept'
+  label: string
+  parent?: string // subject name
+  signals: ('weak-mastery' | 'low-accuracy' | 'declining' | 'repeated-mistakes' | 'faded' | 'high-yield-gap' | 'untouched')[]
+  importance: number // 0..100 — exam-weighted priority, not raw wrongness
+  examRelevance: number // 1..5
+  mastery: number | null
+  accuracy: number | null
+  recall: number | null // 0..1 estimated
+  attempts: number
+  wrongs: number
+  reason: string // human one-liner built from measured facts
+  action: PerformanceHandoff
+}
+
+/** A strength — with guidance to protect it, not re-grind it. */
+export interface PerformanceStrengthItem {
+  id: string
+  kind: 'subject' | 'topic' | 'concept'
+  label: string
+  parent?: string
+  mastery: number
+  accuracy: number | null
+  recall: number | null
+  attempts: number
+  note: string
+}
+
+/** An insight always carries at least one action — never charts without advice. */
+export interface PerformanceInsight {
+  id: string
+  severity: 'critical' | 'warning' | 'info' | 'good'
+  title: string // "Pharmacology accuracy dropped 8%"
+  evidence: string // the measured numbers behind it
+  why: string // one line on what it means
+  actions: PerformanceHandoff[]
+}
+
+/** Per-subject measured row for the mastery / movement tables. */
+export interface PerformanceSubjectRow {
+  id: string
+  code: string
+  name: string
+  color: string
+  mastery: number | null // mean mastery of engaged concepts
+  accuracy: number | null // accuracy on this subject's questions (all-time)
+  recall: number | null
+  coverage: number // % of the subject's concepts engaged
+  attempts: number
+  trend: number | null // accuracy Δ last-14d vs prior-14d (pp)
+  status: 'new' | 'weak' | 'developing' | 'strong'
+}
+
+/** Realistic exam-preparation overview — estimates only, never guarantees. */
+export interface PerformanceExamReadiness {
+  current: number | null
+  band: string
+  gaps: { label: string; detail: string }[]
+  highPriorityTopics: PerformanceWeakItem[]
+  revisionDebt: { count: number; minutes: number }
+  testReadiness: {
+    tests: number
+    lastPercent: number | null
+    meanPercent: number | null
+    bestPercent: number | null
+    band: string | null
+    note: string
+  } | null
+  trajectory: { direction: PerformanceDirection; note: string } | null
+  examDate: string | null
+  daysLeft: number | null
+  disclaimer: string
+}
+
+/** Core indicator block — meaningful signals only, no vanity metrics. */
+export interface PerformanceIndicators {
+  overallProgress: number // % of high-yield-weighted syllabus engaged
+  knowledgeSplit: { strong: number; unstable: number; weak: number; new: number }
+  accuracy: number | null // last 200 attempts
+  accuracyDelta: number | null // last-7d vs prior-7d (pp)
+  recall: number | null // mean estimated recall across touched concepts
+  revisionDebt: { count: number; minutes: number }
+  revisionCoverage: number | null // % of weak concepts actively covered by revision
+  mock: { tests: number; meanPercent: number | null; lastPercent: number | null; bestPercent: number | null; spread: number | null; band: string | null }
+  speed: { medianSec: number | null; pace: number; band: string; note: string }
+  consistency: { streak: number; activeDays14: number; adherence: number }
+  mistakes: { open: number; repeated: number; resolvedThisWeek: number; mistakeRate: number | null; topErrorType: { type: string; count: number } | null }
+  weakCount: number
+  strongCount: number
+  topicsMastered: number
+  topicsTotal: number
+}
+
+/** GET /api/performance/home — the unified performance profile. */
+export interface PerformancePayload {
+  generatedAt: string
+  indicators: PerformanceIndicators
+  readiness: PerformanceReadiness
+  trends: PerformanceTrend[]
+  subjects: PerformanceSubjectRow[]
+  weaknesses: PerformanceWeakItem[] // prioritized, capped
+  focusNow: PerformanceWeakItem[] // top slice — "requires immediate attention"
+  strengths: PerformanceStrengthItem[]
+  insights: PerformanceInsight[]
+  examReadiness: PerformanceExamReadiness
+  dataBasis: { attempts: number; exams: number; activeDays30: number; conceptsTouched: number; conceptsTotal: number; windowDays: number }
+  insufficientData: boolean
+  insufficientNote?: string
+  disclaimers: string[]
+}
+
+/** POST /api/performance/ai — AI Analyst, grounded ONLY in the measured payload. */
+export type PerformanceAiAction = 'weekly_focus' | 'weakest_subject' | 'why_slow' | 'why_mistakes' | 'mock_ready' | 'ask'
+export interface PerformanceAiResponse {
+  ok: boolean
+  action: PerformanceAiAction
+  question?: string // echoed for 'ask'
+  text: string
+  bullets: string[]
+  actions: PerformanceHandoff[] // server-attached measured actions (never AI-invented)
+  fallback: boolean
   disclaimer: string
 }
