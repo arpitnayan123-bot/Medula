@@ -22,6 +22,7 @@ export type View =
   | 'adaptive'
   | 'mistakes'
   | 'revision'
+  | 'planner'
   | 'cases' | 'revise' | 'tutor' | 'progress' | 'roadmap' | 'profile'
 
 export interface Profile {
@@ -1083,4 +1084,215 @@ export interface TutorSessionSummary {
 export interface TutorSessionDetail extends TutorSessionSummary {
   createdAt: string
   messages: { role: 'user' | 'assistant'; content: string }[]
+}
+
+// ─────────────────────── PRODUCT 07 · AI PERSONALIZED STUDY PLANNER ───────────────────────
+// «Given my exam date, target, current preparation and available time — what
+// exactly should I study today?» The plan is per-profile, regenerated from
+// live signals (never a fixed timetable): phases are date-windowed so one
+// missed day NEVER permanently breaks the schedule — missed work is capped
+// and re-balanced into the next days instead. Every task carries a measured
+// why-this reason. No chain-of-thought, no rank predictions — feasibility
+// and pace are honest arithmetic over the student's own data.
+
+export type PlannerMode =
+  | 'auto' | 'full' | 'two-hour' | 'one-hour' | 'revision' | 'mock' | 'catch-up' | 'last-30' | 'emergency'
+
+export const PLANNER_MODES: { id: PlannerMode; label: string; blurb: string; minutes: number }[] = [
+  { id: 'auto', label: 'Auto', blurb: "Engine picks today's shape from your weekday rhythm", minutes: 0 },
+  { id: 'full', label: 'Full Study Day', blurb: 'Your full declared time — learn, practice, revise, test', minutes: 0 },
+  { id: 'two-hour', label: '2-Hour Day', blurb: 'Compressed day: top priorities only', minutes: 120 },
+  { id: 'one-hour', label: '1-Hour Day', blurb: 'One focused hour — highest-risk items first', minutes: 60 },
+  { id: 'revision', label: 'Revision Day', blurb: 'Clear due revision and flashcards, minimal new material', minutes: 0 },
+  { id: 'mock', label: 'Mock-Test Day', blurb: 'Timed exam run + deep review of what it exposed', minutes: 0 },
+  { id: 'catch-up', label: 'Catch-Up Day', blurb: 'Fold missed work back in — one off-day never breaks the plan', minutes: 0 },
+  { id: 'last-30', label: 'Last-30-Days', blurb: 'Exam-proximity shape: high-yield, PYQ, mistakes, mocks', minutes: 0 },
+  { id: 'emergency', label: 'Emergency (Low Time)', blurb: '~30 minutes: the one thing that matters most today', minutes: 30 },
+]
+
+export type PlannerSlot = 'study' | 'practice' | 'revise' | 'test'
+
+export const PLANNER_SLOT_LABELS: Record<PlannerSlot, string> = {
+  study: 'Study',
+  practice: 'Practice',
+  revise: 'Revise',
+  test: 'Test',
+}
+
+export const PLANNER_SLOT_HINTS: Record<PlannerSlot, string> = {
+  study: 'What to learn',
+  practice: 'What questions to solve',
+  revise: 'What to revisit',
+  test: 'What assessment to complete',
+}
+
+/** Client view of a PlannerTask row — reasons are measured, never CoT. */
+export interface PlannerTask {
+  id: string
+  slot: PlannerSlot
+  kind: string
+  refId: string
+  title: string
+  detail: string
+  reason: string
+  minutes: number
+  priority: number
+  status: 'pending' | 'done' | 'skipped' | 'missed'
+  carriedFrom: number // days since its original dayKey (0 = today)
+  handoff: PlannerHandoff | null
+}
+
+/** Deep-link payload the planner UI consumes to start the task where the work lives. */
+export type PlannerHandoff =
+  | { type: 'learn-topic'; topicId: string; label: string }
+  | { type: 'hub'; topicId: string; conceptId?: string; label: string }
+  | { type: 'adaptive'; mode: AdaptiveMode; subjectCode?: string; topicId?: string; conceptId?: string; count: number; label: string }
+  | { type: 'mistakes'; label: string }
+  | { type: 'revision'; mode: RevisionMode; minutes: number; label: string }
+  | { type: 'mock-lab'; label: string }
+
+/** One phase of the long-term plan — date-windowed, not task-chained. */
+export interface PlannerPhase {
+  id: string
+  label: string
+  goal: string
+  fromDays: number // day offset from today (0 = today)
+  toDays: number
+  focus: string[] // up to 4 subject names ranked by need
+  actions: string[]
+  current: boolean
+}
+
+/** Weekly goal computed from remaining work ÷ weeks — recomputed live. */
+export interface PlannerWeeklyGoal {
+  id: string
+  label: string // "Cover ~6 topics in Pathology & Medicine"
+  detail: string
+  paceTopicsPerWeek: number
+  doneThisWeek: number
+}
+
+/** Honest feasibility arithmetic — never a rank promise. */
+export interface PlannerFeasibility {
+  verdict: 'comfortable' | 'tight' | 'overcommitted'
+  headline: string
+  requiredHours: number
+  availableHours: number
+  ratio: number // required / available
+  notes: string[]
+  basis: {
+    remainingConcepts: number
+    totalConcepts: number
+    revisionCyclesPlanned: number
+    questionsTarget: number
+    daysRemaining: number
+    capacityPerDay: number
+  }
+}
+
+export interface PlannerPlanShape {
+  version: number
+  generatedAt: string
+  examLabel: string
+  examDate: string | null
+  examIsEstimate: boolean
+  daysLeft: number
+  stageLabel: string
+  phases: PlannerPhase[]
+  weeklyGoals: PlannerWeeklyGoal[]
+  mockCadenceDays: number // e.g. every 7 days take a mock
+  revisionCyclesLeft: number
+  notes: string[]
+}
+
+/** Per-subject coverage + pace row for the plan overview. */
+export interface PlannerSubjectRow {
+  code: string
+  name: string
+  color: string
+  neetWeight: number
+  conceptsTotal: number
+  conceptsCovered: number
+  coverage: number // 0..100
+  mastery: number // 0..100 avg (0 when untouched)
+  accuracy: number // 0..100 last-30d attempts (0 when none)
+  priority: number // 0..100 planner urgency
+  reason: string
+}
+
+/** Measured progress feeds — planned vs completed, consistency, coverage. */
+export interface PlannerProgress {
+  todayPlannedMinutes: number
+  todayDoneMinutes: number
+  todayPlannedCount: number
+  todayDoneCount: number
+  streakDays: number
+  consistency14: number // % of last 14 IST days with any completed planner task or study session
+  adherence7: number // doneMinutes / plannedMinutes over last 7 logged days (%)
+  syllabusCoverage: number // 0..100 high-yield-weighted
+  revisionDebt: number // open revision items
+  dueCards: number
+  openMistakes: number
+  questionsLast7: number
+  mocksLast30: number
+  last14: { dayKey: string; planned: number; done: number }[]
+}
+
+/** One plain-language, measured observation about today's plan. */
+export interface PlannerIntelligenceNote {
+  id: string
+  tone: 'risk' | 'good' | 'info'
+  text: string
+  action?: { label: string; view: string } // view: adaptive|mistakes|revision|questions|learn|progress
+}
+
+export interface PlannerToday {
+  dayKey: string
+  mode: PlannerMode
+  modeLabel: string
+  capacityMinutes: number
+  plannedMinutes: number
+  headline: string // "3 study blocks · 15 MCQs · 12 due cards · mock review"
+  slots: { slot: PlannerSlot; tasks: PlannerTask[]; minutes: number }[]
+  priority: { title: string; reason: string; taskId: string | null } | null
+  carriedOverCount: number
+  offDay: boolean
+}
+
+/** GET /api/planner/home — the whole planner dashboard. */
+export interface PlannerHome {
+  hasPlan: boolean
+  plan: PlannerPlanShape | null
+  settings: {
+    examDate: string | null
+    examLabel: string
+    targetNote: string
+    dailyMinutes: number
+    weekdayMinutes: number
+    weekendMinutes: number
+    offDays: string[]
+  } | null
+  feasibility: PlannerFeasibility | null
+  today: PlannerToday | null
+  progress: PlannerProgress | null
+  subjects: PlannerSubjectRow[] // top 6 by planner urgency
+  intelligence: PlannerIntelligenceNote[]
+  realized: { medianMinutesPerDay: number; daysSampled: number; note: string } | null
+}
+
+/** POST /api/planner/plan — settings upsert response. */
+export interface PlannerPlanSaveResult {
+  ok: boolean
+  plan: PlannerPlanShape
+  feasibility: PlannerFeasibility
+}
+
+/** POST /api/planner/ai — grounded AI helper actions. */
+export interface PlannerAiResponse {
+  ok: boolean
+  action: string
+  text: string
+  bullets: string[]
+  fallback: boolean
+  disclaimer: string
 }

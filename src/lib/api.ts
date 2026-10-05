@@ -32,6 +32,7 @@ import type {
   MistakeMode, MistakeRetestQuestion, MistakeRetestResult, MistakeStatus,
   RevisionMode, RevisionBlockKind, RevisionSmartHome, RevisionSessionStart,
   RevisionSessionResume, RevisionBlockResult, RevisionSessionSummary, RevisionAiResponse,
+  PlannerHome, PlannerPlanSaveResult, PlannerAiResponse,
 } from './types'
 
 export const api = {
@@ -194,6 +195,18 @@ export const api = {
     post<RevisionSessionSummary>('/api/revision/smart/complete', body),
   revisionAi: (body: { action: 'rapid-notes' | 'recall' | 'compare'; conceptId?: string; pairId?: string }) =>
     post<RevisionAiResponse>('/api/revision/smart/ai', body),
+
+  // ── AI Personalized Study Planner (PRODUCT 07) ──
+  plannerHome: (mode?: string) =>
+    get<PlannerHome>(`/api/planner/home${mode ? `?mode=${encodeURIComponent(mode)}` : ''}`),
+  savePlannerPlan: (body: {
+    examDate?: string | null; examLabel?: string; targetNote?: string
+    dailyMinutes?: number; weekdayMinutes?: number; weekendMinutes?: number; offDays?: string[]
+  }) => post<PlannerPlanSaveResult>('/api/planner/plan', body),
+  completePlannerTask: (body: { taskId: string; status: 'done' | 'skipped' }) =>
+    post<{ ok: boolean }>('/api/planner/task', body),
+  plannerAi: (action: 'why' | 'rebalance' | 'shrink' | 'realism' | 'next') =>
+    post<PlannerAiResponse>('/api/planner/ai', { action }),
 }
 
 // ── Adaptive Engine aux payloads (defined here — types.ts is frozen) ──

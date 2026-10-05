@@ -533,3 +533,74 @@ model MistakeRecord {
   @@index([profileId, status])
   @@index([profileId, lastWrongAt])
 }
+
+// ───────────────────── AI STUDY PLANNER (PRODUCT 07) ─────────────────────
+// Additive tables for the personalized study planner. STANDALONE (no FK
+// relations) like the other engine models → db:push stays non-destructive.
+//
+// PlannerPlan  — the durable plan SHAPE: settings (exam date, capacity,
+//                off-days), phase windows, weekly goals, last feasibility
+//                check. The DAY schedule is never stored stale — today's
+//                queue is always regenerated from live signals.
+// PlannerDayLog — one row per (profile, IST day): chosen mode + planned vs
+//                done totals. The consistency / adherence feed.
+// PlannerTask  — task instances for a given day with lifecycle (pending →
+//                done | skipped; stale pending → missed on next generation).
+//                Completed tasks are durable; pending ones are regenerated.
+model PlannerPlan {
+  id             String    @id @default(cuid())
+  profileId      String
+  status         String    @default("active") // active | archived
+  examDate       DateTime?
+  examLabel      String    @default("")
+  targetNote     String    @default("") // honest pacing anchor — never a rank promise
+  dailyMinutes   Int       @default(240)
+  weekdayMinutes Int       @default(0) // 0 → fall back to dailyMinutes
+  weekendMinutes Int       @default(0) // 0 → fall back to dailyMinutes
+  offDays        Json      @default("[]") // IST weekday keys, e.g. ["Sun"]
+  plan           Json      // PlannerPlanShape snapshot (phases, weekly goals, notes)
+  feasibility    Json      // last computed feasibility verdict
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  @@index([profileId, status])
+}
+
+model PlannerDayLog {
+  id             String   @id @default(cuid())
+  profileId      String
+  dayKey         String   // IST calendar day 'YYYY-MM-DD'
+  mode           String   @default("auto") // auto|full|two-hour|one-hour|revision|mock|catch-up|last-30|emergency
+  plannedMinutes Int      @default(0)
+  doneMinutes    Int      @default(0)
+  plannedCount   Int      @default(0)
+  doneCount      Int      @default(0)
+  status         String   @default("open") // open | partial | done | rest
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@unique([profileId, dayKey])
+  @@index([profileId, dayKey])
+}
+
+model PlannerTask {
+  id        String    @id @default(cuid())
+  profileId String
+  dayKey    String    // IST calendar day this task belongs to
+  slot      String    // study | practice | revise | test
+  kind      String    // topic-learn | concept-repair | mcq | mistake-retest | revision-session | flashcards | mock | pyq | case | catch-up
+  refId     String    @default("") // topicId / conceptId / pairId / …
+  title     String
+  detail    String    @default("") // actionable one-liner
+  reason    String    @default("") // measured why-this note (never chain-of-thought)
+  minutes   Int       @default(20)
+  priority  Int       @default(50) // 0..100
+  status    String    @default("pending") // pending | done | skipped | missed
+  doneAt    DateTime?
+  meta      Json? // hand-off payload (adaptive preset, revision start config…)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  @@unique([profileId, dayKey, slot, kind, refId])
+  @@index([profileId, dayKey])
+}
