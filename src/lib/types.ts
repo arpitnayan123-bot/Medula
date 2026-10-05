@@ -20,6 +20,7 @@ export type Phase = SubjectTaxonomyContract['phase']
 export type View =
   | 'landing' | 'signin' | 'onboarding' | 'home' | 'map' | 'explore' | 'research' | 'understand' | 'learn' | 'hub' | 'questions'
   | 'adaptive'
+  | 'exam'
   | 'mistakes'
   | 'revision'
   | 'planner'
@@ -1964,4 +1965,256 @@ export interface VoiceDebrief {
   weakTouched: { name: string; mastery: number }[] // measured weak areas revisited this session
   fed: { studySession: boolean; errorPattern: boolean; revisionItem: boolean; reason: string }
   handoffs: { revision: boolean; mistakes: boolean; planner: boolean }
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// PRODUCT 12 — EXAM SIMULATOR & MOCK TEST LAB («Simulate → Perform → Analyze
+// → Fix → Retest»). Contract FROZEN for 12-a (engine + /api/exam/**) and
+// 12-b (UI). Grading is always DETERMINISTIC server-side (+4/−1 where
+// negative marking applies) — the answer key never reaches the client before
+// submit, and no AI touches selection or scoring. The AI Test Analyst only
+// narrates the measured analysis — it never grades and never exposes its
+// chain of thought.
+// ═══════════════════════════════════════════════════════════════════════════
+
+export type ExamMode =
+  | 'full' | 'subject' | 'topic' | 'pyq' | 'custom'
+  | 'weak' | 'adaptive' | 'image' | 'rapid'
+
+export interface ExamModeInfo {
+  id: ExamMode
+  name: string
+  tagline: string
+  preset: { count: number; minutes: number; negativeMark: boolean }
+  builtFrom: string // honest one-line description of how the paper is generated
+}
+
+export const EXAM_MODES: ExamModeInfo[] = [
+  { id: 'full', name: 'Full-Length Mock', tagline: 'A NEET-PG-pattern paper across every subject', preset: { count: 50, minutes: 50, negativeMark: true }, builtFrom: 'Subject weights matched to the real exam mix' },
+  { id: 'subject', name: 'Subject Test', tagline: 'One subject, exam conditions', preset: { count: 25, minutes: 25, negativeMark: true }, builtFrom: 'All platform questions in the chosen subject' },
+  { id: 'topic', name: 'Topic Test', tagline: 'One topic or system, end to end', preset: { count: 10, minutes: 10, negativeMark: true }, builtFrom: 'Questions on the chosen topic and its concepts' },
+  { id: 'pyq', name: 'PYQ Test', tagline: 'Classic repeated exam themes only', preset: { count: 20, minutes: 20, negativeMark: true }, builtFrom: 'PYQ-pattern questions tagged by the platform' },
+  { id: 'custom', name: 'Custom Test', tagline: 'Your subjects, topics, difficulty and time', preset: { count: 20, minutes: 20, negativeMark: true }, builtFrom: 'Exactly the filters you set — nothing else' },
+  { id: 'weak', name: 'Weak-Area Test', tagline: 'Only what you are measured-weak at', preset: { count: 15, minutes: 15, negativeMark: false }, builtFrom: 'Weak concepts and recent mistakes — no penalty, it is practice' },
+  { id: 'adaptive', name: 'Adaptive Test', tagline: 'The engine ranks the paper for you', preset: { count: 20, minutes: 20, negativeMark: true }, builtFrom: 'Weakness, recall risk and exam relevance ranked at start' },
+  { id: 'image', name: 'Image-Based Test', tagline: 'X-rays, ECGs and visual stems', preset: { count: 10, minutes: 12, negativeMark: true }, builtFrom: 'Image-based questions from the platform bank' },
+  { id: 'rapid', name: 'Rapid Test', tagline: '45 seconds a question — instinct mode', preset: { count: 10, minutes: 8, negativeMark: false }, builtFrom: 'Rapid and short-stem questions, no negative marking' },
+]
+
+export interface ExamConfig {
+  mode: ExamMode
+  count?: number // 5..100 (clamped server-side)
+  minutes?: number // total time budget (clamped server-side)
+  subjectCodes?: string[] // subject / custom builder
+  topicIds?: string[] // topic / custom builder
+  difficulty?: number | null // custom only — exact 1..3(+4) filter
+  sources?: ('pyq' | 'image' | 'clinical' | 'rapid')[] // custom bias flags
+  negativeMark?: boolean // default per-mode preset
+  conceptId?: string // hand-off filter (single-concept focus)
+}
+
+/** Client-safe exam question — NO answer/explanation before submit. */
+export interface ExamQuestion {
+  id: string
+  stem: string
+  options: { id: string; text: string }[]
+  difficulty: number
+  subjectCode: string
+  system: string
+  conceptId?: string
+  conceptName?: string
+  pyqPattern?: boolean
+  imageBased?: boolean
+  imageUrl?: string
+}
+
+/** POST /api/exam/start */
+export interface ExamStartResult {
+  ok: true
+  attemptId: string
+  label: string
+  mode: ExamMode
+  negativeMark: boolean
+  total: number
+  endsAt: string // server-authoritative deadline (ISO)
+  startedAt: string
+  questions: ExamQuestion[]
+  note?: string // honest shortfall / reshuffle note
+}
+
+/** GET /api/exam/attempt/[id] — resume state (answers stay server-side). */
+export interface ExamAttemptState {
+  attemptId: string
+  mode: ExamMode
+  label: string
+  negativeMark: boolean
+  total: number
+  endsAt: string
+  status: string
+  expired: boolean // deadline passed while away — client offers auto-submit
+  responses: { questionId: string; history: string[]; timeMs: number; marked: boolean }[]
+}
+
+export interface ExamScoreRow {
+  subjectCode: string
+  name: string
+  correct: number
+  wrong: number
+  unattempted: number
+  accuracy: number // % of attempted
+  score: number // includes negative marking
+}
+
+export interface ExamAnalysis {
+  attemptId: string
+  mode: ExamMode
+  label: string
+  negativeMark: boolean
+  autoSubmitted: boolean
+  totals: {
+    total: number
+    answered: number
+    correct: number
+    wrong: number
+    unattempted: number
+    score: number
+    maxScore: number
+    percent: number // score / maxScore
+    accuracy: number // correct / answered
+    timeMs: number
+  }
+  speed: {
+    avgTimeMs: number
+    band: 'fast' | 'steady' | 'slow' // vs 65 s/question exam benchmark
+    buckets: { label: string; count: number }[] // <30 s / 30–90 s / >90 s
+  }
+  subjects: ExamScoreRow[]
+  weakTopics: { name: string; subjectCode: string; correct: number; total: number; accuracy: number; topicId?: string | null }[]
+  strongTopics: { name: string; subjectCode: string; correct: number; total: number; accuracy: number; topicId?: string | null }[]
+  weakConcepts: { conceptId: string; conceptName: string; correct: number; total: number; mastery: number | null }[]
+  difficulty: { d: number; correct: number; total: number }[]
+  pyq: { attempted: number; correct: number; accuracy: number } | null // null when the paper had no PYQ-pattern rows
+  mistakes: {
+    careless: number // wrong in <30 s, or changed-to-wrong
+    conceptual: number // wrong after ≥45 s of work
+    changedToWrong: number
+    changedToRight: number
+    repeated: number // wrongs on concepts already missed ≥2× all-time
+    unattempted: number
+  }
+  repeatedWrong: { conceptId: string; conceptName: string; misses: number }[] // all-time measured
+  improvement: {
+    vsLabel: string
+    vsAt: string
+    scoreDelta: number | null
+    accuracyDelta: number | null
+    speedDeltaMs: number | null // negative = faster
+  } | null
+  readiness: { key: string; label: string; value: number; note: string }[] // transparent 0..100 indicators
+  recommended: { mode: ExamMode; config: ExamConfig; reason: string } | null
+  fed: { studySession: boolean; revisionItems: number; attemptsRecorded: number; reason: string }
+}
+
+export interface ExamReviewQuestion {
+  questionId: string
+  stem: string
+  options: { id: string; text: string }[]
+  answer: string
+  answerText: string
+  selected: string | null
+  selectedText: string | null
+  correct: boolean
+  unattempted: boolean
+  explanation: string
+  teaching: string
+  optionNotes?: Record<string, string> // why each other option is wrong
+  difficulty: number
+  subjectCode: string
+  subjectName: string
+  conceptId: string | null
+  conceptName: string | null
+  topicId: string | null
+  topicName: string | null
+  pyqPattern?: boolean
+  imageBased?: boolean
+  imageUrl?: string
+  timeMs: number
+  changed: boolean // answer was changed at least once
+  marked: boolean
+  mistakeStatus: string | null // all-time MistakeRecord lifecycle for this question
+  wrongCount: number
+  saved: boolean
+}
+
+/** GET /api/exam/review/[id] — full post-test review (answers included). */
+export interface ExamReviewPayload {
+  attemptId: string
+  label: string
+  mode: ExamMode
+  analysis: ExamAnalysis
+  questions: ExamReviewQuestion[]
+}
+
+/** POST /api/exam/ai — AI Test Analyst, grounded on the measured analysis. */
+export type ExamAiAction = 'what-went-wrong' | 'study-next' | 'important-mistakes' | 'revise' | 'next-test'
+export interface ExamAiResponse {
+  ok: boolean
+  action: ExamAiAction
+  text: string
+  fallback: boolean
+  disclaimer: string
+  aiBadge: string
+}
+
+/** GET /api/exam/history — performance tracking across submitted tests. */
+export interface ExamTrendPoint {
+  attemptId: string
+  label: string
+  mode: ExamMode
+  at: string
+  score: number
+  maxScore: number
+  percent: number
+  accuracy: number
+  avgTimeMs: number
+}
+export interface ExamHistoryPayload {
+  tests: ExamTrendPoint[]
+  totals: {
+    tests: number
+    questionsAnswered: number
+    accuracy: number | null
+    avgPercent: number | null
+    bestPercent: number | null
+    minutes: number
+  }
+  consistency: { band: string; note: string; spread: number | null } | null // null when <3 tests
+  subjects: { subjectCode: string; name: string; tests: number; attempted: number; accuracy: number; trend: number | null }[]
+  revisionImpact: { note: string; revisedAccuracy: number | null; unrevisedAccuracy: number | null; sample: number } | null
+  percentileNote: string // honest: no cohort data → no percentile claims
+  insufficientData: boolean
+}
+
+/** GET /api/exam/home — measured dashboard. */
+export interface ExamHome {
+  modes: ExamModeInfo[]
+  stats: {
+    tests: number
+    avgPercent: number | null
+    bestPercent: number | null
+    accuracy: number | null
+    minutes: number
+    lastAt: string | null
+  }
+  recent: { attemptId: string; label: string; mode: ExamMode; percent: number; accuracy: number; score: number; maxScore: number; at: string }[]
+  resume: { attemptId: string; label: string; mode: ExamMode; total: number; answered: number; endsAt: string } | null
+  weakSubjects: { code: string; name: string; accuracy: number | null; tests: number }[]
+  weakConcepts: { conceptId: string; conceptName: string; mastery: number }[]
+  recommended: { mode: ExamMode; config: ExamConfig; reason: string } | null
+  facets: {
+    subjects: { code: string; name: string; count: number }[]
+    topics: { id: string; name: string; subjectCode: string; count: number }[]
+  }
+  bank: { total: number; pyq: number; image: number }
+  disclaimer: string
 }

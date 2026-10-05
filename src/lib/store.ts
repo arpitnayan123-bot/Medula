@@ -8,7 +8,7 @@ import type { Profile, View } from './types'
 // the doctor back where they left off, and mirror to the URL hash (#/map)
 // so a reload keeps the same view.
 export const APP_VIEWS: readonly View[] = [
-  'home', 'map', 'explore', 'research', 'understand', 'learn', 'hub', 'questions', 'adaptive', 'mistakes', 'revision', 'planner', 'graph', 'cases', 'lab', 'voice', 'revise', 'tutor', 'progress', 'roadmap', 'profile',
+  'home', 'map', 'explore', 'research', 'understand', 'learn', 'hub', 'questions', 'adaptive', 'exam', 'mistakes', 'revision', 'planner', 'graph', 'cases', 'lab', 'voice', 'revise', 'tutor', 'progress', 'roadmap', 'profile',
 ] as const
 
 // ── Topic Hub deep links ────────────────────────────────────────────────
@@ -140,7 +140,7 @@ export function viewToLabel(v: View): string {
     graph: 'the Knowledge Graph',
     cases: 'the Case Simulator', lab: 'the Image Lab', revise: 'Revise', tutor: 'the AI Tutor',
     progress: 'Progress', roadmap: 'Roadmap', profile: 'Profile',
-    voice: 'the Voice Tutor',
+    voice: 'the Voice Tutor', exam: 'the Exam Lab',
   }
   return labels[v] ?? v
 }
@@ -162,6 +162,7 @@ interface AppState {
   simFocus: { caseId: string } | null // Case Simulator deep-link hand-off (PRODUCT 09)
   labFocus: { imageId: string } | null // Image Lab deep-link hand-off (PRODUCT 10)
   voicePreset: { mode: import('./types').VoiceMode; topicId?: string } | null // Voice Tutor hand-off (PRODUCT 11)
+  examPreset: { mode?: import('./types').ExamMode; subjectCode?: string; topicId?: string; conceptId?: string; autoStart?: boolean } | null // Exam Lab hand-off (PRODUCT 12)
   researchSeedQuery: string | null // query handed from Explore → Research Hub
   setView: (v: View) => void
   setProfile: (p: Profile | null) => void
@@ -184,6 +185,8 @@ interface AppState {
   closeLab: () => void
   openVoice: (mode: import('./types').VoiceMode, topicId?: string) => void
   clearVoicePreset: () => void
+  openExam: (preset?: { mode?: import('./types').ExamMode; subjectCode?: string; topicId?: string; conceptId?: string; autoStart?: boolean }) => void
+  clearExamPreset: () => void
   setResearchSeedQuery: (q: string | null) => void
 }
 
@@ -204,6 +207,7 @@ export const useAppStore = create<AppState>((set) => ({
   simFocus: null,
   labFocus: null,
   voicePreset: null,
+  examPreset: null,
   researchSeedQuery: null,
   setView: (v) => {
     if (isAppView(v)) {
@@ -239,5 +243,7 @@ export const useAppStore = create<AppState>((set) => ({
   closeLab: () => set({ labFocus: null }),
   openVoice: (mode, topicId) => set({ voicePreset: { mode, topicId }, view: 'voice' }),
   clearVoicePreset: () => set({ voicePreset: null }),
+  openExam: (preset) => set({ examPreset: preset ?? { autoStart: false }, view: 'exam' }),
+  clearExamPreset: () => set({ examPreset: null }),
   setResearchSeedQuery: (q) => set({ researchSeedQuery: q }),
 }))

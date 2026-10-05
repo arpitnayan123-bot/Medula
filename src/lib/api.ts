@@ -38,6 +38,8 @@ import type {
   SimHome, SimCaseDetail, SimActResponse, SimDebrief, SimAiResponse, SimAiMessage,
   LabHome, LabImageDetail, LabAttemptStart, LabActResponse, LabRapidStart, LabDebrief, LabAiResponse, LabMode, LabPin,
   VoiceHome, VoiceMode, VoiceStartResult, VoiceTurnResult, VoiceDebrief,
+  ExamMode, ExamConfig, ExamHome, ExamStartResult, ExamAttemptState,
+  ExamAnalysis, ExamReviewPayload, ExamAiAction, ExamAiResponse, ExamHistoryPayload,
 } from './types'
 
 export const api = {
@@ -294,6 +296,25 @@ export const api = {
     const data = (await res.json()) as { text?: string }
     return (data.text ?? '').trim()
   },
+
+  // ── Exam Simulator & Mock Test Lab (PRODUCT 12) ──
+  // Grading and the answer key stay server-side until submit (contract in
+  // types.ts). Bookmark + report-issue reuse the Adaptive Engine routes.
+  examHome: () => get<ExamHome>('/api/exam/home'),
+  examStart: (body: { config: ExamConfig }) => post<ExamStartResult>('/api/exam/start', body),
+  examAttempt: (id: string) => get<ExamAttemptState>(`/api/exam/attempt/${encodeURIComponent(id)}`),
+  examAnswer: (id: string, body: { questionId: string; selected: string | null; timeMs: number }) =>
+    post<{ ok: true; answered: number }>(`/api/exam/attempt/${encodeURIComponent(id)}/answer`, body),
+  examMark: (id: string, body: { questionId: string; marked: boolean }) =>
+    post<{ ok: true; marked: boolean }>(`/api/exam/attempt/${encodeURIComponent(id)}/mark`, body),
+  examSubmit: (id: string, body: { auto?: boolean }) =>
+    post<ExamAnalysis>(`/api/exam/attempt/${encodeURIComponent(id)}/submit`, body),
+  examAbandon: (id: string) =>
+    post<{ ok: true }>(`/api/exam/attempt/${encodeURIComponent(id)}/abandon`, {}),
+  examAnalysis: (id: string) => get<ExamAnalysis>(`/api/exam/analysis/${encodeURIComponent(id)}`),
+  examReview: (id: string) => get<ExamReviewPayload>(`/api/exam/review/${encodeURIComponent(id)}`),
+  examAi: (body: { action: ExamAiAction; attemptId: string }) => post<ExamAiResponse>('/api/exam/ai', body),
+  examHistory: () => get<ExamHistoryPayload>('/api/exam/history'),
 }
 
 // ── Adaptive Engine aux payloads (defined here — types.ts is frozen) ──

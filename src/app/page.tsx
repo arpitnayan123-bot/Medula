@@ -14,6 +14,7 @@ import { LearnView } from '@/components/learn/learn-view'
 import { HubView } from '@/components/hub/hub-view'
 import { QuestionsIndex } from '@/components/questions/questions-index'
 import { AdaptiveView } from '@/components/adaptive/adaptive-view'
+import { ExamView } from '@/components/exam/exam-view'
 import { MistakeIntelligenceView } from '@/components/mistakes/mistake-intelligence-view'
 import { SmartRevisionView } from '@/components/revision/smart-revision-view'
 import { PlannerView } from '@/components/planner/planner-view'
@@ -113,6 +114,7 @@ export default function Home() {
       {view === 'hub' && <HubView />}
       {view === 'questions' && <QuestionsIndex />}
       {view === 'adaptive' && <AdaptiveView />}
+      {view === 'exam' && <ExamView />}
       {view === 'mistakes' && <MistakeIntelligenceView />}
       {view === 'revision' && <SmartRevisionView />}
       {view === 'planner' && <PlannerView />}

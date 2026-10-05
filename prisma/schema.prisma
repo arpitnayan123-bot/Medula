@@ -790,3 +790,45 @@ model VoiceSession {
   @@index([profileId, status])
   @@index([profileId, startedAt])
 }
+
+// ──────────────── EXAM SIMULATOR & MOCK TEST LAB (PRODUCT 12) ────────────────
+// Additive table for realistic NEET-PG-style testing. STANDALONE engine model:
+// profileId is a plain string (no FK) — db:push stays non-destructive, existing
+// tables untouched (same pattern as SimCaseAttempt / LabAttempt / VoiceSession).
+//
+// ExamAttempt — one exam paper. `questionIds` is the frozen ordered paper.
+//               `responses` is the live answer sheet keyed by questionId:
+//               {questionId, history:[option ids in pick order — last = current],
+//                timeMs (accumulated), marked (review flag), at}. Answer changes
+//               are recorded (history), never punished by the engine — they are
+//               measured as careless-mistake signals in the analysis.
+//               `events` is the append-only exam log ({kind, questionId?, at}).
+// Grading is DETERMINISTIC server-side at submit (+4 correct / −1 wrong /
+// 0 unattempted when negative marking is on) — answers never leave the server
+// before submit, and no AI is involved anywhere in selection or scoring.
+model ExamAttempt {
+  id            String    @id @default(cuid())
+  profileId     String
+  mode          String // full | subject | topic | pyq | custom | weak | adaptive | image | rapid
+  label         String    @default("")
+  config        Json // frozen config at start (subjects/topics/difficulty/count/minutes/negativeMark/sources)
+  questionIds   Json      @default("[]") // ordered paper — string[]
+  responses     Json      @default("[]") // live answer sheet (see header comment)
+  events        Json      @default("[]") // append-only exam event log
+  status        String    @default("active") // active | submitted | abandoned
+  total         Int       @default(0)
+  answered      Int       @default(0)
+  correct       Int       @default(0)
+  wrong         Int       @default(0)
+  unattempted   Int       @default(0)
+  score         Int       @default(0)
+  maxScore      Int       @default(0)
+  timeMs        Int       @default(0) // wall time start → submit
+  autoSubmitted Boolean   @default(false)
+  report        Json? // ExamAnalysis snapshot after submit
+  startedAt     DateTime  @default(now())
+  submittedAt   DateTime?
+
+  @@index([profileId, status])
+  @@index([profileId, startedAt])
+}
