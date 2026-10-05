@@ -27,7 +27,7 @@ const NAV: { id: View; label: string; icon: typeof Home; hint?: string }[] = [
   { id: 'graph', label: 'Knowledge Graph', icon: Network },
   { id: 'revise', label: 'Revise', icon: RefreshCcw },
   { id: 'understand', label: 'Understand', icon: Brain },
-  { id: 'cases', label: 'Cases', icon: Stethoscope },
+  { id: 'cases', label: 'Case Simulator', icon: Stethoscope },
   { id: 'research', label: 'Research', icon: FlaskConical },
   { id: 'explore', label: 'Explore', icon: Compass },
   { id: 'tutor', label: 'AI Tutor', icon: Sparkles },
