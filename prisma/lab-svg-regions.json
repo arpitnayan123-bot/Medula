@@ -1,0 +1,458 @@
+{
+  "ecg-stemi": {
+    "stemiStElevation": {
+      "x": 52,
+      "y": 40,
+      "r": 15,
+      "label": "ST-segment elevation merging into the T wave",
+      "primary": true
+    },
+    "hyperacuteT": {
+      "x": 52,
+      "y": 34,
+      "r": 12,
+      "label": "Broad hyperacute T wave fused with elevated ST"
+    },
+    "qrsComplex": {
+      "x": 46,
+      "y": 58,
+      "r": 12,
+      "label": "Narrow QRS complex (conduction still preserved)"
+    }
+  },
+  "ecg-af": {
+    "noPWaves": {
+      "x": 50,
+      "y": 55,
+      "r": 16,
+      "label": "Absent P waves — chaotic fibrillatory baseline",
+      "primary": true
+    },
+    "irregularRR": {
+      "x": 60,
+      "y": 40,
+      "r": 18,
+      "label": "Irregularly irregular R–R intervals"
+    },
+    "narrowQRS": {
+      "x": 22,
+      "y": 42,
+      "r": 10,
+      "label": "Narrow QRS — ventricular conduction normal"
+    }
+  },
+  "ecg-hyperkalemia": {
+    "peakedT": {
+      "x": 56,
+      "y": 28,
+      "r": 14,
+      "label": "Tall, narrow, peaked (\"tented\") T waves",
+      "primary": true
+    },
+    "wideQRS": {
+      "x": 50,
+      "y": 55,
+      "r": 12,
+      "label": "Widened QRS complex"
+    },
+    "flatP": {
+      "x": 42,
+      "y": 57,
+      "r": 10,
+      "label": "Small flattened P wave"
+    }
+  },
+  "cxr-normal": {
+    "costophrenic": {
+      "x": 23,
+      "y": 82,
+      "r": 7,
+      "label": "Sharp costophrenic angles",
+      "primary": true
+    },
+    "heartSize": {
+      "x": 60,
+      "y": 62,
+      "r": 10,
+      "label": "Cardiothoracic ratio within normal limits"
+    },
+    "lungFields": {
+      "x": 33,
+      "y": 45,
+      "r": 12,
+      "label": "Clear lung fields with normal vascular markings"
+    }
+  },
+  "cxr-pneumothorax": {
+    "pleuralLine": {
+      "x": 29,
+      "y": 48,
+      "r": 9,
+      "label": "Visceral pleural line separated from the chest wall",
+      "primary": true
+    },
+    "noMarkings": {
+      "x": 20,
+      "y": 45,
+      "r": 10,
+      "label": "Avascular (black) zone beyond the pleural line"
+    },
+    "collapsedLung": {
+      "x": 42,
+      "y": 50,
+      "r": 9,
+      "label": "Medially collapsed lung edge"
+    },
+    "deepSulcus": {
+      "x": 21,
+      "y": 82,
+      "r": 8,
+      "label": "Deepened lucent costophrenic sulcus"
+    }
+  },
+  "cxr-miliary-tb": {
+    "miliaryNodules": {
+      "x": 33,
+      "y": 45,
+      "r": 14,
+      "label": "Countless uniform millet-seed nodules in both lungs",
+      "primary": true
+    },
+    "randomSpread": {
+      "x": 66,
+      "y": 45,
+      "r": 14,
+      "label": "Random, even distribution (haematogenous spread)"
+    },
+    "normalHeart": {
+      "x": 60,
+      "y": 62,
+      "r": 9,
+      "label": "Heart size normal — nodules dominate the film"
+    }
+  },
+  "ct-mca-infarct": {
+    "hypodensity": {
+      "x": 70,
+      "y": 50,
+      "r": 13,
+      "label": "Wedge-shaped hypodensity in the left MCA territory",
+      "primary": true
+    },
+    "greyWhiteLoss": {
+      "x": 70,
+      "y": 42,
+      "r": 9,
+      "label": "Loss of grey–white differentiation"
+    },
+    "sulcalEfface": {
+      "x": 72,
+      "y": 64,
+      "r": 9,
+      "label": "Effaced sulci over the infarcted cortex"
+    },
+    "ventricles": {
+      "x": 50,
+      "y": 48,
+      "r": 8,
+      "label": "Lateral ventricles (contralateral side normal)"
+    }
+  },
+  "ct-subdural": {
+    "crescent": {
+      "x": 21,
+      "y": 58,
+      "r": 13,
+      "label": "Crescent-shaped hyperdense collection along the convexity",
+      "primary": true
+    },
+    "skullInner": {
+      "x": 13,
+      "y": 55,
+      "r": 8,
+      "label": "Blood tracks along the inner skull table (crosses sutures)"
+    },
+    "midlineShift": {
+      "x": 54,
+      "y": 47,
+      "r": 7,
+      "label": "Midline shift away from the collection"
+    },
+    "ventricle": {
+      "x": 38,
+      "y": 48,
+      "r": 8,
+      "label": "Compressed ipsilateral ventricle"
+    }
+  },
+  "mri-ms": {
+    "periventricular": {
+      "x": 44,
+      "y": 38,
+      "r": 10,
+      "label": "Ovoid periventricular plaques (\"Dawson fingers\")",
+      "primary": true
+    },
+    "whiteMatter": {
+      "x": 63,
+      "y": 47,
+      "r": 10,
+      "label": "Bright white-matter lesions, sparing the cortex"
+    },
+    "csfDark": {
+      "x": 50,
+      "y": 50,
+      "r": 8,
+      "label": "Dark CSF — FLAIR suppresses fluid, lesions stand out"
+    }
+  },
+  "smear-sickle": {
+    "sickleCells": {
+      "x": 44,
+      "y": 66,
+      "r": 12,
+      "label": "Elongated crescent-shaped sickled red cells",
+      "primary": true
+    },
+    "anisocytosis": {
+      "x": 30,
+      "y": 35,
+      "r": 10,
+      "label": "Variation in red-cell size (anisocytosis)"
+    },
+    "targetCell": {
+      "x": 78,
+      "y": 31,
+      "r": 7,
+      "label": "Target cell — common in haemoglobinopathies"
+    }
+  },
+  "smear-aml": {
+    "blasts": {
+      "x": 50,
+      "y": 50,
+      "r": 16,
+      "label": "Large immature myeloblasts, crowded sheet",
+      "primary": true
+    },
+    "auerRod": {
+      "x": 50,
+      "y": 50,
+      "r": 6,
+      "label": "Needle-shaped pink Auer rod — myeloid lineage"
+    },
+    "nucleoli": {
+      "x": 27,
+      "y": 35,
+      "r": 8,
+      "label": "Fine chromatin with visible nucleoli"
+    }
+  },
+  "derm-psoriasis": {
+    "plaque": {
+      "x": 33,
+      "y": 50,
+      "r": 14,
+      "label": "Well-demarcated erythematous plaque with silvery-white scale",
+      "primary": true
+    },
+    "scale": {
+      "x": 33,
+      "y": 44,
+      "r": 8,
+      "label": "Silvery micaceous scale over the plaque"
+    },
+    "auspitz": {
+      "x": 19,
+      "y": 61,
+      "r": 6,
+      "label": "Pinpoint bleeding points (Auspitz sign) where scale is lifted"
+    }
+  },
+  "derm-zoster": {
+    "dermatomal": {
+      "x": 33,
+      "y": 58,
+      "r": 14,
+      "label": "Grouped vesicles confined to ONE dermatomal band",
+      "primary": true
+    },
+    "vesicles": {
+      "x": 30,
+      "y": 54,
+      "r": 8,
+      "label": "Clear fluid vesicles on an erythematous base"
+    },
+    "midlineStop": {
+      "x": 51,
+      "y": 55,
+      "r": 7,
+      "label": "Rash stops abruptly at the midline"
+    }
+  },
+  "fundus-htn": {
+    "avNipping": {
+      "x": 60,
+      "y": 37,
+      "r": 8,
+      "label": "Arteriovenous nipping at crossings",
+      "primary": true
+    },
+    "flames": {
+      "x": 62,
+      "y": 55,
+      "r": 9,
+      "label": "Flame-shaped haemorrhages radiating from the disc"
+    },
+    "cottonWool": {
+      "x": 51,
+      "y": 52,
+      "r": 8,
+      "label": "Cotton-wool spots (nerve-fibre-layer infarcts)"
+    },
+    "disc": {
+      "x": 69,
+      "y": 50,
+      "r": 7,
+      "label": "Optic disc"
+    }
+  },
+  "fundus-dr": {
+    "dotBlots": {
+      "x": 50,
+      "y": 45,
+      "r": 15,
+      "label": "Scattered dot–blot haemorrhages and microaneurysms",
+      "primary": true
+    },
+    "exudates": {
+      "x": 39,
+      "y": 52,
+      "r": 9,
+      "label": "Circinate ring of yellow hard exudates around the macula"
+    },
+    "macula": {
+      "x": 39,
+      "y": 52,
+      "r": 5,
+      "label": "Macula threatened by exudates — vision risk"
+    },
+    "disc": {
+      "x": 69,
+      "y": 50,
+      "r": 7,
+      "label": "Optic disc"
+    }
+  },
+  "ophtha-cataract": {
+    "whitePupil": {
+      "x": 50,
+      "y": 52,
+      "r": 10,
+      "label": "Pupil appears milky white instead of black",
+      "primary": true
+    },
+    "lens": {
+      "x": 50,
+      "y": 52,
+      "r": 7,
+      "label": "Opaque lens behind the clear cornea"
+    },
+    "redReflex": {
+      "x": 50,
+      "y": 52,
+      "r": 7,
+      "label": "Normal red reflex lost"
+    }
+  },
+  "xray-colles": {
+    "fractureLine": {
+      "x": 46,
+      "y": 44,
+      "r": 10,
+      "label": "Transverse fracture of the distal radius",
+      "primary": true
+    },
+    "dorsalTilt": {
+      "x": 50,
+      "y": 34,
+      "r": 9,
+      "label": "Distal fragment tilted dorsally — dinner-fork deformity"
+    },
+    "ulna": {
+      "x": 45,
+      "y": 70,
+      "r": 8,
+      "label": "Ulna now relatively long at the wrist (radial shortening)"
+    }
+  },
+  "barium-achalasia": {
+    "birdBeak": {
+      "x": 50,
+      "y": 85,
+      "r": 10,
+      "label": "Smooth tapering \"bird-beak\" at the lower sphincter",
+      "primary": true
+    },
+    "dilated": {
+      "x": 50,
+      "y": 22,
+      "r": 14,
+      "label": "Hugely dilated, contrast-filled oesophagus"
+    },
+    "aperistalsis": {
+      "x": 50,
+      "y": 50,
+      "r": 10,
+      "label": "Smooth walls — no peristaltic indentations"
+    }
+  },
+  "us-gallstone": {
+    "stone": {
+      "x": 50,
+      "y": 66,
+      "r": 8,
+      "label": "Bright echogenic focus inside the gallbladder",
+      "primary": true
+    },
+    "shadow": {
+      "x": 50,
+      "y": 88,
+      "r": 10,
+      "label": "Clean posterior acoustic shadow behind the stone"
+    },
+    "bile": {
+      "x": 50,
+      "y": 55,
+      "r": 10,
+      "label": "Anechoic (black) bile — fluid"
+    }
+  },
+  "histo-granuloma": {
+    "caseous": {
+      "x": 50,
+      "y": 50,
+      "r": 15,
+      "label": "Central amorphous caseous (cheesy) necrosis",
+      "primary": true
+    },
+    "epithelioid": {
+      "x": 50,
+      "y": 18,
+      "r": 9,
+      "label": "Rim of pale epithelioid histiocytes"
+    },
+    "langhans": {
+      "x": 40,
+      "y": 47,
+      "r": 6,
+      "label": "Langhans giant cell — horseshoe of peripheral nuclei"
+    },
+    "lymphocytes": {
+      "x": 50,
+      "y": 88,
+      "r": 8,
+      "label": "Outer collar of small lymphocytes"
+    }
+  }
+}

@@ -595,6 +595,67 @@ model SimCaseAttempt {
   @@index([caseId])
 }
 
+// ──────────────── MEDICAL IMAGE LEARNING LAB (PRODUCT 10) ────────────────
+// Additive tables for the interactive image-interpretation lab. STANDALONE
+// engine model: profileId is a plain string (no FK) — db:push stays
+// non-destructive, existing tables untouched.
+//
+// LabImage    — one teaching image + its HIDDEN answer key (brief). The brief
+//               (identify answers, finding regions + verdicts, quiz answers,
+//               guided whys, aiBrief) never leaves the server raw — routes
+//               strip it to {id,label} projections. Region convention:
+//               x/y in % of the natural image, r = hit radius in % of height;
+//               the ENGINE grades pins (server-side, no client trust).
+// LabAttempt  — one student run in one of the six modes. `answers` is the
+//               append-only log [ {type:'answer', stepId, chosen?, pin?,
+//               correct, score, timeMs, ts} ] so scores are MEASURED and any
+//               graded attempt can be audited.
+model LabImage {
+  id            String   @id
+  title         String
+  diagnosis     String   @default("") // the answer, shown in library/organisation contexts
+  modality      String // X-ray | CT | MRI | ECG | Histology | Pathology | Dermatology | Ophthalmology | Anatomy | Microbiology | Ultrasound | Clinical
+  system        String   @default("")
+  subjectCode   String
+  conceptIds    Json     @default("[]") // verified concept links for hand-offs
+  src           String // /questions/<file> — platform-owned asset set
+  provenance    String   @default("ai-illustration") // owned-clinical | ai-illustration
+  sourceNote    String   @default("") // provenance/reference line shown in the UI
+  difficulty    Int      @default(2) // 1..3 (mirrors Question.difficulty)
+  examRelevance Int      @default(3) // 1..5 NEET-PG/MBBS yield rating
+  isNormal      Boolean  @default(false) // normal reference image (compare mode anchor)
+  compareGroup  String?  // groups normal-vs-abnormal / similar-conditions sets
+  brief         Json // HIDDEN answer key (LabBrief) — server-side only
+  aiReady       Boolean  @default(true)
+  attempts      LabAttempt[]
+  createdAt     DateTime @default(now())
+
+  @@index([modality])
+  @@index([subjectCode])
+  @@index([compareGroup])
+}
+
+model LabAttempt {
+  id            String    @id @default(cuid())
+  profileId     String
+  imageId       String
+  image         LabImage  @relation(fields: [imageId], references: [id])
+  mode          String    @default("identify") // identify | interpret | diagnose | quiz | guided | rapid
+  status        String    @default("active") // active | completed | abandoned
+  stepIndex     Int       @default(0)
+  answers       Json      @default("[]") // append-only graded answer log
+  correct       Boolean   @default(false)
+  score         Int       @default(0)
+  findingsHit   Int       @default(0)
+  findingsTotal Int       @default(0)
+  timeMs        Int       @default(0)
+  startedAt     DateTime  @default(now())
+  completedAt   DateTime?
+
+  @@index([profileId, status])
+  @@index([imageId])
+}
+
 // ───────────────────── AI STUDY PLANNER (PRODUCT 07) ─────────────────────
 // Additive tables for the personalized study planner. STANDALONE (no FK
 // relations) like the other engine models → db:push stays non-destructive.

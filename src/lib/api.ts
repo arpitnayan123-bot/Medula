@@ -36,6 +36,7 @@ import type {
   GraphHome, GraphSearchResult, GraphHub, GraphPath, GraphExplorePayload,
   GraphAiResponse, GraphFeedbackBody, GraphAiAction,
   SimHome, SimCaseDetail, SimActResponse, SimDebrief, SimAiResponse, SimAiMessage,
+  LabHome, LabImageDetail, LabAttemptStart, LabActResponse, LabRapidStart, LabDebrief, LabAiResponse, LabMode, LabPin,
 } from './types'
 
 export const api = {
@@ -243,6 +244,25 @@ export const api = {
     post<GraphAiResponse>('/api/graph/ai', body),
   graphFeedback: (body: GraphFeedbackBody) =>
     post<{ ok: boolean }>('/api/graph/feedback', body),
+
+  // ── Medical Image Learning Lab (PRODUCT 10) ──
+  labHome: () => get<LabHome>('/api/lab/home'),
+  labImage: (id: string) =>
+    get<LabImageDetail>(`/api/lab/images/${encodeURIComponent(id)}`),
+  labStart: (imageId: string, mode: LabMode) =>
+    post<LabAttemptStart>(`/api/lab/images/${encodeURIComponent(imageId)}/attempt`, { mode }),
+  labAct: (attemptId: string, body: { stepId: string; chosen?: string | string[]; pin?: LabPin | null; aspect?: number; timeMs?: number }) =>
+    post<LabActResponse>(`/api/lab/attempt/${encodeURIComponent(attemptId)}/act`, body),
+  labStage: (attemptId: string, body: { stepIndex: number }) =>
+    post<{ ok: boolean }>(`/api/lab/attempt/${encodeURIComponent(attemptId)}/stage`, body),
+  labComplete: (attemptId: string) =>
+    post<LabDebrief>(`/api/lab/attempt/${encodeURIComponent(attemptId)}/complete`, {}),
+  labAbandon: (attemptId: string) =>
+    post<{ ok: boolean }>(`/api/lab/attempt/${encodeURIComponent(attemptId)}/abandon`, {}),
+  labRapidStart: (body: { modality?: string; subjectCode?: string }) =>
+    post<LabRapidStart>('/api/lab/rapid', body),
+  labAi: (body: { imageId: string; question: string }) =>
+    post<LabAiResponse>('/api/lab/ai', body),
 }
 
 // ── Adaptive Engine aux payloads (defined here — types.ts is frozen) ──

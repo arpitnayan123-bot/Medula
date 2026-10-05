@@ -24,7 +24,7 @@ export type View =
   | 'revision'
   | 'planner'
   | 'graph'
-  | 'cases' | 'revise' | 'tutor' | 'progress' | 'roadmap' | 'profile'
+  | 'cases' | 'lab' | 'revise' | 'tutor' | 'progress' | 'roadmap' | 'profile'
 
 export interface Profile {
   id: string
@@ -705,6 +705,7 @@ export const ERROR_TYPES: { id: string; label: string; hint: string }[] = [
   { id: 'misread', label: 'Misread the question', hint: 'Skipped a keyword or negation' },
   { id: 'calculation', label: 'Calculation error', hint: 'Right idea, wrong arithmetic' },
   { id: 'reasoning', label: 'Clinical reasoning error', hint: 'Wrong step in the chain' },
+  { id: 'visual', label: 'Visual recognition error', hint: 'Missed or misread the image finding' },
   { id: 'changed', label: 'Changed the right answer', hint: 'Second-guessed correctly-known fact' },
   { id: 'time', label: 'Time pressure', hint: 'Rushed and slipped' },
   { id: 'guess', label: 'Guessed', hint: 'No real basis for the choice' },
@@ -1651,6 +1652,222 @@ export interface SimAiMessage {
   content: string
 }
 export interface SimAiResponse {
+  ok: boolean
+  reply: string
+  fallback: boolean
+  disclaimer: string
+  aiBadge: string
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// PRODUCT 10 · MEDICAL IMAGE LEARNING LAB — FROZEN CONTRACT
+// «See → Identify → Interpret → Reason → Learn → Practice»
+// The `brief` (identify answers, finding regions/verdicts, quiz answers,
+// guided whys, aiBrief) is the HIDDEN answer key — it NEVER leaves the
+// server raw. Routes strip it to {id,label} projections exactly like the
+// Case Simulator strips the sim brief. Pin grading happens server-side.
+// ═══════════════════════════════════════════════════════════════════════
+
+export type LabModality =
+  | 'X-ray' | 'CT' | 'MRI' | 'ECG' | 'Histology' | 'Pathology'
+  | 'Dermatology' | 'Ophthalmology' | 'Anatomy' | 'Microbiology'
+  | 'Ultrasound' | 'Clinical'
+
+export const LAB_MODALITIES: readonly LabModality[] = [
+  'X-ray', 'CT', 'MRI', 'ECG', 'Histology', 'Pathology',
+  'Dermatology', 'Ophthalmology', 'Anatomy', 'Microbiology',
+  'Ultrasound', 'Clinical',
+]
+
+/** The six image learning modes. */
+export type LabMode = 'identify' | 'interpret' | 'diagnose' | 'quiz' | 'guided' | 'rapid'
+
+export const LAB_MODE_META: Record<LabMode, { label: string; blurb: string; graded: boolean }> = {
+  identify: { label: 'Identify', blurb: '«What is this?» — recognise the image', graded: true },
+  interpret: { label: 'Interpret', blurb: 'Locate the findings and name them', graded: true },
+  diagnose: { label: 'Diagnose', blurb: 'Image + clinical context → diagnosis', graded: true },
+  quiz: { label: 'Image Quiz', blurb: 'Targeted questions around the image', graded: true },
+  guided: { label: 'Guided Explanation', blurb: 'Step-by-step reveal of the findings', graded: false },
+  rapid: { label: 'Rapid Fire', blurb: 'Fast image recognition drill', graded: true },
+}
+
+/** HIDDEN — server-only answer key shape (never serialised to the client). */
+export interface LabBrief {
+  identify: {
+    prompt: string
+    options: { id: string; label: string; verdict: 'correct' | 'acceptable' | 'wrong'; why: string }[]
+  }
+  findings: LabFindingBrief[]
+  diagnosis: {
+    context: string // short clinical vignette shown with the image
+    prompt: string
+    options: { id: string; label: string; verdict: 'correct' | 'acceptable' | 'wrong'; why: string }[]
+  }
+  quiz: { id: string; q: string; options: { id: string; label: string; verdict: 'correct' | 'acceptable' | 'wrong'; why: string }[]; teaching: string }[]
+  guided: string[] // ordered reveal steps — each names and explains one finding
+  teaching: string[]
+  aiBrief?: string // grounding paragraph for the AI tutor route
+}
+
+export interface LabFindingBrief {
+  id: string
+  label: string
+  description: string // what it is / what it looks like
+  why: string // why it matters clinically
+  primary?: boolean // headline finding — drives the locate step
+  present?: boolean // default true; false = curated NEGATIVE finding (interpret distractor with teaching why)
+  commonMiss?: string // why students commonly miss it
+  region?: { x: number; y: number; r: number } // % of natural width/height; r = hit radius in % of height
+}
+
+/** Region hit-test convention: student pins arrive as {x,y} in % of the
+ *  natural image size + `aspect` (w/h). Hit: dist(√(((dx/100)·aspect)² + (dy/100)²)) ≤ r/100. */
+
+export interface LabPin {
+  x: number
+  y: number
+}
+export interface LabOptionPublic {
+  id: string
+  label: string
+}
+export interface LabGuidedStep {
+  id: string
+  label: string
+  description: string
+  why: string
+  region: { x: number; y: number; r: number } | null
+}
+
+export type LabProvenance = 'owned-clinical' | 'platform-diagram' | 'ai-illustration'
+export const LAB_PROVENANCE_META: Record<LabProvenance, { badge: string; note: string }> = {
+  'owned-clinical': { badge: 'PLATFORM-OWNED CLINICAL IMAGE', note: 'Owned by this platform for educational use' },
+  'platform-diagram': { badge: 'PLATFORM EDUCATIONAL DIAGRAM', note: 'Schematic diagram drawn for teaching — not a real patient image' },
+  'ai-illustration': { badge: 'AI-GENERATED EDUCATIONAL ILLUSTRATION', note: 'AI-created illustration — not a real patient image' },
+}
+
+/** Library card + list row. */
+export interface LabImageSummary {
+  id: string
+  title: string
+  diagnosis: string
+  modality: LabModality
+  system: string
+  subjectCode: string
+  difficulty: number // 1..3
+  examRelevance: number // 1..5
+  src: string
+  provenance: LabProvenance
+  isNormal: boolean
+  compareGroup: string | null
+  attemptCount: number
+  bestScore: number | null
+  lastScore: number | null
+  lastMode: string | null
+  lastAt: string | null
+}
+
+/** GET /api/lab/images/[id] — client-safe detail. Answers stripped. */
+export interface LabImageDetail {
+  summary: LabImageSummary
+  identifyPrompt: string
+  identifyOptions: LabOptionPublic[]
+  interpretPrompt: string
+  interpretOptions: LabOptionPublic[] // finding labels — regions/verdicts stay server-side
+  locateCount: number // primary findings the student will pin
+  diagnoseContext: string
+  diagnosePrompt: string
+  diagnoseOptions: LabOptionPublic[]
+  quiz: { id: string; q: string; options: LabOptionPublic[] }[]
+  guided: LabGuidedStep[] // teaching content — powers Guided Explanation + reveal
+  concepts: { id: string; name: string }[]
+  similar: LabImageSummary[] // compare pool (same compareGroup or curated similarIds)
+  resume: { attemptId: string; mode: LabMode; startedAt: string } | null
+}
+
+/** GET /api/lab/home — every number measured from LabAttempt rows. */
+export interface LabHome {
+  stats: {
+    imagesAvailable: number
+    imagesStudied: number
+    attempts: number
+    accuracy: number | null // graded attempts correct %
+    interpretationCoverage: number | null // located pins hit %
+    avgTimeMs: number | null
+    rapidBest: number | null
+  }
+  modalities: { name: string; count: number; attempts: number; accuracy: number | null }[]
+  images: LabImageSummary[]
+  weakModalities: { label: string; accuracy: number; attempts: number }[] // measured <70% ≥1 graded attempt
+  missedPatterns: { label: string; count: number; lastImageTitle: string }[] // same finding missed ≥2 runs
+  recommended: { imageId: string; title: string; reason: string } | null
+  rapidPoolSize: number
+  recent: { imageId: string; title: string; mode: string; score: number; correct: boolean; at: string }[]
+  resume: { attemptId: string; imageId: string; imageTitle: string; mode: string } | null
+}
+
+/** POST /api/lab/images/[id]/attempt */
+export interface LabAttemptStart {
+  ok: true
+  attemptId: string
+  mode: LabMode
+}
+
+/** POST …/act — deterministic feedback for ONE step (server-graded). */
+export interface LabPinResult {
+  findingId: string
+  label: string
+  region: { x: number; y: number; r: number } | null
+  verdict: 'hit' | 'miss'
+}
+export interface LabFeedback {
+  correct: boolean
+  score: number // 0..100 for this step
+  headline: string
+  perOption?: { id: string; label: string; verdict: 'correct' | 'acceptable' | 'wrong'; why: string }[]
+  missed?: { id: string; label: string; why: string }[]
+  pins?: { student: LabPin | null; results: LabPinResult[]; hits: number; total: number }
+  teaching?: string // quiz step teaching line
+}
+export interface LabActResponse {
+  ok: true
+  feedback: LabFeedback
+  nextIndex: number
+  done: boolean
+}
+
+/** POST /api/lab/rapid — build a rapid-fire session (10 images from the pool). */
+export interface LabRapidStart {
+  ok: true
+  attemptId: string
+  timeLimitMs: number // per-item soft limit (server clamps reported time)
+  items: { imageId: string; src: string; modality: LabModality; prompt: string; options: LabOptionPublic[] }[]
+}
+
+/** POST …/complete — debrief. */
+export interface LabDebrief {
+  attemptId: string
+  imageId: string
+  imageTitle: string
+  diagnosis: string
+  mode: LabMode
+  scores: {
+    total: number
+    timeMs: number
+    findingsHit: number
+    findingsTotal: number
+  }
+  steps: { prompt: string; chosenLabels: string[]; correct: boolean; score: number; headline: string; perOption: LabFeedback['perOption'] }[]
+  teaching: string[]
+  concepts: { id: string; name: string; mastery: number | null; status: string | null }[]
+  related: { kind: string; label: string; blurb: string; items: { id: string; name: string; edgeLabel: string }[] }[] | null
+  mistakeFed: { errorPattern: boolean; revisionItem: boolean; reason: string } | null
+  handoffs: { conceptId: string | null; topicId: string | null; subjectCode: string | null }
+  nextImages: LabImageSummary[] // «practice similar images» — same modality pool
+}
+
+/** POST /api/lab/ai — grounded image tutor. */
+export interface LabAiResponse {
   ok: boolean
   reply: string
   fallback: boolean

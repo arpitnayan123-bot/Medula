@@ -19,6 +19,7 @@ import { SmartRevisionView } from '@/components/revision/smart-revision-view'
 import { PlannerView } from '@/components/planner/planner-view'
 import { GraphView } from '@/components/graph/graph-view'
 import { SimView } from '@/components/sim/sim-view'
+import { LabView } from '@/components/lab/lab-view'
 import { ReviseView } from '@/components/revise/revise-view'
 import { TutorView } from '@/components/tutor/tutor-view'
 import { ProgressView } from '@/components/progress/progress-view'
@@ -116,6 +117,7 @@ export default function Home() {
       {view === 'planner' && <PlannerView />}
       {view === 'graph' && <GraphView />}
       {view === 'cases' && <SimView />}
+      {view === 'lab' && <LabView />}
       {view === 'revise' && <ReviseView />}
       {view === 'tutor' && <TutorView />}
       {view === 'progress' && <ProgressView />}

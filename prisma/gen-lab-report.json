@@ -1,0 +1,122 @@
+[
+  {
+    "file": "ecg-stemi.jpg",
+    "ok": true,
+    "skipped": true
+  },
+  {
+    "file": "ecg-af.jpg",
+    "ok": true,
+    "skipped": true
+  },
+  {
+    "file": "ecg-hyperkalemia.jpg",
+    "ok": true,
+    "skipped": true
+  },
+  {
+    "file": "cxr-normal.jpg",
+    "ok": true,
+    "skipped": true
+  },
+  {
+    "file": "cxr-pneumothorax.jpg",
+    "ok": true,
+    "skipped": true
+  },
+  {
+    "file": "cxr-miliary-tb.jpg",
+    "ok": true,
+    "skipped": true
+  },
+  {
+    "file": "ct-mca-infarct.jpg",
+    "ok": true,
+    "skipped": true
+  },
+  {
+    "file": "ct-subdural.jpg",
+    "ok": true,
+    "skipped": true
+  },
+  {
+    "file": "mri-ms.jpg",
+    "ok": true,
+    "skipped": true
+  },
+  {
+    "file": "histo-cirrhosis.jpg",
+    "ok": true,
+    "skipped": true
+  },
+  {
+    "file": "histo-granuloma.jpg",
+    "ok": true,
+    "skipped": true
+  },
+  {
+    "file": "smear-sickle.jpg",
+    "ok": true,
+    "skipped": true
+  },
+  {
+    "file": "smear-aml.jpg",
+    "ok": true,
+    "skipped": true
+  },
+  {
+    "file": "derm-psoriasis.jpg",
+    "ok": true,
+    "skipped": true
+  },
+  {
+    "file": "derm-zoster.jpg",
+    "ok": true,
+    "skipped": true
+  },
+  {
+    "file": "fundus-htn.jpg",
+    "ok": true,
+    "skipped": true
+  },
+  {
+    "file": "fundus-dr.jpg",
+    "ok": true,
+    "skipped": true
+  },
+  {
+    "file": "gram-staph.jpg",
+    "ok": true,
+    "skipped": true
+  },
+  {
+    "file": "gram-ecoli.jpg",
+    "ok": true,
+    "skipped": true
+  },
+  {
+    "file": "xray-colles.jpg",
+    "ok": true,
+    "skipped": true
+  },
+  {
+    "file": "barium-achalasia.jpg",
+    "ok": true,
+    "skipped": true
+  },
+  {
+    "file": "ophtha-cataract.jpg",
+    "ok": true,
+    "skipped": true
+  },
+  {
+    "file": "us-gallstone.jpg",
+    "ok": true,
+    "kb": 151
+  },
+  {
+    "file": "anatomy-coronary.jpg",
+    "ok": true,
+    "kb": 70
+  }
+]

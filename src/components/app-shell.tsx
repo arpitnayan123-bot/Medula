@@ -8,7 +8,7 @@ import { Logo } from '@/components/brand/logo'
 import { cn } from '@/lib/utils'
 import {
   Home, Brain, BookMarked, BookOpen, CalendarCheck, CalendarClock, CircleHelp, Network, Stethoscope, RefreshCcw,
-  Sparkles, UserRound, Search, Menu, X,
+  Sparkles, UserRound, Search, Menu, X, ScanEye,
   Keyboard, WifiOff, LayoutGrid, Compass, FlaskConical, Target, Bandage,
 } from 'lucide-react'
 import type { View } from '@/lib/types'
@@ -28,6 +28,7 @@ const NAV: { id: View; label: string; icon: typeof Home; hint?: string }[] = [
   { id: 'revise', label: 'Revise', icon: RefreshCcw },
   { id: 'understand', label: 'Understand', icon: Brain },
   { id: 'cases', label: 'Case Simulator', icon: Stethoscope },
+  { id: 'lab', label: 'Image Lab', icon: ScanEye },
   { id: 'research', label: 'Research', icon: FlaskConical },
   { id: 'explore', label: 'Explore', icon: Compass },
   { id: 'tutor', label: 'AI Tutor', icon: Sparkles },
@@ -39,7 +40,7 @@ const NAV: { id: View; label: string; icon: typeof Home; hint?: string }[] = [
 // sidebar footer card (desktop) and the More sheet (mobile), not the groups.
 const NAV_GROUPS: { title: string; items: View[] }[] = [
   { title: 'Daily study', items: ['home', 'map', 'hub', 'learn', 'questions', 'adaptive', 'mistakes', 'revision', 'planner', 'graph', 'revise'] },
-  { title: 'Clinical & deep dives', items: ['understand', 'cases'] },
+  { title: 'Clinical & deep dives', items: ['understand', 'cases', 'lab'] },
   { title: 'Discover', items: ['research', 'explore', 'tutor'] },
 ]
 
