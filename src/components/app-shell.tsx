@@ -7,7 +7,7 @@ import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
 import { Logo } from '@/components/brand/logo'
 import { cn } from '@/lib/utils'
 import {
-  Home, Brain, BookMarked, BookOpen, CalendarCheck, CalendarClock, CircleHelp, ClipboardList, LibraryBig, Network, Stethoscope, RefreshCcw,
+  Home, Brain, BookMarked, BookOpen, CalendarCheck, CalendarClock, CircleHelp, ClipboardList, GraduationCap, LibraryBig, Network, Stethoscope, RefreshCcw,
   Sparkles, UserRound, Search, Menu, X, ScanEye, ScanSearch, Mic, Gauge, Users,
   Keyboard, WifiOff, LayoutGrid, Compass, FlaskConical, Target, Bandage, Trophy,
 } from 'lucide-react'
@@ -39,6 +39,7 @@ const NAV: { id: View; label: string; icon: typeof Home; hint?: string }[] = [
   { id: 'community', label: 'Community', icon: Users },
   { id: 'gamify', label: 'Motivation', icon: Trophy },
   { id: 'brain', label: 'Medical Brain', icon: Brain },
+  { id: 'faculty', label: 'Faculty Studio', icon: GraduationCap },
   { id: 'tutor', label: 'AI Tutor', icon: Sparkles },
   { id: 'profile', label: 'Profile', icon: UserRound },
 ]
@@ -48,7 +49,7 @@ const NAV: { id: View; label: string; icon: typeof Home; hint?: string }[] = [
 // sidebar footer card (desktop) and the More sheet (mobile), not the groups.
 const NAV_GROUPS: { title: string; items: View[] }[] = [
   { title: 'Daily study', items: ['home', 'map', 'hub', 'learn', 'questions', 'adaptive', 'exam', 'mistakes', 'revision', 'planner', 'graph', 'performance', 'revise'] },
-  { title: 'Intelligence', items: ['brain'] },
+  { title: 'Intelligence', items: ['brain', 'faculty'] },
   { title: 'Clinical & deep dives', items: ['understand', 'cases', 'lab', 'voice'] },
   { title: 'Community', items: ['community'] },
   { title: 'Growth', items: ['gamify'] },

@@ -40,6 +40,7 @@ import { AskView } from '@/components/ask/ask-view'
 import { CommunityView } from '@/components/community/community-view'
 import { GamifyView } from '@/components/gamify/gamify-view'
 import { BrainView } from '@/components/brain/brain-view'
+import { FacultyView } from '@/components/faculty/faculty-view'
 import { Loader2 } from 'lucide-react'
 
 export default function Home() {
@@ -120,6 +121,7 @@ export default function Home() {
       {view === 'community' && <CommunityView />}
       {view === 'gamify' && <GamifyView />}
       {view === 'brain' && <BrainView />}
+      {view === 'faculty' && <FacultyView />}
       {view === 'understand' && <UnderstandView />}
       {view === 'learn' && <LearnView />}
       {view === 'hub' && <HubView />}

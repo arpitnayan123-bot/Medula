@@ -1223,3 +1223,104 @@ model BrainSnapshot {
   @@unique([profileId, dayKey])
   @@index([profileId, createdAt])
 }
+
+// ═════════════ AI FACULTY & CONTENT INTELLIGENCE (PRODUCT 19) ═════════════
+// Additive, STANDALONE models (no FK, plain string ids) — db:push stays
+// non-destructive (P11–P18 pattern).
+//
+// Governing rules: AI assistance is grounded in EXISTING platform content and
+// can ONLY produce drafts; "published" requires an explicit human reviewer
+// step (reviewerNote + reviewer recorded). Quality findings are flagged for
+// human review, never auto-resolved. Publishing creates a FacultyContentVersion
+// (version, summary, reviewer, references, verification status) so content can
+// evolve without rewriting learning history (KnowledgeState/attempt rows are
+// keyed by conceptId/questionId and are never touched).
+//
+// Demo model: a single faculty workspace on the demo profile. The learner-
+// facing recommendations read the same measured signals as P18 (this
+// account's activity, labelled) — no peer data is implied.
+
+// AI-assisted or manual content draft. NEVER authoritative by itself — the
+// UI marks aiAssisted drafts and status stays draft|in-review until a reviewer
+// acts. `body` holds the structured proposal (FacultyDraftBody contract).
+model FacultyDraft {
+  id               String   @id @default(cuid())
+  profileId        String
+  kind             String // summary|simplify|key-points|flashcards|mcq|case|revision-notes|concept-links|manual
+  entityType       String // concept|question|topic
+  entityId         String
+  entityLabel      String   @default("")
+  title            String
+  body             Json
+  status           String   @default("draft") // draft|in-review|published|rejected
+  aiAssisted       Boolean  @default(false)
+  grounded         Boolean  @default(false) // assist grounded on existing platform content
+  changeNote       String   @default("")
+  reviewerNote     String   @default("")
+  reviewedBy       String   @default("")
+  publishedVersion Int      @default(0) // FacultyContentVersion.version when published
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  @@index([profileId, status])
+  @@index([entityType, entityId])
+}
+
+// Quality/gap finding flagged FOR HUMAN REVIEW (never auto-resolved). The
+// engines upsert the OPEN row per (entityType, entityId, kind) so re-runs
+// refresh evidence instead of spamming duplicates; resolved/dismissed rows
+// keep the audit trail.
+model FacultyReviewItem {
+  id           String   @id @default(cuid())
+  entityType   String
+  entityId     String
+  kind         String // gap or quality kind (FacultyGapKind | FacultyQualityKind)
+  severity     String   @default("warning")
+  status       String   @default("open") // open|in-review|resolved|dismissed
+  evidence     Json
+  suggestion   String   @default("")
+  reviewerNote String   @default("")
+  resolvedBy   String   @default("")
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([status, kind])
+  @@index([entityType, entityId])
+}
+
+// Content version ledger. One row per published/applied content revision:
+// version number (unique per target), reviewer, change summary, references,
+// verification status and last-reviewed date. `body` snapshots the applied
+// draft payload. Existing learning history is never rewritten — versions are
+// additive and rollback-able by inspection.
+model FacultyContentVersion {
+  id                 String    @id @default(cuid())
+  entityType         String
+  entityId           String
+  entityLabel        String    @default("")
+  version            Int
+  verificationStatus String    @default("unverified") // unverified|in-review|verified|flagged
+  reviewer           String    @default("")
+  summary            String    @default("")
+  references         Json
+  body               Json?
+  lastReviewedAt     DateTime?
+  createdAt          DateTime  @default(now())
+
+  @@unique([entityType, entityId, version])
+  @@index([entityType, entityId])
+}
+
+// Faculty workspace audit trail: who did what, when (demo actor labelled).
+// Written on draft lifecycle events, review resolutions and version creation.
+model FacultyAuditLog {
+  id         String   @id @default(cuid())
+  actor      String   @default("Faculty (demo)")
+  action     String // draft-created|draft-submitted|draft-published|draft-rejected|item-flagged|item-resolved|item-dismissed|version-created|lesson-applied
+  entityType String   @default("")
+  entityId   String   @default("")
+  detail     Json
+  createdAt  DateTime @default(now())
+
+  @@index([createdAt])
+}

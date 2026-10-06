@@ -15,6 +15,7 @@
     "db:migrate": "prisma migrate dev",
     "db:reset": "prisma migrate reset",
     "db:seed-sim": "bun prisma/seed-sim.ts",
+    "db:seed-faculty": "bun prisma/seed-faculty.ts",
     "db:seed-lab": "bun prisma/seed-lab.ts"
   },
   "dependencies": {

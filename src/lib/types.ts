@@ -32,6 +32,7 @@ export type View =
   | 'community' // PRODUCT 16 — Medical Learning Community & Accountability
   | 'gamify' // PRODUCT 17 — Gamified Medical Learning & Motivation Engine
   | 'brain' // PRODUCT 18 — Personal Medical Brain
+  | 'faculty' // PRODUCT 19 — AI Faculty & Content Intelligence
 
 export interface Profile {
   id: string
@@ -3549,4 +3550,313 @@ export interface BrainResetResult {
   scope: string
   cleared: { table: string; count: number }[]
   note: string
+}
+
+// ═════════════ AI FACULTY & CONTENT INTELLIGENCE (PRODUCT 19) ═════════════
+// A separate first-class faculty workspace + content intelligence layer:
+// «Collect → Organize → Understand → Validate → Personalize»
+//
+// Binding rules for every P19 route/component:
+// - MEASURED ONLY: every gap, finding, coverage number and recommendation is
+//   computed live from the real content tables (Subject/Topic/Concept/lesson,
+//   Question/Flashcard/ClinicalCase/SimCase/LabImage/LearningModule, P14
+//   resource catalog) and real learning activity (KnowledgeState,
+//   QuestionAttempt, LearnProgress, MistakeRecord). Nothing is invented.
+// - AI NEVER SELF-PUBLISHES: assistance (summarize, simplify, key points,
+//   flashcards, MCQs, cases, revision notes, concept links) is grounded in
+//   EXISTING platform content, produces a FacultyDraft with aiAssisted=true,
+//   and can only reach "published" through an explicit human reviewer step
+//   (reviewerNote required). Unverified AI output is NEVER authoritative.
+// - FLAG, DON'T DECLARE: quality-control findings (answer-key skew, ambiguity,
+//   duplicates, missing citations, outdated content, fail-after-read) are
+//   flagged FOR HUMAN REVIEW — the engine never auto-resolves them as correct.
+// - ATTRIBUTION & LICENSING: external resources keep their license/attribution
+//   lines from the P14 catalog; missing attribution is itself a QC finding.
+// - VERSIONING: published drafts become FacultyContentVersion rows (version,
+//   summary, reviewer, references, verification status, lastReviewedAt).
+//   Applying a lesson body is an explicit reviewer action and is additive —
+//   KnowledgeState/attempt history keyed by conceptId is never rewritten.
+// - PRIVACY: the fail-after-read signal is measured on THIS account's activity
+//   (labelled as such). No private performance data leaves the platform.
+// - No chain-of-thought anywhere: AI outputs are final text, AI-ASSISTED
+//   badged, grounded, with deterministic fallbacks.
+//
+// Priority rule (published): gaps are ranked by exam weight × learner demand
+// (attempts + mistakes + learn-status) so faculty effort lands where students
+// struggle most — not where the library is merely thin.
+
+export type FacultyEntityType = 'concept' | 'question' | 'flashcard' | 'case' | 'resource' | 'topic' | 'module'
+
+export type FacultyGapKind =
+  | 'missing-lesson'
+  | 'missing-practice'
+  | 'missing-revision'
+  | 'missing-case-correlation'
+  | 'missing-prerequisite-lesson'
+  | 'unlinked-question'
+  | 'unlinked-flashcard'
+  | 'outdated-content'
+
+export type FacultyQualityKind =
+  | 'answer-key-skew'
+  | 'duplicate-question'
+  | 'ambiguous-mcq'
+  | 'poor-explanation'
+  | 'missing-option-notes'
+  | 'missing-citation'
+  | 'outdated-resource'
+  | 'fail-after-read'
+  | 'open-report'
+
+export type FacultySeverity = 'info' | 'warning' | 'critical'
+
+export type FacultyVerificationStatus = 'unverified' | 'in-review' | 'verified' | 'flagged'
+
+export type FacultyDraftStatus = 'draft' | 'in-review' | 'published' | 'rejected'
+
+export type FacultyDraftKind =
+  | 'summary'
+  | 'simplify'
+  | 'key-points'
+  | 'flashcards'
+  | 'mcq'
+  | 'case'
+  | 'revision-notes'
+  | 'concept-links'
+  | 'manual'
+
+export type FacultyAssistAction = Exclude<FacultyDraftKind, 'manual'>
+
+export interface FacultyHandoff {
+  view: string // target view id (e.g. 'learn', 'questions', 'brain')
+  label: string // button copy
+  focus?: string // optional focus payload (conceptId, tab…)
+}
+
+export interface FacultyGapItem {
+  id: string // deterministic: `${kind}:${entityType}:${entityId}`
+  kind: FacultyGapKind
+  severity: FacultySeverity
+  entityType: FacultyEntityType
+  entityId: string
+  label: string // human-readable target ("Abruptio Placentae — ObGy")
+  subjectName?: string
+  topicName?: string
+  examWeight?: number | null
+  demandLine?: string // "34 attempts · 41% correct · 8 mistakes" (measured)
+  evidence: string[] // measured lines, each traceable
+  suggestion: string
+  priority: number // 0..100 published score: examWeight × demand × severity
+  handoff?: FacultyHandoff
+}
+
+export interface FacultyGapsPayload {
+  generatedAt: string
+  counts: { all: number } & Partial<Record<FacultyGapKind, number>>
+  items: FacultyGapItem[] // priority-ranked, capped (client can filter)
+  prioritizedBy: string // published priority rule
+  dataBasis: string
+  note: string
+}
+
+export interface FacultyQualityItem {
+  id: string // deterministic: `${kind}:${entityType}:${entityId}`
+  kind: FacultyQualityKind
+  severity: FacultySeverity
+  entityType: FacultyEntityType
+  entityId: string
+  label: string
+  evidence: string[]
+  suggestion: string
+  flagged: boolean // open FacultyReviewItem exists
+  reviewItemId?: string
+}
+
+export interface FacultyQualityPayload {
+  generatedAt: string
+  answerKeyDist: { option: string; count: number; sharePct: number }[]
+  answerKeySkew: { skewPct: number; line: string } | null
+  counts: { all: number; open: number } & Partial<Record<FacultyQualityKind, number>>
+  items: FacultyQualityItem[]
+  openReports: { questions: number; resources: number }
+  flaggedForHumanReview: number
+  disclaimer: string
+  note: string
+}
+
+export interface FacultyInventorySubject {
+  id: string
+  name: string
+  topics: number
+  concepts: number
+  lessons: number
+  questions: number
+  flashcards: number
+  cases: number
+  lessonCoveragePct: number | null
+}
+
+export interface FacultyInventoryPayload {
+  generatedAt: string
+  totals: {
+    subjects: number
+    topics: number
+    concepts: number
+    lessons: number
+    questions: number
+    pyqPatternQuestions: number
+    flashcards: number
+    cases: number
+    simCases: number
+    labImages: number
+    learningModules: number
+    edges: number
+    verifiedEdges: number
+  }
+  subjects: FacultyInventorySubject[]
+  organization: {
+    unlinkedQuestions: { count: number; sample: { id: string; stem: string; subjectCode: string }[] }
+    questionsWithoutConcept: number
+    unlinkedFlashcards: { count: number; sample: { id: string; front: string; subjectCode: string }[] }
+  }
+  note: string
+}
+
+export interface FacultyDraftBody {
+  text?: string // summaries, simplified explanations, revision notes
+  bullets?: string[] // key points, structured outlines
+  cards?: { front: string; back: string }[]
+  mcqs?: { stem: string; options: { id: string; text: string }[]; answer: string; explanation: string; teaching: string }[]
+  case?: { title: string; specialty: string; patient: string; steps: string[]; learning: string[] }
+  links?: { fromId: string; toId: string; type: string; label: string; why: string }[]
+  references?: string[]
+}
+
+export interface FacultyDraftView {
+  id: string
+  kind: FacultyDraftKind
+  entityType: FacultyEntityType
+  entityId: string
+  entityLabel: string
+  title: string
+  status: FacultyDraftStatus
+  aiAssisted: boolean
+  grounded: boolean
+  changeNote: string
+  reviewerNote: string
+  reviewedBy: string
+  publishedVersion: number | null
+  createdAt: string
+  updatedAt: string
+  body: FacultyDraftBody
+}
+
+export interface FacultyDraftsPayload {
+  generatedAt: string
+  counts: { all: number } & Partial<Record<FacultyDraftStatus, number>>
+  drafts: FacultyDraftView[]
+  note: string
+}
+
+export interface FacultyAssistResult {
+  draft: FacultyDraftView
+  sources: { kind: string; label: string }[] // what the assist grounded on
+  aiAssisted: boolean
+  disclaimer: string
+  note: string
+}
+
+export interface FacultyReviewItemView {
+  id: string
+  kind: string
+  severity: FacultySeverity
+  entityType: FacultyEntityType
+  entityId: string
+  label: string
+  evidence: string[]
+  suggestion: string
+  status: 'open' | 'in-review' | 'resolved' | 'dismissed'
+  createdAt: string
+  updatedAt: string
+}
+
+export interface FacultyReviewQueuePayload {
+  generatedAt: string
+  open: FacultyReviewItemView[]
+  draftsInReview: FacultyDraftView[]
+  note: string
+}
+
+export interface FacultyRecommendResource {
+  kind: 'lesson' | 'questions' | 'flashcards' | 'case' | 'lab' | 'module' | 'understand'
+  label: string
+  count?: number
+  why: string
+  handoff?: FacultyHandoff
+}
+
+export interface FacultyRecommendItem {
+  conceptId: string
+  conceptName: string
+  topicName: string
+  subjectName: string
+  examWeight: number
+  weaknessLine: string // measured (attempts, accuracy, mistakes, recall)
+  recommended: FacultyRecommendResource[]
+  note: string
+}
+
+export interface FacultyRecommendPayload {
+  generatedAt: string
+  items: FacultyRecommendItem[]
+  dataBasis: string
+  note: string
+}
+
+export interface FacultyVersionView {
+  id: string
+  entityType: FacultyEntityType
+  entityId: string
+  entityLabel: string
+  version: number
+  verificationStatus: FacultyVerificationStatus
+  reviewer: string
+  summary: string
+  references: string[]
+  lastReviewedAt: string | null
+  createdAt: string
+}
+
+export interface FacultyVersionsPayload {
+  generatedAt: string
+  versions: FacultyVersionView[]
+  note: string
+}
+
+export interface FacultyHomePayload {
+  generatedAt: string
+  pipeline: { stage: 'collected' | 'organized' | 'understood' | 'validated' | 'personalized'; headline: string; detail: string }[]
+  inventory: {
+    subjects: number
+    topics: number
+    concepts: number
+    lessons: number
+    questions: number
+    pyqPatternQuestions: number
+    flashcards: number
+    cases: number
+    simCases: number
+    labImages: number
+    learningModules: number
+    edges: number
+  }
+  gaps: { all: number; critical: number; top: FacultyGapItem[] }
+  quality: { all: number; open: number; critical: number; top: FacultyQualityItem[] }
+  drafts: { counts: Partial<Record<FacultyDraftStatus, number>>; recent: FacultyDraftView[] }
+  versions: { verified: number; recent: FacultyVersionView[] }
+  recommendations: FacultyRecommendItem[]
+  howItWorks: string[]
+  dataBasis: string
+  workspaceNote: string
+  honestNote: string
 }

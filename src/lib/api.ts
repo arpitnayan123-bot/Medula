@@ -53,6 +53,10 @@ import type {
   BrainHomePayload, BrainKnowledgePayload, BrainMemoryPayload, BrainPathPayload, BrainStrategyPayload,
   BrainTutorPack, BrainPracticePayload, BrainContentPayload, BrainTimelinePayload, BrainExportPayload,
   BrainPrivacyPayload, BrainPrivacySettingsView, BrainResetResult,
+  FacultyHomePayload, FacultyInventoryPayload, FacultyGapsPayload, FacultyQualityPayload,
+  FacultyAssistResult, FacultyDraftsPayload, FacultyDraftView, FacultyDraftKind, FacultyDraftBody,
+  FacultyEntityType, FacultyAssistAction, FacultySeverity, FacultyReviewQueuePayload,
+  FacultyReviewItemView, FacultyRecommendPayload, FacultyVersionsPayload, FacultyVersionView,
 } from './types'
 
 export const api = {
@@ -543,6 +547,47 @@ export const api = {
   brainPrivacySet: (patch: Partial<BrainPrivacySettingsView>) =>
     post<BrainPrivacyPayload>('/api/brain/privacy', patch),
   brainReset: (scope: string) => post<BrainResetResult>('/api/brain/reset', { scope }),
+
+  // ── AI Faculty & Content Intelligence (PRODUCT 19) ──
+  // Shapes are the frozen Faculty* contract in types.ts. Honesty rules the
+  // client relies on: every gap/finding/coverage number is measured from the
+  // real content tables and learning activity (nothing invented), AI assist
+  // only ever produces DRAFTS (aiAssisted=true — never authoritative),
+  // publishing is an explicit human reviewer step that mints a verified
+  // FacultyContentVersion, and QC findings are flagged FOR human review — the
+  // engine never declares content correct on its own.
+  facultyHome: () => get<FacultyHomePayload>('/api/faculty/home'),
+  facultyInventory: () => get<FacultyInventoryPayload>('/api/faculty/inventory'),
+  facultyGaps: () => get<FacultyGapsPayload>('/api/faculty/gaps'),
+  facultyQuality: () => get<FacultyQualityPayload>('/api/faculty/quality'),
+  facultyAssist: (body: { entityType: FacultyEntityType; entityId: string; action: FacultyAssistAction; instruction?: string }) =>
+    post<FacultyAssistResult>('/api/faculty/assist', body),
+  facultyDrafts: () => get<FacultyDraftsPayload>('/api/faculty/drafts'),
+  facultyCreateDraft: (body: { entityType: FacultyEntityType; entityId: string; kind?: FacultyDraftKind; title?: string; body?: FacultyDraftBody; changeNote?: string }) =>
+    post<{ draft: FacultyDraftView }>('/api/faculty/drafts', body),
+  facultyPatchDraft: (id: string, body: { action: 'submit' | 'publish' | 'reject'; changeNote?: string; reviewerNote?: string; applyLesson?: boolean }) =>
+    post<{ draft: FacultyDraftView; version?: FacultyVersionView | null; note?: string }>(
+      `/api/faculty/drafts/${encodeURIComponent(id)}`, body,
+    ),
+  facultyReviewQueue: () => get<FacultyReviewQueuePayload>('/api/faculty/review'),
+  facultyReviewAction: (body: {
+    action: 'flag' | 'resolve' | 'dismiss'
+    itemId?: string
+    kind?: string
+    entityType?: FacultyEntityType
+    entityId?: string
+    label?: string
+    severity?: FacultySeverity
+    evidence?: string[]
+    suggestion?: string
+    reviewerNote?: string
+  }) => post<{ ok: boolean; item?: FacultyReviewItemView; note?: string }>('/api/faculty/review', body),
+  facultyRecommend: () => get<FacultyRecommendPayload>('/api/faculty/recommend'),
+  facultyVersions: (params?: { entityType?: string; entityId?: string }) => {
+    const qs = new URLSearchParams(Object.entries(params ?? {}).filter(([, v]) => v != null && v !== '').map(([k, v]) => [k, String(v)]))
+    const q = qs.toString()
+    return get<FacultyVersionsPayload>(`/api/faculty/versions${q ? `?${q}` : ''}`)
+  },
 }
 
 // ── Adaptive Engine aux payloads (defined here — types.ts is frozen) ──

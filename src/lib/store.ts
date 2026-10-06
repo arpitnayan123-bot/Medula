@@ -8,7 +8,7 @@ import type { Profile, View } from './types'
 // the doctor back where they left off, and mirror to the URL hash (#/map)
 // so a reload keeps the same view.
 export const APP_VIEWS: readonly View[] = [
-  'home', 'map', 'explore', 'research', 'understand', 'learn', 'hub', 'questions', 'adaptive', 'exam', 'mistakes', 'revision', 'planner', 'graph', 'performance', 'cases', 'lab', 'voice', 'revise', 'tutor', 'progress', 'roadmap', 'profile', 'library', 'ask', 'community', 'gamify', 'brain',
+  'home', 'map', 'explore', 'research', 'understand', 'learn', 'hub', 'questions', 'adaptive', 'exam', 'mistakes', 'revision', 'planner', 'graph', 'performance', 'cases', 'lab', 'voice', 'revise', 'tutor', 'progress', 'roadmap', 'profile', 'library', 'ask', 'community', 'gamify', 'brain', 'faculty',
 ] as const
 
 // ── Resource Hub deep links (PRODUCT 14) ──────────────────────────────
@@ -176,7 +176,7 @@ export function viewToLabel(v: View): string {
     cases: 'the Case Simulator', lab: 'the Image Lab', revise: 'Revise', tutor: 'the AI Tutor',
     progress: 'Progress', roadmap: 'Roadmap', profile: 'Profile',
     voice: 'the Voice Tutor', exam: 'the Exam Lab', library: 'the Resource Hub',
-    ask: 'the Ask Engine', community: 'Community', gamify: 'Motivation', brain: 'Medical Brain',
+    ask: 'the Ask Engine', community: 'Community', gamify: 'Motivation', brain: 'Medical Brain', faculty: 'the Faculty Studio',
   }
   return labels[v] ?? v
 }
@@ -205,6 +205,7 @@ interface AppState {
   communityFocus: { spaceId?: string; postId?: string; tab?: 'home' | 'groups' | 'accountability'; nonce?: number } | null // Community hand-off (PRODUCT 16)
   gamifyFocus: { tab?: 'overview' | 'journey' | 'achievements' | 'challenges' | 'boards' | 'rewards'; nonce?: number } | null // Motivation hand-off (PRODUCT 17)
   brainFocus: { tab?: 'overview' | 'knowledge' | 'path' | 'memory' | 'strategy' | 'privacy'; nonce?: number } | null // Medical Brain hand-off (PRODUCT 18)
+  facultyFocus: { tab?: FacultyTab; nonce?: number } | null // Faculty Studio hand-off (PRODUCT 19)
   setView: (v: View) => void
   setProfile: (p: Profile | null) => void
   setHydrated: (v: boolean) => void
@@ -239,7 +240,11 @@ interface AppState {
   closeGamify: () => void
   openBrain: (focus?: { tab?: 'overview' | 'knowledge' | 'path' | 'memory' | 'strategy' | 'privacy' }) => void
   closeBrain: () => void
+  openFaculty: (focus?: { tab?: FacultyTab }) => void
+  closeFaculty: () => void
 }
+
+export type FacultyTab = 'overview' | 'gaps' | 'quality' | 'studio' | 'library'
 
 export const useAppStore = create<AppState>((set) => ({
   view: 'landing',
@@ -265,6 +270,7 @@ export const useAppStore = create<AppState>((set) => ({
   communityFocus: null,
   gamifyFocus: null,
   brainFocus: null,
+  facultyFocus: null,
   setView: (v) => {
     if (isAppView(v)) {
       try { window.localStorage.setItem(LAST_VIEW_KEY, v) } catch { /* private mode */ }
@@ -339,4 +345,10 @@ export const useAppStore = create<AppState>((set) => ({
     set({ view: 'brain', brainFocus: { ...focus, nonce: Date.now() } })
   },
   closeBrain: () => set({ brainFocus: null }),
+  openFaculty: (focus) => {
+    try { window.localStorage.setItem(LAST_VIEW_KEY, 'faculty') } catch { /* private mode */ }
+    // nonce re-triggers the view's focus effect for repeat hand-offs
+    set({ view: 'faculty', facultyFocus: { ...focus, nonce: Date.now() } })
+  },
+  closeFaculty: () => set({ facultyFocus: null }),
 }))
