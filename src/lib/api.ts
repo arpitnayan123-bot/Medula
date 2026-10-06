@@ -50,6 +50,9 @@ import type {
   CommunityReplySummary, CommunitySpaceSummary,
   GamifyHomePayload, GamifyJourneyPayload, GamifyAchievementsPayload, GamifyChallengesPayload,
   GamifyLeaderboardPayload, GamifyXpLedgerPayload, GamifyRewardsPayload, GamifyChallengeView,
+  BrainHomePayload, BrainKnowledgePayload, BrainMemoryPayload, BrainPathPayload, BrainStrategyPayload,
+  BrainTutorPack, BrainPracticePayload, BrainContentPayload, BrainTimelinePayload, BrainExportPayload,
+  BrainPrivacyPayload, BrainPrivacySettingsView, BrainResetResult,
 } from './types'
 
 export const api = {
@@ -513,6 +516,33 @@ export const api = {
   gamifyXpLedger: (limit = 120) =>
     get<GamifyXpLedgerPayload>(`/api/gamify/xp?limit=${limit}`),
   gamifyRewards: () => get<GamifyRewardsPayload>('/api/gamify/rewards'),
+
+  // ── Personal Medical Brain (PRODUCT 18) ──
+  // Shapes are the frozen Brain* contract in types.ts. Honesty rules the client
+  // relies on: every signal is measured from real learning activity, concept
+  // states derive from multiple signal families (published derivation), every
+  // recommendation carries its evidence, and the whole layer is PRIVATE BY
+  // DEFAULT — the UI only renders what the engine publishes, never invents.
+  brainHome: () => get<BrainHomePayload>('/api/brain/home'),
+  brainKnowledge: (params?: { state?: string; subject?: string; q?: string }) => {
+    const qs = new URLSearchParams(Object.entries(params ?? {}).filter(([, v]) => v != null && v !== '').map(([k, v]) => [k, String(v)]))
+    const q = qs.toString()
+    return get<BrainKnowledgePayload>(`/api/brain/knowledge${q ? `?${q}` : ''}`)
+  },
+  brainMemory: () => get<BrainMemoryPayload>('/api/brain/memory'),
+  brainPath: (conceptId?: string) =>
+    get<BrainPathPayload>(`/api/brain/path${conceptId ? `?conceptId=${encodeURIComponent(conceptId)}` : ''}`),
+  brainStrategy: () => get<BrainStrategyPayload>('/api/brain/strategy'),
+  brainTutorContext: () => get<BrainTutorPack>('/api/brain/tutor-context'),
+  brainPractice: () => get<BrainPracticePayload>('/api/brain/practice'),
+  brainContent: (conceptId?: string) =>
+    get<BrainContentPayload>(`/api/brain/content${conceptId ? `?conceptId=${encodeURIComponent(conceptId)}` : ''}`),
+  brainTimeline: () => get<BrainTimelinePayload>('/api/brain/timeline'),
+  brainExport: () => get<BrainExportPayload>('/api/brain/export'),
+  brainPrivacyGet: () => get<BrainPrivacyPayload>('/api/brain/privacy'),
+  brainPrivacySet: (patch: Partial<BrainPrivacySettingsView>) =>
+    post<BrainPrivacyPayload>('/api/brain/privacy', patch),
+  brainReset: (scope: string) => post<BrainResetResult>('/api/brain/reset', { scope }),
 }
 
 // ── Adaptive Engine aux payloads (defined here — types.ts is frozen) ──

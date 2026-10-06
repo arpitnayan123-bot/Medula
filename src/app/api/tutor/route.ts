@@ -3,6 +3,7 @@ import ZAI from 'z-ai-web-dev-sdk'
 import { db } from '@/lib/db'
 import { getDemoProfile } from '@/lib/profile'
 import { buildTutorContext, serializePersonalization, PERSONALIZATION_RULES, yearLabelFor } from '@/lib/tutor-context'
+import { ensureBrainSettings, loadBrainContext, deriveConceptStates, buildTutorPack, serializeBrainTutorContext } from '@/lib/brain-engine'
 
 export const dynamic = 'force-dynamic'
 export const maxDuration = 60
@@ -110,6 +111,23 @@ export async function POST(req: NextRequest) {
       ? `\n\nWHAT YOU KNOW ABOUT THIS STUDENT (measured platform data):\n${personal}\n\n${PERSONALIZATION_RULES}`
       : ''
   } catch { /* personalization is best-effort — never block the reply */ }
+
+  // ── Learning-intelligence block (PRODUCT 18 — additive augmentation) ─────
+  // The brain pack AUGMENTS the personalization block above (never replaces
+  // it): forgetting risks, prereq gaps, strengths NOT to re-teach, exam
+  // clock. Best-effort — the tutor must keep working if the brain fails.
+  try {
+    const settings = await ensureBrainSettings(profile.id)
+    if (settings.tutorContextOn && settings.personalizationOn) {
+      const brainCtx = await loadBrainContext(profile.id)
+      const brainStates = deriveConceptStates(brainCtx)
+      const pack = buildTutorPack(brainCtx, brainStates)
+      const brainText = serializeBrainTutorContext(pack)
+      if (brainText) {
+        personalization += `\n\nLEARNING INTELLIGENCE (measured, private to this student — additional context):\n${brainText}`
+      }
+    }
+  } catch { /* brain augmentation is best-effort — never block the reply */ }
 
   // ── Concept focus (from concept explorer hand-off) ───────────────────────
   let contextBlock = ''

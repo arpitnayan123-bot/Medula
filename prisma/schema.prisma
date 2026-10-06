@@ -1177,3 +1177,49 @@ model MotivationSettings {
   featured  Json     @default("[]") // string[] of achievement ids, capped 3
   updatedAt DateTime @updatedAt
 }
+
+// ═════════════ PERSONAL MEDICAL BRAIN (PRODUCT 18) ═════════════
+// Additive, STANDALONE models (no FK, plain string profileId) — db:push stays
+// non-destructive (P11–P17 pattern).
+//
+// Privacy rules: the brain is PRIVATE BY DEFAULT — no sharing surface exists
+// and nothing here is exposed to other students. BrainSettings holds the
+// per-surface personalization switches (AI Tutor context, question feed,
+// revision feed, content feed) and the history-snapshot opt-in. Every value
+// the brain derives stays computed-on-read from measured activity; the only
+// persisted artifacts are the daily snapshot (for the longitudinal timeline)
+// and the settings row. Data control routes: export (view stored data) and
+// scoped reset (delete learning history) live in /api/brain/*.
+
+// Per-profile brain personalization + privacy controls. All personalization
+// defaults ON (the brain personalizes the student's own experience only);
+// disabling a switch makes that surface fall back to non-personalized
+// behavior. tutorContextOn gates what the AI Tutor is told about the student
+// (transparency view: /api/brain/tutor-context shows the exact blocks).
+model BrainSettings {
+  profileId                 String   @id
+  personalizationOn         Boolean  @default(true)
+  tutorContextOn            Boolean  @default(true)
+  questionPersonalizationOn Boolean  @default(true)
+  revisionPersonalizationOn Boolean  @default(true)
+  contentPersonalizationOn  Boolean  @default(true)
+  historySnapshotsOn        Boolean  @default(true)
+  updatedAt                 DateTime @updatedAt
+}
+
+// One daily materialized snapshot of the derived profile (IST day key),
+// used ONLY for the longitudinal timeline ("mastery over time"). Unique on
+// (profileId, dayKey) makes materialization idempotent. data is a small
+// capped object {conceptsByState, accuracy, counts…} — no raw content.
+// Respect for privacy: snapshots stop the moment historySnapshotsOn=false;
+// deleting snapshots (reset scope 'snapshots') erases the timeline history.
+model BrainSnapshot {
+  id        String   @id @default(cuid())
+  profileId String
+  dayKey    String // IST day key
+  data      Json // capped derived counters ({mastered, strong, atRisk, needsRevision, accuracy, conceptsByState})
+  createdAt DateTime @default(now())
+
+  @@unique([profileId, dayKey])
+  @@index([profileId, createdAt])
+}

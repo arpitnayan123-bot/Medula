@@ -38,6 +38,7 @@ const NAV: { id: View; label: string; icon: typeof Home; hint?: string }[] = [
   { id: 'ask', label: 'Ask Engine', icon: ScanSearch },
   { id: 'community', label: 'Community', icon: Users },
   { id: 'gamify', label: 'Motivation', icon: Trophy },
+  { id: 'brain', label: 'Medical Brain', icon: Brain },
   { id: 'tutor', label: 'AI Tutor', icon: Sparkles },
   { id: 'profile', label: 'Profile', icon: UserRound },
 ]
@@ -47,6 +48,7 @@ const NAV: { id: View; label: string; icon: typeof Home; hint?: string }[] = [
 // sidebar footer card (desktop) and the More sheet (mobile), not the groups.
 const NAV_GROUPS: { title: string; items: View[] }[] = [
   { title: 'Daily study', items: ['home', 'map', 'hub', 'learn', 'questions', 'adaptive', 'exam', 'mistakes', 'revision', 'planner', 'graph', 'performance', 'revise'] },
+  { title: 'Intelligence', items: ['brain'] },
   { title: 'Clinical & deep dives', items: ['understand', 'cases', 'lab', 'voice'] },
   { title: 'Community', items: ['community'] },
   { title: 'Growth', items: ['gamify'] },

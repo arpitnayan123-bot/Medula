@@ -31,6 +31,7 @@ export type View =
   | 'ask' // PRODUCT 15 — AI Medical Search & Answer Engine
   | 'community' // PRODUCT 16 — Medical Learning Community & Accountability
   | 'gamify' // PRODUCT 17 — Gamified Medical Learning & Motivation Engine
+  | 'brain' // PRODUCT 18 — Personal Medical Brain
 
 export interface Profile {
   id: string
@@ -3251,5 +3252,301 @@ export interface GamifyRewardsPayload {
   featured: string[]
   badges: { unlocked: number; total: number; challengeBadges: { id: string; title: string; completedAt: string }[] }
   groupRecognition: { groupName: string; note: string }[]
+  note: string
+}
+
+// ═════════════ PERSONAL MEDICAL BRAIN (PRODUCT 18) ═════════════
+// A continuously evolving personal learning intelligence layer:
+// «Observe → Understand → Personalize → Predict → Improve»
+//
+// Honesty & privacy rules (binding for every P18 route/component):
+// - Every signal is MEASURED from real learning activity (KnowledgeState,
+//   QuestionAttempt, FlashcardReview, MistakeRecord, RevisionItem/Session,
+//   LearnProgress, StudySession, ExamAttempt, SimCaseAttempt). Nothing is
+//   invented, nothing is a guess presented as data.
+// - Concept states derive from MULTIPLE signal families, never a single
+//   quiz result. The derivation rule is published below and rendered in the
+//   UI ("How your brain works").
+// - Every recommendation carries its evidence (signals) — "why am I seeing
+//   this" is always answerable in one tap.
+// - The brain is PRIVATE BY DEFAULT: no sharing surface exists. AI Tutor
+//   context is transparency-first (the student can see exactly what the
+//   tutor sees) and controlled by a toggle. No chain-of-thought anywhere —
+//   AI outputs are final text only, badged and grounded.
+// - Exam strategy is evidence-based and NEVER promises or predicts a rank.
+// - Personalization toggles are respected everywhere; disabling a switch
+//   means that surface falls back to its non-personalized behavior.
+//
+// PUBLISHED 7-state derivation (evaluated in this order, mutually exclusive):
+//   not-started    → zero measured signals
+//   at-risk        → was strong/mastered (score ≥ 70) but estRecall < 0.5 now
+//   needs-revision → engaged but estRecall < 0.6 (due), or ≥ 2 open repeated mistakes
+//   mastered       → attempts ≥ 3 ∧ accuracy ≥ 75 ∧ estRecall ≥ 0.6 ∧ 0 open mistakes
+//   strong         → score ≥ 70 ∧ estRecall ≥ 0.55
+//   familiar       → score ≥ 45 or (engaged ≥ 2 ∧ accuracy ≥ 50)
+//   learning       → any measured signal below the above bars
+// estRecall = e^(−t / 1.6·stability) — the platform's published Ebbinghaus curve.
+
+export type BrainConceptStatus =
+  | 'not-started'
+  | 'learning'
+  | 'familiar'
+  | 'strong'
+  | 'mastered'
+  | 'at-risk'
+  | 'needs-revision'
+
+export type BrainForgetRisk = 'none' | 'low' | 'moderate' | 'high'
+
+export interface BrainSignal {
+  kind: 'mcq' | 'flashcards' | 'revision' | 'mistakes' | 'cases' | 'lesson' | 'learn-mark' | 'lab' | 'voice' | 'mock'
+  label: string // "34 MCQs · 71% correct" — measured, human-readable
+  at?: string // ISO timestamp of the last measurement in this family
+}
+
+export interface BrainConceptState {
+  conceptId: string
+  name: string
+  topicId: string
+  topicName: string
+  subjectId: string
+  subjectName: string
+  examWeight: number // 1..5 curriculum exam relevance (published, not inferred)
+  status: BrainConceptStatus
+  score: number | null // KnowledgeState score 0..100 (null = never measured)
+  estRecall: number | null // e^(−t/1.6·stability), null = never studied
+  stabilityDays: number | null
+  accuracy: number | null // MCQ accuracy %
+  attempts: number
+  meanTimeMs: number | null
+  openMistakes: number
+  lastReviewedAt: string | null
+  forgetRisk: BrainForgetRisk
+  daysToDecay: number | null // days until estRecall < 0.6 at current stability
+  signals: BrainSignal[] // every measured signal family — the "why"
+  prereqGap: boolean // an unlearned prerequisite blocks this concept
+}
+
+export interface BrainStateCounts {
+  'not-started': number
+  learning: number
+  familiar: number
+  strong: number
+  mastered: number
+  'at-risk': number
+  'needs-revision': number
+}
+
+export interface BrainAction {
+  label: string
+  view: View // hand-off target (existing views only)
+  conceptId?: string
+  topicId?: string
+  note?: string
+}
+
+export interface BrainAnswerItem {
+  conceptId?: string
+  questionId?: string
+  label: string
+  detail: string
+  evidence?: string
+  action?: BrainAction
+}
+
+export interface BrainAnswer {
+  id: 'know' | 'forget' | 'repeat' | 'prereq' | 'next' | 'revise' | 'practice'
+  question: string
+  headline: string
+  items: BrainAnswerItem[]
+  note?: string
+}
+
+export interface BrainPathStage {
+  id: 'next' | 'learn' | 'practice' | 'correct' | 'revise' | 'retest' | 'mastery'
+  title: string
+  line: string
+  done: boolean
+  current: boolean
+  evidence: string[]
+  actions: BrainAction[]
+}
+
+export interface BrainPathPayload {
+  focus: BrainConceptState | null
+  reason: string // why this focus was chosen (measured signals)
+  stages: BrainPathStage[] // Next Concept → Learn → Practice → Correct → Revise → Retest → Mastery
+  alternatives: { conceptId: string; name: string; reason: string }[]
+  insufficientData: boolean
+  note: string
+}
+
+export interface BrainMemoryRow {
+  conceptId: string
+  name: string
+  topicName: string
+  subjectName: string
+  lastReviewedAt: string | null
+  stabilityDays: number | null
+  estRecall: number | null
+  forgetRisk: BrainForgetRisk
+  daysToDecay: number | null
+  revisions: number
+  flashcards: { reps: number; lapses: number; lastGrade: number | null }
+  wrongCount: number
+  retrievalSuccess: number | null // successful retrievals / (retrievals + lapses) %
+  signals: string[]
+}
+
+export interface BrainTutorPack {
+  enabled: boolean // BrainSettings.tutorContextOn
+  blocks: { title: string; lines: string[] }[] // exactly what the tutor receives
+  masteredNotToRepeat: string[] // tutor is told NOT to re-teach these
+  note: string
+}
+
+export interface BrainPracticeQuestion {
+  id: string
+  stem: string
+  subjectCode: string
+  topicId: string | null
+  conceptId: string | null
+  why: string // measured reason this question was picked
+}
+
+export interface BrainPracticePayload {
+  generatedAt: string
+  focusLine: string
+  confusionPair: { a: string; b: string; line: string; conceptIds: string[] } | null
+  discriminationQuestions: BrainPracticeQuestion[]
+  weaknessQuestions: BrainPracticeQuestion[]
+  handoff: BrainAction
+  note: string
+}
+
+export interface BrainContentRec {
+  kind: 'lesson' | 'mcq' | 'pyq' | 'case' | 'image' | 'flashcards' | 'revision'
+  label: string
+  count: number
+  detail: string
+  action: BrainAction
+}
+
+export interface BrainContentPayload {
+  generatedAt: string
+  focus: { conceptId: string; name: string } | null
+  recs: BrainContentRec[]
+  note: string
+}
+
+export interface BrainStrategyPayload {
+  generatedAt: string
+  examClock: { daysLeft: number | null; stage: string; isEstimate: boolean } | null
+  readiness: { current: number | null; band: string; dataPoorDims: string[] } | null
+  highImpactWeaknesses: { conceptId: string; name: string; line: string; examWeight: number; action: BrainAction }[]
+  strongAreas: { conceptId: string; name: string; line: string }[]
+  timeManagement: { medianSec: number | null; paceSec: number; timedAccuracy: number | null; untimedAccuracy: number | null; line: string }
+  mistakePatterns: { errorType: string; count: number; tactic: string }[]
+  revisionGaps: { coverage: number | null; overdue: number; line: string }
+  testTaking: { carelessRate: number | null; changedAnswers: number; line: string }
+  playbook: string[] // evidence-based strategy lines — never a rank promise
+  disclaimer: string
+}
+
+export interface BrainInsight {
+  title: string
+  line: string
+  evidence?: string
+  action?: BrainAction
+}
+
+export interface BrainPrivacySettingsView {
+  personalizationOn: boolean
+  tutorContextOn: boolean
+  questionPersonalizationOn: boolean
+  revisionPersonalizationOn: boolean
+  contentPersonalizationOn: boolean
+  historySnapshotsOn: boolean
+}
+
+export interface BrainHomePayload {
+  generatedAt: string
+  profile: {
+    topicsStudied: number
+    topicsTotal: number
+    conceptsByState: BrainStateCounts
+    questionAccuracy: number | null
+    accuracy30d: number | null
+    medianTimeSec: number | null
+    revisionSessions: number
+    mock: { attempts: number; meanScore: number | null; lastScore: number | null; bestScore: number | null }
+    consistency: { streakDays: number; activeDays30: number }
+    preferences: { prepStage: string; examLabel: string; dailyHours: number | null; learningStyles: string[] }
+  }
+  answers: BrainAnswer[] // the 7 intelligence questions, condensed items
+  path: BrainPathPayload
+  insights: BrainInsight[] // max 4 — insights + actions, never a data dump
+  forgetting: { atRisk: number; needsRevision: number; topRisks: { conceptId: string; name: string; recall: number }[] }
+  privacy: BrainPrivacySettingsView
+  howItWorks: string[] // published derivation rules
+  dataBasis: { conceptsMeasured: number; attempts: number; flashcardReviews: number; revisionItems: number; mocks: number }
+  honestNote: string
+}
+
+export interface BrainKnowledgePayload {
+  generatedAt: string
+  counts: BrainStateCounts
+  states: BrainConceptState[]
+  note: string
+}
+
+export interface BrainMemoryPayload {
+  generatedAt: string
+  rows: BrainMemoryRow[]
+  summary: { highRisk: number; moderateRisk: number; dueNow: number; note: string }
+}
+
+export interface BrainTimelinePoint {
+  dayKey: string
+  label: string
+  mastered: number
+  strong: number
+  atRisk: number
+  needsRevision: number
+  accuracy: number | null
+}
+
+export interface BrainTimelinePayload {
+  generatedAt: string
+  points: BrainTimelinePoint[]
+  note: string
+}
+
+export interface BrainPrivacyPayload {
+  generatedAt: string
+  settings: BrainPrivacySettingsView
+  storedData: { section: string; count: number; description: string }[]
+  privateByDefault: string
+  howItWorks: string[]
+  note: string
+}
+
+export interface BrainExportSection {
+  title: string
+  description: string
+  rows: { label: string; value: string }[]
+}
+
+export interface BrainExportPayload {
+  generatedAt: string
+  profileLine: string
+  sections: BrainExportSection[]
+  note: string
+}
+
+export interface BrainResetResult {
+  ok: boolean
+  scope: string
+  cleared: { table: string; count: number }[]
   note: string
 }
