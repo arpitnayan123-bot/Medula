@@ -8,7 +8,7 @@ import type { Profile, View } from './types'
 // the doctor back where they left off, and mirror to the URL hash (#/map)
 // so a reload keeps the same view.
 export const APP_VIEWS: readonly View[] = [
-  'home', 'map', 'explore', 'research', 'understand', 'learn', 'hub', 'questions', 'adaptive', 'exam', 'mistakes', 'revision', 'planner', 'graph', 'performance', 'cases', 'lab', 'voice', 'revise', 'tutor', 'progress', 'roadmap', 'profile', 'library', 'ask', 'community', 'gamify', 'brain', 'faculty',
+  'os', 'home', 'map', 'explore', 'research', 'understand', 'learn', 'hub', 'questions', 'adaptive', 'exam', 'mistakes', 'revision', 'planner', 'graph', 'performance', 'cases', 'lab', 'voice', 'revise', 'tutor', 'progress', 'roadmap', 'profile', 'library', 'ask', 'community', 'gamify', 'brain', 'faculty',
 ] as const
 
 // ── Resource Hub deep links (PRODUCT 14) ──────────────────────────────
@@ -177,6 +177,7 @@ export function viewToLabel(v: View): string {
     progress: 'Progress', roadmap: 'Roadmap', profile: 'Profile',
     voice: 'the Voice Tutor', exam: 'the Exam Lab', library: 'the Resource Hub',
     ask: 'the Ask Engine', community: 'Community', gamify: 'Motivation', brain: 'Medical Brain', faculty: 'the Faculty Studio',
+    os: 'the Command Center',
   }
   return labels[v] ?? v
 }

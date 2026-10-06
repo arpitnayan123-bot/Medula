@@ -145,7 +145,8 @@ const ERROR_LABELS: Record<string, string> = {
   guess: 'guessed',
 }
 
-const MISTAKE_TACTICS: Record<string, string> = {
+// Exported for PRODUCT 20 (os-engine) — one tactic map across the platform.
+export const MISTAKE_TACTICS: Record<string, string> = {
   misread: 'Slow down on stems — re-read the lead-in (""EXCEPT"", ""NOT"") before the options',
   confused: 'Discrimination drills on the confused pairs — contrast tables, side-by-side recall',
   forgot: 'Spaced revision — schedule the faded concepts, don\u2019t re-read passively',

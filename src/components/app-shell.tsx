@@ -9,12 +9,13 @@ import { cn } from '@/lib/utils'
 import {
   Home, Brain, BookMarked, BookOpen, CalendarCheck, CalendarClock, CircleHelp, ClipboardList, GraduationCap, LibraryBig, Network, Stethoscope, RefreshCcw,
   Sparkles, UserRound, Search, Menu, X, ScanEye, ScanSearch, Mic, Gauge, Users,
-  Keyboard, WifiOff, LayoutGrid, Compass, FlaskConical, Target, Bandage, Trophy,
+  Keyboard, WifiOff, LayoutGrid, Compass, FlaskConical, Target, Bandage, Trophy, Command,
 } from 'lucide-react'
 import type { View } from '@/lib/types'
 
 // One flat registry — used by the mobile "More" sheet and lookups.
 const NAV: { id: View; label: string; icon: typeof Home; hint?: string }[] = [
+  { id: 'os', label: 'Command Center', icon: Command },
   { id: 'home', label: 'Home', icon: Home },
   { id: 'map', label: 'Search', icon: Search },
   { id: 'hub', label: 'Topic Hub', icon: BookMarked },
@@ -48,6 +49,7 @@ const NAV: { id: View; label: string; icon: typeof Home; hint?: string }[] = [
 // rows — the library is assimilated, not scattered. Profile lives in the
 // sidebar footer card (desktop) and the More sheet (mobile), not the groups.
 const NAV_GROUPS: { title: string; items: View[] }[] = [
+  { title: 'Education OS', items: ['os'] },
   { title: 'Daily study', items: ['home', 'map', 'hub', 'learn', 'questions', 'adaptive', 'exam', 'mistakes', 'revision', 'planner', 'graph', 'performance', 'revise'] },
   { title: 'Intelligence', items: ['brain', 'faculty'] },
   { title: 'Clinical & deep dives', items: ['understand', 'cases', 'lab', 'voice'] },

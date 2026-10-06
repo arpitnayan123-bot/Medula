@@ -8,6 +8,7 @@ import { LandingPage } from '@/components/landing/landing-page'
 import { SignInView } from '@/components/auth/signin-view'
 import { OnboardingWizard } from '@/components/onboarding/onboarding-wizard'
 import { DashboardView } from '@/components/dashboard/dashboard-view'
+import { OsView } from '@/components/os/os-view'
 import { DoubtSearchView } from '@/components/search/doubt-search-view'
 import { UnderstandView } from '@/components/understand/understand-view'
 import { LearnView } from '@/components/learn/learn-view'
@@ -112,6 +113,7 @@ export default function Home() {
   return (
     <AppShell>
       <RegisterSW />
+      {view === 'os' && <OsView />}
       {view === 'home' && <DashboardView />}
       {view === 'map' && <DoubtSearchView />}
       {view === 'explore' && <ExploreView onNavigate={handleExploreNav} />}

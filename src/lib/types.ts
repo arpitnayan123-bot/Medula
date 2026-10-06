@@ -33,6 +33,7 @@ export type View =
   | 'gamify' // PRODUCT 17 — Gamified Medical Learning & Motivation Engine
   | 'brain' // PRODUCT 18 — Personal Medical Brain
   | 'faculty' // PRODUCT 19 — AI Faculty & Content Intelligence
+  | 'os' // PRODUCT 20 — Medical Education OS (unified command center)
 
 export interface Profile {
   id: string
@@ -3859,4 +3860,183 @@ export interface FacultyHomePayload {
   dataBasis: string
   workspaceNote: string
   honestNote: string
+}
+
+// ═══════════════════ MEDICAL EDUCATION OS (PRODUCT 20) ═══════════════════
+// «Discover → Learn → Practice → Analyze → Revise → Improve» — one command
+// center that COMPOSES the existing engines (revision, mistakes, brain
+// knowledge states, performance readiness, exam clock, planner, activity
+// ledgers) into a single ranked "what should I do next" feed. It is a
+// coordination layer, never a second implementation of a feature.
+//
+// HONESTY RULES (binding for every consumer):
+//   · Every number is measured from the student's own ledgers — no peers,
+//     no seeds, no invented urgency. Empty sections say so plainly.
+//   · Action priorities come from the PUBLISHED rule (OsNowPayload.rule) —
+//     never from an opaque score and never from chain-of-thought.
+//   · Hand-offs reuse each feature's existing entry point (store presets /
+//     hash deep links). The OS never re-implements practice, revision, etc.
+export type OsActionKind = 'learn' | 'practice' | 'revise' | 'fix' | 'test' | 'analyze' | 'explore'
+
+export type OsActionSource =
+  | 'revision'
+  | 'mistakes'
+  | 'knowledge'
+  | 'performance'
+  | 'exam'
+  | 'planner'
+  | 'learn'
+
+export interface OsAction {
+  id: string
+  kind: OsActionKind
+  source: OsActionSource
+  title: string
+  reason: string // measured evidence line, e.g. "3 blocks overdue · 45 min"
+  cta: string
+  view: View // hand-off target — an EXISTING view, opened with context
+  conceptId?: string
+  topicId?: string
+  priority: number // 0..100 from the published rule (shown in the UI)
+  ruleIndex?: number // 1-based line in OsNowPayload.rule that produced this action
+}
+
+export interface OsNowPayload {
+  primary: OsAction
+  alternates: OsAction[] // up to 2, always a DIFFERENT kind than primary
+  rule: string[] // the published priority order — transparency, not magic
+}
+
+export interface OsRevisionToday {
+  dueCount: number
+  overdueCount: number
+  minutes: number // measured sum of due RevisionItem.minutes
+  topItems: {
+    conceptId: string
+    conceptName: string
+    topicName: string | null
+    reason: string
+    dueAt: string
+    overdue: boolean
+  }[]
+  sessionsThisWeek: number
+}
+
+export interface OsMcqTarget {
+  id: string
+  label: string
+  parent?: string
+  accuracy: number | null
+  attempts: number
+  importance: number // exam-weighted priority from the P13 ranking (reused)
+  reason: string
+  view: View
+  conceptId?: string
+  topicId?: string
+}
+
+export interface OsMcqs {
+  suggestedCount: number // the platform's standard session size
+  bankSize: number // measured platform question pool
+  targets: OsMcqTarget[]
+}
+
+export interface OsMistakes {
+  open: number
+  repeated: number // wrong ≥ 2 times and still unresolved
+  resolvedThisWeek: number
+  oldestOpenAt: string | null
+  patterns: { errorType: string; label: string; count: number; tactic: string }[]
+}
+
+export interface OsTests {
+  examLabel: string | null
+  daysLeft: number | null
+  isEstimate: boolean
+  stage: string | null
+  lastMock: { mode: string; percent: number | null; submittedAt: string } | null
+  mocksLast30: number
+  suggested: { title: string; reason: string } | null
+  note: string // honest scheduling note — the platform has no test calendar
+}
+
+export interface OsWeakItem {
+  id: string
+  label: string
+  parent?: string
+  signals: string[]
+  importance: number // 0..100 exam-weighted (P13 importance ranking, reused)
+  accuracy: number | null
+  attempts: number
+  reason: string
+  view: View
+  conceptId?: string
+  topicId?: string
+}
+
+export interface OsReadiness {
+  overall: number | null
+  band: string
+  dimensions: { label: string; value: number | null; note: string }[] // top movers only
+  methodology: string // the P13 published formula sentence (reused verbatim)
+  dataPoor: boolean
+}
+
+export type OsActivityKind =
+  | 'practice'
+  | 'revision'
+  | 'study'
+  | 'mock'
+  | 'case'
+  | 'image'
+  | 'voice'
+  | 'flashcards'
+  | 'community'
+  | 'tutor'
+  | 'ask'
+
+export interface OsActivityItem {
+  id: string
+  kind: OsActivityKind
+  label: string
+  detail?: string
+  metric?: string // measured, e.g. "+4 correct of 6"
+  at: string // ISO timestamp
+}
+
+export type OsConnectionStatus = 'active' | 'quiet'
+
+export interface OsConnection {
+  view: View
+  label: string
+  status: OsConnectionStatus // active = used in the last 30 days, quiet = not yet
+  contribution: string // measured one-liner of what this feature knows today
+}
+
+export interface OsStats {
+  streakDays: number
+  activeDays30: number
+  minutesToday: number
+  questionsToday: number
+  xpToday: number
+}
+
+export interface OsCommandCenter {
+  generatedAt: string
+  greeting: { hello: string; dateLine: string; examLine: string | null; stageLabel: string }
+  now: OsNowPayload
+  today: {
+    revision: OsRevisionToday
+    mcqs: OsMcqs
+    mistakes: OsMistakes
+    tests: OsTests
+  }
+  weakTopics: OsWeakItem[]
+  readiness: OsReadiness
+  activity: OsActivityItem[]
+  connections: OsConnection[]
+  stats: OsStats
+  dataBasis: { ledgers: string[]; window: string; peers: string }
+  honestNote: string
+  insufficientData: boolean
 }

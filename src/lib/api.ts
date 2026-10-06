@@ -57,6 +57,7 @@ import type {
   FacultyAssistResult, FacultyDraftsPayload, FacultyDraftView, FacultyDraftKind, FacultyDraftBody,
   FacultyEntityType, FacultyAssistAction, FacultySeverity, FacultyReviewQueuePayload,
   FacultyReviewItemView, FacultyRecommendPayload, FacultyVersionsPayload, FacultyVersionView,
+  OsCommandCenter,
 } from './types'
 
 export const api = {
@@ -588,6 +589,14 @@ export const api = {
     const q = qs.toString()
     return get<FacultyVersionsPayload>(`/api/faculty/versions${q ? `?${q}` : ''}`)
   },
+
+  // ── Medical Education OS (PRODUCT 20) ──
+  // Shapes are the frozen Os* contract in types.ts. Honesty rules the client
+  // relies on: every action/counter/contribution line is measured from the
+  // student's own ledgers (no peers, no seeds), priorities follow the
+  // PUBLISHED rule in OsNowPayload.rule, and hand-offs open EXISTING views
+  // with context — the OS never re-implements a feature.
+  osHome: () => get<OsCommandCenter>('/api/os/home'),
 }
 
 // ── Adaptive Engine aux payloads (defined here — types.ts is frozen) ──
