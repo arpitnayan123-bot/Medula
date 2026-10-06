@@ -7,7 +7,7 @@ import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
 import { Logo } from '@/components/brand/logo'
 import { cn } from '@/lib/utils'
 import {
-  Home, Brain, BookMarked, BookOpen, CalendarCheck, CalendarClock, CircleHelp, ClipboardList, Network, Stethoscope, RefreshCcw,
+  Home, Brain, BookMarked, BookOpen, CalendarCheck, CalendarClock, CircleHelp, ClipboardList, LibraryBig, Network, Stethoscope, RefreshCcw,
   Sparkles, UserRound, Search, Menu, X, ScanEye, Mic, Gauge,
   Keyboard, WifiOff, LayoutGrid, Compass, FlaskConical, Target, Bandage,
 } from 'lucide-react'
@@ -34,6 +34,7 @@ const NAV: { id: View; label: string; icon: typeof Home; hint?: string }[] = [
   { id: 'voice', label: 'Voice Tutor', icon: Mic },
   { id: 'research', label: 'Research', icon: FlaskConical },
   { id: 'explore', label: 'Explore', icon: Compass },
+  { id: 'library', label: 'Resource Hub', icon: LibraryBig },
   { id: 'tutor', label: 'AI Tutor', icon: Sparkles },
   { id: 'profile', label: 'Profile', icon: UserRound },
 ]
@@ -44,7 +45,7 @@ const NAV: { id: View; label: string; icon: typeof Home; hint?: string }[] = [
 const NAV_GROUPS: { title: string; items: View[] }[] = [
   { title: 'Daily study', items: ['home', 'map', 'hub', 'learn', 'questions', 'adaptive', 'exam', 'mistakes', 'revision', 'planner', 'graph', 'performance', 'revise'] },
   { title: 'Clinical & deep dives', items: ['understand', 'cases', 'lab', 'voice'] },
-  { title: 'Discover', items: ['research', 'explore', 'tutor'] },
+  { title: 'Discover', items: ['research', 'explore', 'library', 'tutor'] },
 ]
 
 // Views that open as drill-downs of a parent section keep the parent

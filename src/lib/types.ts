@@ -27,6 +27,7 @@ export type View =
   | 'graph'
   | 'performance'
   | 'cases' | 'lab' | 'voice' | 'revise' | 'tutor' | 'progress' | 'roadmap' | 'profile'
+  | 'library'
 
 export interface Profile {
   id: string
@@ -2411,5 +2412,185 @@ export interface PerformanceAiResponse {
   bullets: string[]
   actions: PerformanceHandoff[] // server-attached measured actions (never AI-invented)
   fallback: boolean
+  disclaimer: string
+}
+
+// ═══════════════════ MEDICAL CONTENT & RESOURCE HUB (PRODUCT 14) ═══════════════════
+// «Discover → Learn → Compare → Practice → Save» — one organised, searchable
+// ecosystem of learning resources. TRUST RULES (binding for every consumer):
+//   · Platform-owned content is clearly distinguished from external resources.
+//   · External resources are METADATA + LINK-OUT ONLY. We never re-host,
+//     re-distribute or scrape copyrighted material.
+//   · Every external record carries source, original URL, license/permission
+//     status (where known), attribution note, access type and last-verified.
+//   · urlVerified === false means exactly that: shown honestly as
+//     "verification pending", never dressed up as verified.
+
+/** Resource type buckets (spec: lessons/notes/lectures/videos/articles/guidelines/…). */
+export type ResourceKind =
+  | 'lesson' | 'notes' | 'lecture-video' | 'article' | 'guideline' | 'reference'
+  | 'images' | 'clinical' | 'pyq' | 'question-set' | 'revision' | 'course' | 'case'
+
+export const RESOURCE_KIND_META: Record<ResourceKind, { label: string; icon: string }> = {
+  lesson: { label: 'Lessons', icon: 'BookOpen' },
+  notes: { label: 'Notes', icon: 'NotebookPen' },
+  'lecture-video': { label: 'Video lectures', icon: 'MonitorPlay' },
+  article: { label: 'Articles & papers', icon: 'ScrollText' },
+  guideline: { label: 'Guidelines', icon: 'Scale' },
+  reference: { label: 'References', icon: 'Library' },
+  images: { label: 'Image libraries', icon: 'Images' },
+  clinical: { label: 'Clinical tools', icon: 'Stethoscope' },
+  pyq: { label: 'Past exam papers', icon: 'FileQuestion' },
+  'question-set': { label: 'Question sets', icon: 'CircleHelp' },
+  revision: { label: 'Revision', icon: 'RefreshCcw' },
+  course: { label: 'Courses', icon: 'GraduationCap' },
+  case: { label: 'Cases', icon: 'ClipboardList' },
+}
+
+export type ResourceOwnership = 'platform' | 'external'
+export type ResourceAccess = 'PUBLIC' | 'REGISTRATION' | 'PAID' | 'MIXED' | 'UNKNOWN'
+
+/** One curated external resource — metadata only, always links out. */
+export interface LibraryExternalResource {
+  id: string // 'ext:…'
+  ownership: 'external'
+  kind: ResourceKind
+  title: string
+  description: string // our OWN original summary — never scraped copy
+  sourceName: string
+  sourceSlug: string // SOURCE_REGISTRY slug when the institution is registered
+  url: string // ORIGINAL location — the only place the content lives
+  urlVerified: boolean
+  lastVerified: string | null
+  access: ResourceAccess
+  license: string // honest license/permission status, 'See site terms' when unknown
+  attribution: string // attribution requirements or 'Not required for link-out'
+  subjects: string[] // subject ids from the curriculum registry
+  topicIds: string[] // topic ids from the curriculum registry
+  difficulty: 1 | 2 | 3 // 1=foundational 2=core 3=advanced
+  exams: string[] // 'neetpg' | 'fmge' | 'mbbs'
+  language: 'en' | 'hi' | 'en-hi'
+  minutes?: number // typical study time estimate when we can justify one
+}
+
+/** One platform-owned resource, generated from MEASURED counts (never invented). */
+export interface LibraryPlatformResource {
+  id: string // 'platform:…'
+  ownership: 'platform'
+  kind: ResourceKind
+  title: string
+  description: string
+  subjects: string[]
+  topicIds: string[]
+  difficulty: 1 | 2 | 3
+  exams: string[]
+  /** measured backing counts + navigation target */
+  counts: Record<string, number>
+  view: View // where «Open» goes
+  focus?: { kind: 'subject' | 'topic'; id: string } | null
+  preset?: Record<string, unknown> | null // e.g. adaptivePreset payload
+}
+
+export type LibraryResource = LibraryExternalResource | LibraryPlatformResource
+
+/** GET /api/library/resources — filter + search contract. */
+export interface LibraryQuery {
+  q?: string
+  subject?: string
+  topic?: string
+  kind?: string // ResourceKind or csv
+  source?: string // institution slug
+  difficulty?: 1 | 2 | 3
+  exam?: string
+  ownership?: ResourceOwnership
+  access?: ResourceAccess
+  sort?: 'relevance' | 'title' | 'recent'
+  page?: number
+}
+
+export interface LibraryResourcesPayload {
+  total: number
+  page: number
+  pageSize: number
+  resources: LibraryResource[]
+  /** honesty note about external linking — always shown in UI footer */
+  disclaimer: string
+}
+
+/** GET /api/library/resources/[id] — topic-integrated detail. */
+export interface LibraryDetailPayload {
+  resource: LibraryResource
+  /** Subject → Topic → Concept → Questions → Cases → Revision chain */
+  integration: {
+    subjects: { id: string; name: string; color: string }[]
+    topics: { id: string; name: string; subjectId: string; subjectName: string; importance: number; concepts: number; questions: number; mastery: number | null }[]
+    concepts: { id: string; name: string; topicId: string; mastery: number | null }[]
+    cases: { id: string; title: string; specialty: string; difficulty: number }[]
+  }
+  related: LibraryResource[] // same subject/topic siblings (max 4)
+  saved: boolean
+  reported: boolean
+  handoffs: {
+    practice: { conceptId?: string; topicId?: string } | null
+    revision: { topicId?: string } | null
+    hub: { topicId: string } | null
+  }
+  disclaimer: string
+}
+
+/** GET /api/library/home — the hub landing (measured, personalised). */
+export interface LibraryHomePayload {
+  stats: {
+    platform: number // platform resource surfaces available now
+    external: number // curated external resources in the catalog
+    saved: number
+    verifiedExternal: number // external entries with verified source domains
+  }
+  /** «Start where you are» — personalisation from real learning signals */
+  forYou: {
+    reason: string // honest data-basis line, e.g. 'From your 3 weakest topics'
+    basis: { weakConcepts: number; dueRevision: number; recentTopics: number }
+    resources: (LibraryResource & { reasonTag: string })[]
+  } | null // null when there is no signal yet (never fabricated)
+  kinds: { kind: ResourceKind; count: number }[]
+  subjects: { id: string; name: string; color: string; count: number }[]
+  sources: { slug: string; name: string; count: number; verified: boolean }[]
+  featured: LibraryResource[]
+  recentTopics: { id: string; name: string; subjectId: string; subjectName: string }[] // «studying X? jump to its resources»
+  hasSignal: boolean // whether enough profile data exists for personalisation
+  disclaimer: string
+}
+
+/** GET /api/library/for-topic/[topicId] — topic integration feed. */
+export interface LibraryTopicFeedPayload {
+  topic: { id: string; name: string; subjectId: string; subjectName: string; system: string | null }
+  platform: LibraryPlatformResource[]
+  external: LibraryExternalResource[]
+  total: number
+  disclaimer: string
+}
+
+/** GET/POST /api/library/saved */
+export interface LibrarySavedPayload {
+  resources: (LibraryResource & { savedAt: string })[]
+  total: number
+}
+
+/** POST /api/library/report */
+export interface LibraryReportResult {
+  ok: boolean
+  reason: string
+  receivedAt: string
+  note: string
+}
+
+/** POST /api/library/ai — grounded assistant over OUR catalog metadata. */
+export interface LibraryAiResponse {
+  ok: boolean
+  mode: 'recommend' | 'key-points' | 'compare'
+  answer: string
+  resourceIds: string[] // referenced catalog ids (validated — never invented)
+  fallback: boolean // true when the deterministic path answered
+  aiBadge: string
   disclaimer: string
 }

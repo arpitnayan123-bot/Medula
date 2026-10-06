@@ -20,6 +20,10 @@ export const FEATURES = {
   // must say so. Output is always labelled as AI interpretation.
   ENABLE_PAPER_EXPLAIN: true,
 
+  // Medical Content & Resource Hub (PRODUCT 14) — curated metadata + link-out
+  // catalog over platform-owned content and open/licensed external resources.
+  ENABLE_RESOURCE_HUB: true,
+
   // ── Flagged OFF until their phase arrives (do not build ad-hoc) ──
   ENABLE_MENTORSHIP: false, // Phase 11 — needs real auth + credential verification workflow
   ENABLE_SOURCE_PIPELINE: false, // Phase 6 — crawler + admin review queue; needs dedicated infra

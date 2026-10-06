@@ -41,6 +41,8 @@ import type {
   ExamMode, ExamConfig, ExamHome, ExamStartResult, ExamAttemptState,
   ExamAnalysis, ExamReviewPayload, ExamAiAction, ExamAiResponse, ExamHistoryPayload,
   PerformancePayload, PerformanceAiAction, PerformanceAiResponse,
+  LibraryHomePayload, LibraryResourcesPayload, LibraryDetailPayload, LibraryTopicFeedPayload,
+  LibrarySavedPayload, LibraryReportResult, LibraryAiResponse,
 } from './types'
 
 export const api = {
@@ -324,6 +326,32 @@ export const api = {
   performanceHome: () => get<PerformancePayload>('/api/performance/home'),
   performanceAi: (body: { action: PerformanceAiAction; question?: string }) =>
     post<PerformanceAiResponse>('/api/performance/ai', body),
+  // ── Medical Content & Resource Hub (PRODUCT 14) ──
+  // Shapes are the frozen Library* contract in types.ts. External resources are
+  // METADATA + LINK-OUT ONLY — payloads carry our own summaries, source, url,
+  // license + verification status, never scraped content.
+  libraryHome: () => get<LibraryHomePayload>('/api/library/home'),
+  libraryResources: (params: Record<string, string | number | undefined>) => {
+    const qs = new URLSearchParams()
+    for (const [k, v] of Object.entries(params)) {
+      if (v !== undefined && v !== null && v !== '') qs.set(k, String(v))
+    }
+    const s = qs.toString()
+    return get<LibraryResourcesPayload>(`/api/library/resources${s ? `?${s}` : ''}`)
+  },
+  libraryResource: (id: string) =>
+    get<LibraryDetailPayload>(`/api/library/resources/${encodeURIComponent(id)}`),
+  librarySaved: () => get<LibrarySavedPayload>('/api/library/saved'),
+  librarySavedToggle: (resourceId: string) =>
+    post<{ saved: boolean }>('/api/library/saved', { resourceId }),
+  libraryReport: (body: { resourceId: string; reason: string; details?: string }) =>
+    post<LibraryReportResult>('/api/library/report', body),
+  libraryTopicFeed: (topicId: string) =>
+    get<LibraryTopicFeedPayload>(`/api/library/for-topic/${encodeURIComponent(topicId)}`),
+  // Request body matches the /api/library/ai route: {mode, resourceIds, query}.
+  // Response is the frozen LibraryAiResponse.
+  libraryAi: (body: { mode: 'recommend' | 'key-points' | 'compare'; resourceIds: string[]; query?: string }) =>
+    post<LibraryAiResponse>('/api/library/ai', body),
 }
 
 // ── Adaptive Engine aux payloads (defined here — types.ts is frozen) ──

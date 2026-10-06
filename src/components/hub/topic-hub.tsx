@@ -597,9 +597,28 @@ function ReadSection({ data, onOpenConcept }: {
   data: HubTopicPayload
   onOpenConcept: (id: string) => void
 }) {
+  // PRODUCT 14 — one additive bridge: everything the Resource Hub curates for
+  // this topic (guidelines, references, image atlases, open courses) is one tap away.
+  const openLibrary = useAppStore((s) => s.openLibrary)
   return (
     <div className="space-y-5">
       <SectionIntro title="Read" sub="Structured notes, key tables and reference material — everything written down." />
+
+      <button
+        type="button"
+        onClick={() => openLibrary({ topicId: data.topic.id })}
+        className="group flex w-full items-center gap-3 rounded-2xl border border-primary/25 bg-primary/5 p-3.5 text-left transition-colors hover:border-primary/45 hover:bg-primary/10 min-h-11"
+        aria-label="Open curated resources for this topic in the Resource Hub"
+      >
+        <span className="clay-in grid size-9 shrink-0 place-items-center rounded-xl" aria-hidden="true">
+          <Layers className="size-4 text-primary" />
+        </span>
+        <span className="min-w-0 flex-1">
+          <span className="block text-sm font-semibold">Resource Hub — curated for this topic</span>
+          <span className="block text-[11px] text-ink-soft">Guidelines, references, image atlases & open courses — metadata + link-out, license checked.</span>
+        </span>
+        <ChevronRight className="size-4 shrink-0 text-primary transition-transform group-hover:translate-x-0.5" aria-hidden="true" />
+      </button>
 
       {data.read.sections.length > 0 && (
         <div className="rounded-2xl border border-line bg-card p-4">

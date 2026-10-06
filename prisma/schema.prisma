@@ -832,3 +832,36 @@ model ExamAttempt {
   @@index([profileId, status])
   @@index([profileId, startedAt])
 }
+
+// ───────────────── MEDICAL CONTENT & RESOURCE HUB (PRODUCT 14) ─────────────────
+// Saved bookmarks + quality-control reports over the curated resource catalog.
+// Standalone (no FK relations) like the other engine models → db:push stays
+// non-destructive. resourceId is a catalog id ('ext:…' | 'platform:…') — the
+// catalog itself is code-versioned (src/lib/resource-catalog.ts + measured
+// platform synthesis), so no resource table is needed and nothing copyrighted
+// is ever stored locally: metadata + ids only.
+
+model SavedResource {
+  id         String   @id @default(cuid())
+  profileId  String
+  resourceId String
+  note       String   @default("")
+  createdAt  DateTime @default(now())
+
+  @@unique([profileId, resourceId])
+  @@index([profileId])
+}
+
+model ResourceReport {
+  id         String   @id @default(cuid())
+  profileId  String
+  resourceId String
+  reason     String // incorrect|broken|outdated|copyright|other
+  details    String   @default("")
+  status     String   @default("open") // open|reviewed|resolved
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([profileId, resourceId])
+  @@index([status])
+}

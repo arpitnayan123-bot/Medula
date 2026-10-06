@@ -35,6 +35,7 @@ import { ShortcutsOverlay } from '@/components/shortcuts/shortcuts-overlay'
 import { AuditView } from '@/components/audit/audit-view'
 import { ExploreView } from '@/components/explore/explore-view'
 import { ResearchView } from '@/components/research/research-view'
+import { LibraryView } from '@/components/library/library-view'
 import { Loader2 } from 'lucide-react'
 
 export default function Home() {
@@ -110,6 +111,7 @@ export default function Home() {
       {view === 'map' && <DoubtSearchView />}
       {view === 'explore' && <ExploreView onNavigate={handleExploreNav} />}
       {view === 'research' && <ResearchView initialQuery={researchSeedQuery ?? undefined} />}
+      {view === 'library' && <LibraryView />}
       {view === 'understand' && <UnderstandView />}
       {view === 'learn' && <LearnView />}
       {view === 'hub' && <HubView />}

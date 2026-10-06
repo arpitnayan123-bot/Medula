@@ -8,8 +8,42 @@ import type { Profile, View } from './types'
 // the doctor back where they left off, and mirror to the URL hash (#/map)
 // so a reload keeps the same view.
 export const APP_VIEWS: readonly View[] = [
-  'home', 'map', 'explore', 'research', 'understand', 'learn', 'hub', 'questions', 'adaptive', 'exam', 'mistakes', 'revision', 'planner', 'graph', 'performance', 'cases', 'lab', 'voice', 'revise', 'tutor', 'progress', 'roadmap', 'profile',
+  'home', 'map', 'explore', 'research', 'understand', 'learn', 'hub', 'questions', 'adaptive', 'exam', 'mistakes', 'revision', 'planner', 'graph', 'performance', 'cases', 'lab', 'voice', 'revise', 'tutor', 'progress', 'roadmap', 'profile', 'library',
 ] as const
+
+// ── Resource Hub deep links (PRODUCT 14) ──────────────────────────────
+// The library supports shareable deep links of the form #/library?topic=<id>
+// (&?q=<query>) so a student studying a topic lands directly on that topic's
+// resources. The view re-reads the full hash on mount; store focus covers
+// in-app hand-offs (Topic Hub, Learn, dashboard) without a page reload.
+export const LIBRARY_TOPIC_KEY = 'medula:library-topic'
+export const LIBRARY_Q_KEY = 'medula:library-q'
+
+export function parseLibraryHash(hash?: string): { topicId: string | null; q: string | null } {
+  const h = hash ?? (typeof window !== 'undefined' ? window.location.hash : '')
+  if (!h.startsWith('#/library')) return { topicId: null, q: null }
+  let topicId: string | null = null
+  let q: string | null = null
+  try {
+    const qs = h.slice('#/library'.length).replace(/^\?/, '')
+    for (const part of qs.split('&')) {
+      const [k, v] = part.split('=')
+      const val = v ? decodeURIComponent(v) : null
+      if (k === 'topic' && val) topicId = val
+      if (k === 'q' && val) q = val
+    }
+  } catch { /* malformed hash — ignore */ }
+  return { topicId, q }
+}
+
+export function writeLibraryHash(topicId: string | null, q: string | null): void {
+  if (typeof window === 'undefined') return
+  const qs = new URLSearchParams()
+  if (topicId) qs.set('topic', topicId)
+  if (q) qs.set('q', q)
+  const target = qs.toString() ? `#/library?${qs.toString()}` : '#/library'
+  try { window.history.replaceState(null, '', target) } catch { /* private mode */ }
+}
 
 // ── Topic Hub deep links ────────────────────────────────────────────────
 // The hub supports shareable deep links of the form #/hub?topic=<id> (and
@@ -141,7 +175,7 @@ export function viewToLabel(v: View): string {
     performance: 'Performance Intelligence',
     cases: 'the Case Simulator', lab: 'the Image Lab', revise: 'Revise', tutor: 'the AI Tutor',
     progress: 'Progress', roadmap: 'Roadmap', profile: 'Profile',
-    voice: 'the Voice Tutor', exam: 'the Exam Lab',
+    voice: 'the Voice Tutor', exam: 'the Exam Lab', library: 'the Resource Hub',
   }
   return labels[v] ?? v
 }
@@ -165,6 +199,7 @@ interface AppState {
   voicePreset: { mode: import('./types').VoiceMode; topicId?: string } | null // Voice Tutor hand-off (PRODUCT 11)
   examPreset: { mode?: import('./types').ExamMode; subjectCode?: string; topicId?: string; conceptId?: string; autoStart?: boolean } | null // Exam Lab hand-off (PRODUCT 12)
   researchSeedQuery: string | null // query handed from Explore → Research Hub
+  libraryFocus: { topicId?: string; q?: string; nonce?: number } | null // Resource Hub deep-link hand-off (PRODUCT 14)
   setView: (v: View) => void
   setProfile: (p: Profile | null) => void
   setHydrated: (v: boolean) => void
@@ -189,6 +224,8 @@ interface AppState {
   openExam: (preset?: { mode?: import('./types').ExamMode; subjectCode?: string; topicId?: string; conceptId?: string; autoStart?: boolean }) => void
   clearExamPreset: () => void
   setResearchSeedQuery: (q: string | null) => void
+  openLibrary: (focus?: { topicId?: string; q?: string }) => void
+  closeLibrary: () => void
 }
 
 export const useAppStore = create<AppState>((set) => ({
@@ -210,6 +247,7 @@ export const useAppStore = create<AppState>((set) => ({
   voicePreset: null,
   examPreset: null,
   researchSeedQuery: null,
+  libraryFocus: null,
   setView: (v) => {
     if (isAppView(v)) {
       try { window.localStorage.setItem(LAST_VIEW_KEY, v) } catch { /* private mode */ }
@@ -247,4 +285,17 @@ export const useAppStore = create<AppState>((set) => ({
   openExam: (preset) => set({ examPreset: preset ?? { autoStart: false }, view: 'exam' }),
   clearExamPreset: () => set({ examPreset: null }),
   setResearchSeedQuery: (q) => set({ researchSeedQuery: q }),
+  openLibrary: (focus) => {
+    try {
+      if (focus?.topicId) window.sessionStorage.setItem(LIBRARY_TOPIC_KEY, focus.topicId)
+      else window.sessionStorage.removeItem(LIBRARY_TOPIC_KEY)
+      if (focus?.q) window.sessionStorage.setItem(LIBRARY_Q_KEY, focus.q)
+      else window.sessionStorage.removeItem(LIBRARY_Q_KEY)
+    } catch { /* private mode */ }
+    writeLibraryHash(focus?.topicId ?? null, focus?.q ?? null)
+    try { window.localStorage.setItem(LAST_VIEW_KEY, 'library') } catch { /* private mode */ }
+    // nonce re-triggers the view's focus effect for repeat hand-offs
+    set({ view: 'library', libraryFocus: { ...focus, nonce: Date.now() } })
+  },
+  closeLibrary: () => set({ libraryFocus: null }),
 }))
