@@ -1287,8 +1287,8 @@ export function QuizView() {
         <Button size="lg" className="min-h-11 flex-1 font-semibold" onClick={backToConfig}>
           <RefreshCw className="size-4" /> RUN ANOTHER SET
         </Button>
-        <Button size="lg" variant="outline" className="min-h-11 sm:flex-none" onClick={() => setView('home')}>
-          BACK TO DASHBOARD
+        <Button size="lg" variant="outline" className="min-h-11 sm:flex-none" onClick={() => setView('os')}>
+          BACK TO HOME
         </Button>
       </div>
     </div>

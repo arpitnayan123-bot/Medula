@@ -15,7 +15,7 @@ import {
 } from '@/components/os/os-shared'
 import {
   CalendarCheck, CircleHelp, Bandage, ClipboardList, ChevronRight,
-  AlertTriangle, Clock, BookOpen,
+  AlertTriangle, Clock, BookOpen, CirclePause, ArrowRight,
 } from 'lucide-react'
 
 const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1]
@@ -313,6 +313,69 @@ function WeakRow({ w }: { w: OsWeakItem }) {
   )
 }
 
+// ── stop signals — where your time stops paying (personalization #4) ────────
+
+function StopSection({ data }: { data: OsCommandCenter }) {
+  const signals = data.stopSignals
+  return (
+    <Section
+      title="Stop spending time here"
+      icon={CirclePause}
+      action={signals[0]?.redirectView && signals[0]?.redirectLabel && (
+        <OsGoButton
+          view={signals[0].redirectView}
+          conceptId={signals[0].redirectConceptId}
+          topicId={signals[0].redirectTopicId}
+          variant="ghost"
+          size="sm"
+          className="text-xs text-primary"
+        >
+          Shift to {signals[0].redirectLabel} <ChevronRight className="size-3.5" aria-hidden />
+        </OsGoButton>
+      )}
+    >
+      {signals.length === 0 ? (
+        <EmptyNote>
+          Nothing to drop — every area you touched still needs the time. This list appears when ground you already hold keeps pulling attention away from where marks are lost.
+        </EmptyNote>
+      ) : (
+        <ul className="space-y-1.5">
+          {signals.map((s) => (
+            <li key={s.id} className="rounded-xl border border-border/60 bg-background/60 px-2.5 py-2">
+              <div className="flex items-center justify-between gap-2">
+                <span className="min-w-0 truncate text-[13px] font-medium">{s.label}</span>
+                <span className="shrink-0 rounded-full border border-border/70 px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-wide text-ink-soft">
+                  {s.kind === 'over-drilled' ? 'over-drilled' : 'saturated'}
+                </span>
+              </div>
+              <div className="mt-0.5 text-[11px] leading-relaxed text-ink-soft">{s.evidence}</div>
+              {s.redirectView && s.redirectLabel && (
+                <StopRedirect view={s.redirectView} label={s.redirectLabel} conceptId={s.redirectConceptId} topicId={s.redirectTopicId} />
+              )}
+            </li>
+          ))}
+        </ul>
+      )}
+    </Section>
+  )
+}
+
+// Separate button component — keeps the list item markup flat and the tap
+// target 44px, and hands the freed time back to today's top weakness WITH its
+// concept/topic context attached (the same presets the feature itself uses).
+function StopRedirect({ view, label, conceptId, topicId }: { view: OsWeakItem['view']; label: string; conceptId?: string; topicId?: string }) {
+  const go = useOsNavigate()
+  return (
+    <button
+      onClick={() => go(view, conceptId, topicId)}
+      className="mt-1.5 inline-flex min-h-9 items-center gap-1 rounded-lg text-[11px] font-medium text-primary transition hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50"
+    >
+      Shift that time to {label}
+      <ArrowRight className="size-3" aria-hidden />
+    </button>
+  )
+}
+
 // ── recent activity (merged cross-feature feed) ─────────────────────────────
 
 function ActivitySection({ data }: { data: OsCommandCenter }) {
@@ -370,6 +433,7 @@ export function OsTodaySections({ data }: { data: OsCommandCenter }) {
         <MistakesSection data={data} />
         <TestsSection data={data} />
         <WeakSection data={data} />
+        <StopSection data={data} />
         <ActivitySection data={data} />
       </div>
     </div>

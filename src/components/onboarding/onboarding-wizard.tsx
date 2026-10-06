@@ -316,9 +316,9 @@ export function OnboardingWizard() {
       setProfile(res.profile)
       toast({
         title: `Welcome to MEDULA, ${res.profile.name}.`,
-        description: 'Your learning system is calibrated. Building your first dashboard…',
+        description: 'Your learning system is calibrated. Preparing your command center…',
       })
-      setView('home')
+      setView('os')
     } catch (err) {
       setError(
         err instanceof Error
@@ -337,7 +337,7 @@ export function OnboardingWizard() {
     } catch {
       toast({ title: 'Could not reach the server — continuing with the demo student.' })
     }
-    setView('home')
+    setView('os')
   }
 
   const motionCustom = reduce ? 0 : dir

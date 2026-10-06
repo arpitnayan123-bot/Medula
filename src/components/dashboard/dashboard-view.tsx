@@ -20,7 +20,7 @@ import {
   RefreshCw,
   ScanSearch,
   ShieldCheck,
-  Target,
+  Command,
   Timer,
 } from 'lucide-react'
 
@@ -188,12 +188,6 @@ function SegmentRow({ index, seg }: { index: number; seg: PlanSegment }) {
   )
 }
 
-function masteryTone(m: number): string {
-  if (m < 40) return 'bg-sev-crit'
-  if (m < 70) return 'bg-sev-warn'
-  return 'bg-sev-ok'
-}
-
 // ─── Loading / Error states ──────────────────────────────────────────────────
 
 function DashboardSkeleton() {
@@ -235,7 +229,6 @@ function DashboardError({ onRetry }: { onRetry: () => void }) {
 
 export function DashboardView() {
   const setView = useAppStore((s) => s.setView)
-  const openConcept = useAppStore((s) => s.openConcept)
   const setQuizPreset = useAppStore((s) => s.setQuizPreset)
   const setAuditOpen = useAppStore((s) => s.setAuditOpen)
   const setMapScope = useAppStore((s) => s.setMapScope)
@@ -274,7 +267,7 @@ export function DashboardView() {
   if (status === 'loading') return <DashboardSkeleton />
   if (status === 'error' || !data) return <DashboardError onRetry={retry} />
 
-  const { stageLabel, prepStage, brainScore, stats, knowledgeSplit, revisionDebt, weaknesses, nextAction, todayPlan, heatToday } = data
+  const { stageLabel, prepStage, brainScore, stats, knowledgeSplit, revisionDebt, nextAction, todayPlan, heatToday } = data
 
   const stageLabelText = PREP_STAGE_LABELS[prepStage] ?? prepStage
   const missionTotal = todayPlan.reduce((a, s) => a + s.minutes, 0)
@@ -345,23 +338,6 @@ export function DashboardView() {
                 <Bar pct={missionPct} className="bg-primary" delay={0.25} />
               </div>
             </div>
-
-            {/* next best action — one quiet line instead of a full card */}
-            {nextAction && (
-              <button
-                type="button"
-                onClick={() => openConcept(nextAction.conceptId)}
-                className="mt-3 flex min-h-10 w-full items-center gap-2 rounded-xl border border-primary/25 bg-card/60 px-3 py-2 text-left transition-colors hover:border-primary/50"
-              >
-                <Target className="size-4 shrink-0 text-primary" aria-hidden />
-                <span className="min-w-0 flex-1 truncate text-xs text-ink-soft">
-                  <span className="font-semibold text-foreground">{nextAction.conceptName}</span> — {nextAction.reason}
-                </span>
-                <span className="hidden shrink-0 items-center gap-1 text-[11px] font-medium text-primary sm:inline-flex">
-                  Why? <ArrowRight className="size-3" aria-hidden />
-                </span>
-              </button>
-            )}
 
             {/* plan segments */}
             {todayPlan.length > 0 && (
@@ -434,53 +410,24 @@ export function DashboardView() {
         </Reveal>
       )}
 
-      {/* 4 · Focus now — top 3 weak spots, one tap to practice */}
-      {!needsAudit && weaknesses.length > 0 && (
+      {/* 4 · One system pointer — the OS command center owns "what next" and
+          the weak-topic ranking; this page owns the plan, subjects, internship.
+          No second arbiter, no duplicated weak-spots list. */}
+      {!needsAudit && (
         <Reveal index={4}>
-          <section aria-label="Focus now">
-            <div className="flex items-baseline justify-between gap-3 px-1">
-              <h2 className="text-lg font-semibold tracking-tight">Focus now</h2>
-              <button
-                type="button"
-                onClick={() => setView('progress')}
-                className="inline-flex min-h-8 items-center gap-1 text-xs font-medium text-primary hover:underline"
-              >
-                Full progress <ArrowRight className="size-3.5" aria-hidden />
-              </button>
-            </div>
-            <ul className="mt-3 space-y-2">
-              {weaknesses.slice(0, 3).map((w) => (
-                <li key={w.conceptId}>
-                  <div className="flex min-h-14 items-center gap-3 rounded-xl border border-line bg-card/70 px-3 py-2.5">
-                    <span className={cn('size-2 shrink-0 rounded-full', masteryTone(w.mastery))} aria-hidden />
-                    <button
-                      type="button"
-                      onClick={() => openConcept(w.conceptId)}
-                      className="min-w-0 flex-1 text-left"
-                      aria-label={`${w.name} — ${w.mastery}% mastery. Open concept.`}
-                    >
-                      <span className="block truncate text-sm font-medium">{w.name}</span>
-                      <span className="block truncate text-xs text-ink-soft">
-                        {w.subject} · {w.reason}
-                      </span>
-                    </button>
-                    <span className="w-10 shrink-0 text-right text-xs tabular-nums text-ink-soft">{w.mastery}%</span>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      className="h-9 shrink-0 rounded-lg px-3 text-xs"
-                      onClick={() => {
-                        setQuizPreset({ conceptId: w.conceptId, count: 5 })
-                        setView('questions')
-                      }}
-                    >
-                      Practice
-                    </Button>
-                  </div>
-                </li>
-              ))}
-            </ul>
-          </section>
+          <button
+            type="button"
+            onClick={() => setView('os')}
+            className="flex min-h-12 w-full items-center gap-2.5 rounded-xl border border-line bg-card/60 px-3.5 py-2.5 text-left transition-colors hover:border-primary/40"
+            aria-label="Open your command center — what to do next, weak topics and today's plan in one place"
+          >
+            <Command className="size-4 shrink-0 text-primary" aria-hidden />
+            <span className="min-w-0 flex-1 text-xs text-ink-soft">
+              <span className="font-medium text-foreground">What should I do next?</span>{' '}
+              Your command center ranks revision, practice, mistakes and mocks in one place.
+            </span>
+            <ArrowRight className="size-3.5 shrink-0 text-ink-soft" aria-hidden />
+          </button>
         </Reveal>
       )}
 

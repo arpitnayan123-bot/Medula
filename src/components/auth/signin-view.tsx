@@ -66,8 +66,8 @@ export function SignInView({ initialHash }: { initialHash?: string }) {
     if (profile) {
       setProfile(profile)
       if (profile.onboarded) {
-        // Deep link wins, then the stored last view, else home.
-        setView(viewFromHash(initialHash) ?? readStoredView() ?? 'home')
+        // Deep link wins, then the stored last view, else the OS home.
+        setView(viewFromHash(initialHash) ?? readStoredView() ?? 'os')
       } else {
         setView('onboarding')
       }

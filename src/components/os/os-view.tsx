@@ -51,28 +51,33 @@ function OsSkeleton() {
 export function OsView() {
   const [data, setData] = useState<OsCommandCenter | null>(null)
   const [state, setState] = useState<'loading' | 'ready' | 'error'>('loading')
+  const [reloadKey, setReloadKey] = useState(0)
 
-  // Fetches without touching state synchronously — transitions happen in the
-  // promise callbacks, so the mount effect never causes cascading renders.
-  const fetchPayload = useCallback(async () => {
-    try {
-      const payload = await api.osHome()
-      setData(payload)
-      setState('ready')
-    } catch {
-      setState('error')
+  // Fetch transitions happen inside promise callbacks — never synchronously
+  // within the effect body (avoids cascading renders on mount).
+  useEffect(() => {
+    let cancelled = false
+    api.osHome().then(
+      (payload) => {
+        if (cancelled) return
+        setData(payload)
+        setState('ready')
+      },
+      () => {
+        if (cancelled) return
+        setState('error')
+      },
+    )
+    return () => {
+      cancelled = true
     }
-  }, [])
+  }, [reloadKey])
 
   // Retry is a user action — show the spinner immediately, then fetch.
   const retry = useCallback(() => {
     setState('loading')
-    void fetchPayload()
-  }, [fetchPayload])
-
-  useEffect(() => {
-    void fetchPayload()
-  }, [fetchPayload])
+    setReloadKey((k) => k + 1)
+  }, [])
 
   return (
     <div className="mx-auto w-full max-w-5xl px-4 py-5 md:px-6 md:py-7">

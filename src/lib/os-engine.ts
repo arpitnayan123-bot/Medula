@@ -31,6 +31,7 @@ import type {
   OsConnection,
   OsMcqTarget,
   OsRevisionToday,
+  OsStopSignal,
   OsTests,
   OsWeakItem,
 } from '@/lib/types'
@@ -430,6 +431,65 @@ export async function buildOsCommandCenter(profileId: string): Promise<OsCommand
     alternates.push(c)
   }
 
+  // ── 8b. Stop signals — what to STOP spending time on (personalization #4) ─
+  // Two measured families, never a vibe:
+  //   · over-drilled — concepts already mastered/strong that keep receiving
+  //     attempts this week (time there buys almost nothing now)
+  //   · saturated — topics holding ≥85% accuracy over ≥15 attempts, where
+  //     extra questions have visibly stopped moving the marks
+  // Each signal carries a redirect toward today's top weakness, so the time
+  // has somewhere measured to go instead.
+  const strongIds = new Set(
+    states.filter((s) => s.status === 'mastered' || s.status === 'strong').map((s) => s.conceptId),
+  )
+  const drilledThisWeek = new Map<string, number>()
+  for (const a of ctx.attempts) {
+    if (a.createdAt.getTime() >= weekStart.getTime() && a.conceptId && strongIds.has(a.conceptId)) {
+      drilledThisWeek.set(a.conceptId, (drilledThisWeek.get(a.conceptId) ?? 0) + 1)
+    }
+  }
+  const stopSignals: OsStopSignal[] = []
+  for (const [conceptId, n] of [...drilledThisWeek.entries()].sort((x, y) => y[1] - x[1])) {
+    if (n < 4) continue // fewer than 4 repeats is incidental re-touch, not a habit
+    const st = stateByName.get(conceptId)
+    if (!st) continue
+    stopSignals.push({
+      id: `overdrilled-${conceptId}`,
+      kind: 'over-drilled',
+      label: st.name,
+      parent: st.topicName,
+      evidence: `${st.status === 'mastered' ? 'Mastered' : 'Strong'} · ${st.accuracy !== null ? `${st.accuracy}% accuracy` : 'recall holding'} — ${n} more attempts this week on ground you already hold`,
+    })
+  }
+  const topicAgg = new Map<string, { name: string; attempts: number; correct: number }>()
+  for (const s of states) {
+    if (s.attempts < 15 || s.accuracy === null) continue
+    const cur = topicAgg.get(s.topicId) ?? { name: s.topicName, attempts: 0, correct: 0 }
+    cur.attempts += s.attempts
+    cur.correct += Math.round((s.accuracy / 100) * s.attempts)
+    topicAgg.set(s.topicId, cur)
+  }
+  for (const [topicId, t] of topicAgg) {
+    const acc = Math.round((t.correct / t.attempts) * 100)
+    if (acc < 85) continue
+    stopSignals.push({
+      id: `saturated-${topicId}`,
+      kind: 'saturated',
+      label: t.name,
+      evidence: `${acc}% accuracy over ${t.attempts} attempts — extra questions here barely move your marks now`,
+    })
+  }
+  stopSignals.sort((a, b) => (a.kind === 'over-drilled' ? 0 : 1) - (b.kind === 'over-drilled' ? 0 : 1))
+  const stopCapped = stopSignals.slice(0, 4)
+  if (stopCapped.length > 0 && topWeakness) {
+    for (const s of stopCapped) {
+      s.redirectView = topWeakness.view
+      s.redirectLabel = topWeakness.label
+      s.redirectConceptId = topWeakness.conceptId
+      s.redirectTopicId = topWeakness.topicId
+    }
+  }
+
   // ── 9. Merged cross-feature activity feed (genuinely new — no engine has it)
   const feed: OsActivityItem[] = []
   for (const a of ctx.attempts.slice(0, 5)) {
@@ -626,6 +686,7 @@ export async function buildOsCommandCenter(profileId: string): Promise<OsCommand
       tests,
     },
     weakTopics,
+    stopSignals: stopCapped,
     readiness: {
       overall: perf?.readiness.overall ?? null,
       band: perf?.readiness.band ?? '—',

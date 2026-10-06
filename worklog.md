@@ -1878,3 +1878,34 @@ Work Log:
 
 Stage Summary:
 - Platform is fully reusable for P20: view/nav/api/store/engine/patterns all stable and documented. Key facts: 29 app views via inline switch in page.tsx; NAV_GROUPS pattern for adding an 'OS' entry; getDemoProfile() is the only auth; every engine is computed-on-read; BrainAction {label,view,conceptId,topicId} + store nonce channels are the standard hand-off; honesty rules = measured-only + seeded peers labelled + honestNote strings. GAPS for P20: no exam/test scheduling model (only profile.examDate), no merged cross-feature activity feed, no single unified "do next" arbiter (7 engines each produce their own top action), no per-user settings row for the OS (BrainSettings/MotivationSettings are the copy patterns), no cross-feature session/readiness aggregation endpoint (must compose engines server-side, not refetch 7 routes).
+
+---
+Task ID: 20-done
+Agent: main
+Task: PRODUCT 20 — MEDICAL EDUCATION OS: audit the entire platform, unify all features into one intelligent command center («Discover → Learn → Practice → Analyze → Revise → Improve»), de-duplicate, then verify + deliver.
+
+Work Log:
+- AUDIT (mandatory pre-implementation): inventoried all 28 nav views (app-shell NAV + 7 NAV_GROUPS), 45 API route families, 9 engines (engine/brain/faculty/gamify/revision/community/ask/os + performance lib), store hand-off mechanism (quizPreset/adaptivePreset/learnFocus/hubFocus/examPreset/libraryFocus = the platform-wide context channel). Found the P20 implementation (os-engine 647L + 5 components + /api/os/home) was already committed silently inside the P19 commit (266d311) — never separately verified, and missing one spec item.
+- REUSE MAP (connect, don't rebuild): os-engine composes loadBrainContext + deriveConceptStates (P18 7-state knowledge), buildPerformancePayload (P13 readiness + exam-weighted weakness), examClock/computeStreak/istDayKey (P1), MISTAKE_TACTICS (one tactic map platform-wide); hand-offs go through the EXISTING store presets — the OS adds zero second implementations.
+- GAP FOUND vs spec: personalization decision #4 "what they should stop spending time on" was missing → implemented MEASURED stop signals: over-drilled (mastered/strong concepts with ≥4 attempts this week) + saturated (topics ≥85% accuracy over ≥15 attempts), each with evidence line + redirect to today's top weakness. Types: OsStopSignal/OsStopKind frozen in types.ts; stopSignals added to OsCommandCenter.
+- DE-DUPLICATION (spec mandate): the OS command center is now THE home screen — post-auth default 'os', onboarding exit 'os', mobile bottom-bar Home → 'os'; the old dashboard becomes 'Today' (label Today in nav, viewToLabel updated) owning plan + subjects + internship; its duplicated arbiters removed (nextAction display line + Focus-now weak-spots section) replaced by one quiet pointer into the command center — no second "what next" engine surface, no twice-listed weak topics. Quiz result CTA now BACK TO HOME → 'os'; roadmap "SEE TODAY'S MISSION" correctly targets Today.
+- Fixed lint error in os-view.tsx (react-hooks/set-state-in-effect) by adopting the platform Promise-then cancelled-flag fetch pattern.
+- Verified /api/os/home: primary "Clear overdue revision (6 blocks · 105 min)", alternates (mistakes / continue lesson), 7 revision due, 4 MCQ targets, 76 open mistakes, 251d exam estimate, 7 weak topics, 1 measured stop signal (over-drilled Acute Cholecystitis), readiness 54 Developing, 12 activity rows, 14 connections, stats streak 29/30 active days — all measured.
+- Regression: 14 API families 200 (dashboard, performance/home, adaptive/home, revision, mistakes, gamify/home, community/home, brain/home, faculty/home, os/home, readiness, graph, questions, learn/home+curriculum, planner/home). tsc 0 errors; lint 0 errors (3 pre-existing seed warnings).
+
+Stage Summary:
+- P20 complete: one connected OS — hero answers «What should I do next?» from the published 9-rule priority order (shown in-UI, no CoT); today sections (revision/MCQs/mistakes/tests/weak topics/stop signals/activity); 14-feature connection map with measured one-liners; context-preserving hand-offs everywhere; honest empty states; DoD «One intelligent medical education OS — not 20 separate features» — ready for commit + push.
+
+---
+Task ID: 20-e2e
+Agent: main (browser QA)
+Task: P20 E2E verification round (agent-browser) after stop-signal context fix.
+
+Work Log:
+- Fixed react-hooks/set-state-in-effect lint error in os-view.tsx (platform Promise-then cancelled-flag pattern).
+- E2E: post-auth default lands #/os (OS = home); mobile bottom-bar Home → #/os; "Why this?" rule expander shows published 9-rule order with no-CoT disclaimer; Start revision CTA → Smart Revision; stop-signal redirect now carries topic context (redirectTopicId t-patho-cvpath) and lands hub focused on the weakness's topic (Cardiovascular Pathology incl. Atherosclerosis content) — concept-level id passed through when the source weakness carries one.
+- Screenshots desktop 1440px + mobile 390px full-page: all sections render (hero/rule/alternates/stats/today strip/revision/MCQ/mistakes/tests/weak/stop signals/activity/14 connections/trust footer); zero horizontal overflow (scrollWidth check true); zero page errors; zero console errors (only benign dev banners).
+- tsc 0 src errors; lint 0 errors (3 pre-existing prisma/seed warnings); regression 15 API families 200.
+
+Stage Summary:
+- P20 verified end-to-end on desktop + mobile. DoD met: «One intelligent medical education OS — not 20 separate features.» Ready to commit + push.

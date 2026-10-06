@@ -4021,6 +4021,23 @@ export interface OsStats {
   xpToday: number
 }
 
+// Personalization decision #4 — "what they should stop spending time on".
+// Measured only: ground the student already holds that keeps pulling
+// attention away from where marks are actually lost.
+export type OsStopKind = 'over-drilled' | 'saturated'
+
+export interface OsStopSignal {
+  id: string
+  kind: OsStopKind
+  label: string
+  parent?: string // topic/subject the concept sits in
+  evidence: string // measured line, e.g. "Mastered · 92% accuracy — 6 attempts this week"
+  redirectView?: View // where that time should go instead (today's top weakness)
+  redirectLabel?: string
+  redirectConceptId?: string // context carried so the hand-off lands IN the weakness
+  redirectTopicId?: string
+}
+
 export interface OsCommandCenter {
   generatedAt: string
   greeting: { hello: string; dateLine: string; examLine: string | null; stageLabel: string }
@@ -4032,6 +4049,7 @@ export interface OsCommandCenter {
     tests: OsTests
   }
   weakTopics: OsWeakItem[]
+  stopSignals: OsStopSignal[]
   readiness: OsReadiness
   activity: OsActivityItem[]
   connections: OsConnection[]

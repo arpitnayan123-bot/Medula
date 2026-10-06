@@ -14,9 +14,11 @@ import {
 import type { View } from '@/lib/types'
 
 // One flat registry — used by the mobile "More" sheet and lookups.
+// 'os' is the HOME surface (answers "what should I do next?"); 'home' is the
+// Today surface (plan + subjects + internship) inside Daily study.
 const NAV: { id: View; label: string; icon: typeof Home; hint?: string }[] = [
-  { id: 'os', label: 'Command Center', icon: Command },
-  { id: 'home', label: 'Home', icon: Home },
+  { id: 'os', label: 'Home', icon: Command },
+  { id: 'home', label: 'Today', icon: Home },
   { id: 'map', label: 'Search', icon: Search },
   { id: 'hub', label: 'Topic Hub', icon: BookMarked },
   { id: 'learn', label: 'Learn', icon: BookOpen },
@@ -66,10 +68,11 @@ const PARENT_OF: Partial<Record<View, View>> = {
 }
 const sectionOf = (v: View): View => PARENT_OF[v] ?? v
 
-// Mobile bottom bar — the core daily loop (Home / Search / Questions / Revise)
-// plus a "More" button that opens a bottom sheet with the remaining sections.
+// Mobile bottom bar — the core daily loop opens on the OS home (what should
+// I do next) plus Search / Questions / Revise, and a "More" sheet with the
+// remaining sections.
 const MOBILE_NAV: { id: View; label: string; icon: typeof Home }[] = [
-  { id: 'home', label: 'Home', icon: Home },
+  { id: 'os', label: 'Home', icon: Command },
   { id: 'map', label: 'Search', icon: Search },
   { id: 'questions', label: 'Questions', icon: CircleHelp },
   { id: 'revise', label: 'Revise', icon: RefreshCcw },
