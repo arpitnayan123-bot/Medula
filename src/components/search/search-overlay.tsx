@@ -9,6 +9,7 @@ import {
   Layers,
   Library,
   Loader2,
+  ScanSearch,
   Sparkles,
   Stethoscope,
   TriangleAlert,
@@ -84,6 +85,7 @@ export function SearchOverlay() {
   const setView = useAppStore((s) => s.setView)
   const openConcept = useAppStore((s) => s.openConcept)
   const setQuizPreset = useAppStore((s) => s.setQuizPreset)
+  const openAsk = useAppStore((s) => s.openAsk)
 
   const [q, setQ] = useState('')
   const [results, setResults] = useState<SearchResults | null>(null)
@@ -212,6 +214,18 @@ export function SearchOverlay() {
                 >
                   <RowIcon icon={Sparkles} tone="primary" />
                   <TwoLine title={`Ask the tutor: “${query}”`} sub="Full explanation in tutor mode — educational only" />
+                </CommandItem>
+                {/* Ask Engine (PRODUCT 15) — grounded answer + sources + practice */}
+                <CommandItem
+                  value="ask-the-engine"
+                  onSelect={() => {
+                    setSearchOpen(false)
+                    openAsk({ q: query })
+                  }}
+                  className="min-h-11 gap-2.5 rounded-xl border border-primary/25 bg-primary/5 data-[selected=true]:border-primary/40"
+                >
+                  <RowIcon icon={ScanSearch} tone="primary" />
+                  <TwoLine title={`Ask the engine: “${query}”`} sub="Grounded answer with levels, verified sources and practice" />
                 </CommandItem>
               </CommandGroup>
             )}

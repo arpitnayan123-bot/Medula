@@ -865,3 +865,29 @@ model ResourceReport {
   @@index([profileId, resourceId])
   @@index([status])
 }
+
+// ─── PRODUCT 15 — AI MEDICAL SEARCH & ANSWER ENGINE ─────────────────────────
+// One thread per natural-language ask («Why does nephrotic syndrome cause
+// edema?», «Explain AKI», «X vs Y»). The engine (src/lib/ask-engine.ts) ALWAYS
+// re-derives retrieval + grounding live from the platform (concepts, lessons,
+// graph edges, questions, cases, resources, this student's knowledge states);
+// `grounding` merely snapshots the deterministic knowledge-page payload so a
+// thread can be re-opened later without re-computing. Standalone (no FK) like
+// the other engine models → db:push stays non-destructive. Personal messages
+// are capped server-side; nothing here is medical advice.
+model AskThread {
+  id                 String   @id @default(cuid())
+  profileId          String
+  title              String   @default("") // short thread label (root query, trimmed)
+  rootQuery          String   @default("") // verbatim first query
+  resolvedKind       String   @default("none") // concept|topic|compare|none
+  conceptId          String   @default("") // primary resolved concept ('' when none)
+  secondaryConceptId String   @default("") // compare target ('' when none)
+  level              String   @default("mbbs") // eli5|mbbs|neetpg|detailed
+  grounding          Json?    // snapshot of the AskAnswerPayload (minus threadId)
+  messages           Json     @default("[]") // follow-up transcript [{role,kind,text,payload?}]
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  @@index([profileId, updatedAt])
+}

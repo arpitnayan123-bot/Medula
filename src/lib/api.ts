@@ -43,6 +43,7 @@ import type {
   PerformancePayload, PerformanceAiAction, PerformanceAiResponse,
   LibraryHomePayload, LibraryResourcesPayload, LibraryDetailPayload, LibraryTopicFeedPayload,
   LibrarySavedPayload, LibraryReportResult, LibraryAiResponse,
+  AskLevel, AskHomePayload, AskAnswerPayload, AskFollowPayload, AskQuizPayload, AskRevisionResult, AskThreadDetail,
 } from './types'
 
 export const api = {
@@ -352,6 +353,20 @@ export const api = {
   // Response is the frozen LibraryAiResponse.
   libraryAi: (body: { mode: 'recommend' | 'key-points' | 'compare'; resourceIds: string[]; query?: string }) =>
     post<LibraryAiResponse>('/api/library/ai', body),
+
+  // ── AI Medical Search & Answer Engine (PRODUCT 15) ──
+  // Grounded answers only: the engine resolves queries against platform
+  // concepts/lessons/graph, never fabricates sources, and honestly reports
+  // uncertainty. Shapes are the frozen Ask* contract in types.ts.
+  askHome: () => get<AskHomePayload>('/api/ask/home'),
+  askSearch: (body: { q: string; level?: AskLevel }) => post<AskAnswerPayload>('/api/ask/search', body),
+  askLevel: (body: { threadId: string; level: AskLevel }) =>
+    post<{ ok: boolean; level: AskLevel; answer: AskAnswerPayload['answer']; personal: AskAnswerPayload['personal']; personalNote: string | null; connections: AskAnswerPayload['connections']; highYield: string[]; sources: AskAnswerPayload['sources']; resources: AskAnswerPayload['resources']; questions: AskAnswerPayload['questions']; cases: AskAnswerPayload['cases'] }>('/api/ask/level', body),
+  askFollowup: (body: { threadId: string; message: string }) => post<AskFollowPayload>('/api/ask/followup', body),
+  askQuiz: (body: { threadId?: string; conceptId?: string; mode?: 'concept' | 'mistakes'; count?: number }) =>
+    post<AskQuizPayload>('/api/ask/quiz', body),
+  askRevision: (body: { threadId: string }) => post<AskRevisionResult>('/api/ask/revision', body),
+  askThread: (id: string) => get<{ thread: AskThreadDetail }>(`/api/ask/thread/${encodeURIComponent(id)}`),
 }
 
 // ── Adaptive Engine aux payloads (defined here — types.ts is frozen) ──

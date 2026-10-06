@@ -28,6 +28,7 @@ export type View =
   | 'performance'
   | 'cases' | 'lab' | 'voice' | 'revise' | 'tutor' | 'progress' | 'roadmap' | 'profile'
   | 'library'
+  | 'ask' // PRODUCT 15 — AI Medical Search & Answer Engine
 
 export interface Profile {
   id: string
@@ -2593,4 +2594,169 @@ export interface LibraryAiResponse {
   fallback: boolean // true when the deterministic path answered
   aiBadge: string
   disclaimer: string
+}
+
+// ─── PRODUCT 15 — AI MEDICAL SEARCH & ANSWER ENGINE (Ask Engine) ─────────────
+// Search → Understand → Verify → Explore → Learn. The engine ALWAYS grounds on
+// platform content (concepts + structured lessons + verified graph edges +
+// measured questions/cases + curated resource metadata). It never fabricates
+// citations: every source row below is assembled deterministically in code;
+// when grounding is insufficient the answer says so instead of inventing.
+
+export type AskLevel = 'eli5' | 'mbbs' | 'neetpg' | 'detailed'
+export type AskResolutionKind = 'concept' | 'topic' | 'compare' | 'none'
+export type AskSourceKind = 'platform' | 'lesson-ref' | 'question-pool' | 'external'
+
+/** One deterministically-assembled source row — never written by the LLM. */
+export interface AskSource {
+  kind: AskSourceKind
+  label: string
+  detail?: string // e.g. institution + year, or "worked explanations on platform"
+  url?: string // external link-out only (verified status carried separately)
+  verified?: boolean // urlVerified for external rows
+  lastVerified?: string | null
+  license?: string
+  access?: ResourceAccess
+}
+
+/** Curated external resource — METADATA ONLY, always links out (P14 rules). */
+export interface AskResource {
+  id: string
+  kind: ResourceKind
+  title: string
+  description: string
+  sourceName: string
+  url: string
+  urlVerified: boolean
+  lastVerified: string | null
+  access: ResourceAccess
+  license: string
+  difficulty: 1 | 2 | 3
+}
+
+/** One graph neighbour grouped for the knowledge page. */
+export interface AskConnection {
+  group: string // GraphGroupKind
+  items: { id: string; name: string; mastery: number; status: string }[]
+}
+
+/** The student's own measured mistakes on the resolved concept. */
+export interface AskMistakeItem {
+  questionId: string
+  stem: string
+  wrongCount: number
+  lastErrorType: string | null
+  teaching: string
+}
+
+/** A self-check MCQ drawn from the MEASURED platform pool (never AI-invented). */
+export interface AskQuizItem {
+  id: string
+  stem: string
+  options: { id: string; text: string }[]
+  answer: string
+  explanation: string
+  teaching: string
+  pyqPattern: boolean
+  conceptName?: string
+}
+
+/** Serializable grounding/knowledge-page snapshot persisted on AskThread. */
+export interface AskAnswerPayload {
+  threadId: string
+  query: string
+  /** shown when Hinglish/fuzzy normalisation fired, e.g. «understood as …» */
+  understoodAs?: string
+  level: AskLevel
+  resolution: {
+    kind: AskResolutionKind
+    conceptId?: string
+    conceptName?: string
+    conceptSummary?: string
+    secondaryId?: string
+    secondaryName?: string
+    topicId?: string
+    topicName?: string
+    subjectName?: string
+    subjectColor?: string
+    matchedVia?: string
+  }
+  answer: {
+    text: string
+    keyPoints: string[]
+    uncertain: boolean // engine could not fully ground the answer
+    uncertainNote?: string
+    fallback: boolean // deterministic compose (AI unavailable)
+    aiBadge: string
+    disclaimer: string
+  }
+  personalNote?: string // e.g. "renal physiology is a current weak area — we start there"
+  connections: AskConnection[]
+  highYield: string[] // measured numbers/mnemonics/mistake-warnings from the platform lesson
+  personal: {
+    mastery: number | null
+    status: string | null
+    missingPrerequisites: { id: string; name: string; mastery: number }[]
+    mistakeOpen: number
+    mistakeMaxWrong: number
+  }
+  questions: { total: number; pyq: number }
+  cases: { id: string; title: string; specialty: string }[]
+  resources: AskResource[]
+  sources: AskSource[]
+  suggestions: string[] // follow-up chips
+}
+
+/** POST /api/ask/followup — intent-dispatched reply inside a thread. */
+export type AskFollowKind = 'text' | 'quiz' | 'mistakes' | 'revision' | 'compare'
+export interface AskFollowPayload {
+  ok: boolean
+  kind: AskFollowKind
+  reply: string
+  quiz?: AskQuizItem[]
+  quizNote?: string
+  mistakes?: AskMistakeItem[]
+  related?: { id: string; name: string; group: string }[]
+  fallback?: boolean
+  aiBadge?: string
+  disclaimer?: string
+}
+
+/** POST /api/ask/quiz */
+export interface AskQuizPayload {
+  items: AskQuizItem[]
+  note?: string // honest empty-state note when the pool is dry
+}
+
+/** POST /api/ask/revision */
+export interface AskRevisionResult {
+  ok: boolean
+  queued: boolean // false when an open item already existed (dedupe)
+  due: number // measured due count after the write
+}
+
+/** GET /api/ask/thread/[id] — reopen a past thread. */
+export interface AskThreadDetail {
+  id: string
+  title: string
+  rootQuery: string
+  level: AskLevel
+  createdAt: string
+  updatedAt: string
+  page: AskAnswerPayload
+  messages: { role: 'user' | 'assistant'; kind: AskFollowKind; text: string; payload?: AskFollowPayload }[]
+}
+
+/** GET /api/ask/home */
+export interface AskHomePayload {
+  threads: { id: string; title: string; rootQuery: string; resolvedKind: string; updatedAt: string }[]
+  stats: { concepts: number; questions: number; pyq: number; lessons: number; cases: number; resources: number }
+  personal: {
+    yearLabel: string
+    prepStage: string
+    weak: { conceptId: string; name: string; mastery: number }[]
+    missed: { conceptId: string | null; name: string; count: number }[]
+    dueRevision: number
+  }
+  examples: string[] // measured, resolvable starters (concept-name templated)
 }

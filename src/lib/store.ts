@@ -8,7 +8,7 @@ import type { Profile, View } from './types'
 // the doctor back where they left off, and mirror to the URL hash (#/map)
 // so a reload keeps the same view.
 export const APP_VIEWS: readonly View[] = [
-  'home', 'map', 'explore', 'research', 'understand', 'learn', 'hub', 'questions', 'adaptive', 'exam', 'mistakes', 'revision', 'planner', 'graph', 'performance', 'cases', 'lab', 'voice', 'revise', 'tutor', 'progress', 'roadmap', 'profile', 'library',
+  'home', 'map', 'explore', 'research', 'understand', 'learn', 'hub', 'questions', 'adaptive', 'exam', 'mistakes', 'revision', 'planner', 'graph', 'performance', 'cases', 'lab', 'voice', 'revise', 'tutor', 'progress', 'roadmap', 'profile', 'library', 'ask',
 ] as const
 
 // ── Resource Hub deep links (PRODUCT 14) ──────────────────────────────
@@ -176,6 +176,7 @@ export function viewToLabel(v: View): string {
     cases: 'the Case Simulator', lab: 'the Image Lab', revise: 'Revise', tutor: 'the AI Tutor',
     progress: 'Progress', roadmap: 'Roadmap', profile: 'Profile',
     voice: 'the Voice Tutor', exam: 'the Exam Lab', library: 'the Resource Hub',
+    ask: 'the Ask Engine',
   }
   return labels[v] ?? v
 }
@@ -200,6 +201,7 @@ interface AppState {
   examPreset: { mode?: import('./types').ExamMode; subjectCode?: string; topicId?: string; conceptId?: string; autoStart?: boolean } | null // Exam Lab hand-off (PRODUCT 12)
   researchSeedQuery: string | null // query handed from Explore → Research Hub
   libraryFocus: { topicId?: string; q?: string; nonce?: number } | null // Resource Hub deep-link hand-off (PRODUCT 14)
+  askFocus: { q?: string; threadId?: string; nonce?: number } | null // Ask Engine hand-off (PRODUCT 15)
   setView: (v: View) => void
   setProfile: (p: Profile | null) => void
   setHydrated: (v: boolean) => void
@@ -226,6 +228,8 @@ interface AppState {
   setResearchSeedQuery: (q: string | null) => void
   openLibrary: (focus?: { topicId?: string; q?: string }) => void
   closeLibrary: () => void
+  openAsk: (focus?: { q?: string; threadId?: string }) => void
+  closeAsk: () => void
 }
 
 export const useAppStore = create<AppState>((set) => ({
@@ -248,6 +252,7 @@ export const useAppStore = create<AppState>((set) => ({
   examPreset: null,
   researchSeedQuery: null,
   libraryFocus: null,
+  askFocus: null,
   setView: (v) => {
     if (isAppView(v)) {
       try { window.localStorage.setItem(LAST_VIEW_KEY, v) } catch { /* private mode */ }
@@ -298,4 +303,10 @@ export const useAppStore = create<AppState>((set) => ({
     set({ view: 'library', libraryFocus: { ...focus, nonce: Date.now() } })
   },
   closeLibrary: () => set({ libraryFocus: null }),
+  openAsk: (focus) => {
+    try { window.localStorage.setItem(LAST_VIEW_KEY, 'ask') } catch { /* private mode */ }
+    // nonce re-triggers the view's focus effect for repeat hand-offs
+    set({ view: 'ask', askFocus: { ...focus, nonce: Date.now() } })
+  },
+  closeAsk: () => set({ askFocus: null }),
 }))

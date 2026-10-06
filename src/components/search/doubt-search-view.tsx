@@ -18,6 +18,7 @@ import {
   Layers,
   Library,
   Loader2,
+  ScanSearch,
   Search,
   Sparkles,
   Stethoscope,
@@ -139,6 +140,7 @@ export function DoubtSearchView() {
   const openHub = useAppStore((s) => s.openHub)
   const setQuizPreset = useAppStore((s) => s.setQuizPreset)
   const setResearchSeedQuery = useAppStore((s) => s.setResearchSeedQuery)
+  const openAsk = useAppStore((s) => s.openAsk)
   const mapScope = useAppStore((s) => s.mapScope)
   const setMapScope = useAppStore((s) => s.setMapScope)
   const reduce = useReducedMotion()
@@ -507,6 +509,18 @@ export function DoubtSearchView() {
               <RowIcon icon={FlaskConical} />
               <span className="min-w-0 flex-1 text-sm font-medium">
                 “{query}” in live research papers
+              </span>
+              <ArrowRight className="size-4 text-ink-soft" aria-hidden />
+            </button>
+            {/* Ask Engine (PRODUCT 15) — grounded full-page answer */}
+            <button
+              type="button"
+              onClick={() => openAsk({ q: query })}
+              className="flex min-h-12 items-center gap-3 rounded-xl border border-primary/30 bg-primary/5 px-3 text-left transition-colors hover:border-primary/50 sm:col-span-2"
+            >
+              <RowIcon icon={ScanSearch} tone="primary" />
+              <span className="min-w-0 flex-1 text-sm font-medium">
+                Get a grounded answer with sources — open the Ask Engine
               </span>
               <ArrowRight className="size-4 text-ink-soft" aria-hidden />
             </button>
