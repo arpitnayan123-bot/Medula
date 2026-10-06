@@ -8,7 +8,7 @@ import type { Profile, View } from './types'
 // the doctor back where they left off, and mirror to the URL hash (#/map)
 // so a reload keeps the same view.
 export const APP_VIEWS: readonly View[] = [
-  'home', 'map', 'explore', 'research', 'understand', 'learn', 'hub', 'questions', 'adaptive', 'exam', 'mistakes', 'revision', 'planner', 'graph', 'performance', 'cases', 'lab', 'voice', 'revise', 'tutor', 'progress', 'roadmap', 'profile', 'library', 'ask', 'community',
+  'home', 'map', 'explore', 'research', 'understand', 'learn', 'hub', 'questions', 'adaptive', 'exam', 'mistakes', 'revision', 'planner', 'graph', 'performance', 'cases', 'lab', 'voice', 'revise', 'tutor', 'progress', 'roadmap', 'profile', 'library', 'ask', 'community', 'gamify',
 ] as const
 
 // ── Resource Hub deep links (PRODUCT 14) ──────────────────────────────
@@ -176,7 +176,7 @@ export function viewToLabel(v: View): string {
     cases: 'the Case Simulator', lab: 'the Image Lab', revise: 'Revise', tutor: 'the AI Tutor',
     progress: 'Progress', roadmap: 'Roadmap', profile: 'Profile',
     voice: 'the Voice Tutor', exam: 'the Exam Lab', library: 'the Resource Hub',
-    ask: 'the Ask Engine', community: 'Community',
+    ask: 'the Ask Engine', community: 'Community', gamify: 'Motivation',
   }
   return labels[v] ?? v
 }
@@ -203,6 +203,7 @@ interface AppState {
   libraryFocus: { topicId?: string; q?: string; nonce?: number } | null // Resource Hub deep-link hand-off (PRODUCT 14)
   askFocus: { q?: string; threadId?: string; nonce?: number } | null // Ask Engine hand-off (PRODUCT 15)
   communityFocus: { spaceId?: string; postId?: string; tab?: 'home' | 'groups' | 'accountability'; nonce?: number } | null // Community hand-off (PRODUCT 16)
+  gamifyFocus: { tab?: 'overview' | 'journey' | 'achievements' | 'challenges' | 'boards' | 'rewards'; nonce?: number } | null // Motivation hand-off (PRODUCT 17)
   setView: (v: View) => void
   setProfile: (p: Profile | null) => void
   setHydrated: (v: boolean) => void
@@ -233,6 +234,8 @@ interface AppState {
   closeAsk: () => void
   openCommunity: (focus?: { spaceId?: string; postId?: string; tab?: 'home' | 'groups' | 'accountability' }) => void
   closeCommunity: () => void
+  openGamify: (focus?: { tab?: 'overview' | 'journey' | 'achievements' | 'challenges' | 'boards' | 'rewards' }) => void
+  closeGamify: () => void
 }
 
 export const useAppStore = create<AppState>((set) => ({
@@ -257,6 +260,7 @@ export const useAppStore = create<AppState>((set) => ({
   libraryFocus: null,
   askFocus: null,
   communityFocus: null,
+  gamifyFocus: null,
   setView: (v) => {
     if (isAppView(v)) {
       try { window.localStorage.setItem(LAST_VIEW_KEY, v) } catch { /* private mode */ }
@@ -319,4 +323,10 @@ export const useAppStore = create<AppState>((set) => ({
     set({ view: 'community', communityFocus: { ...focus, nonce: Date.now() } })
   },
   closeCommunity: () => set({ communityFocus: null }),
+  openGamify: (focus) => {
+    try { window.localStorage.setItem(LAST_VIEW_KEY, 'gamify') } catch { /* private mode */ }
+    // nonce re-triggers the view's focus effect for repeat hand-offs
+    set({ view: 'gamify', gamifyFocus: { ...focus, nonce: Date.now() } })
+  },
+  closeGamify: () => set({ gamifyFocus: null }),
 }))

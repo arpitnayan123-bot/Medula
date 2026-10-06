@@ -320,8 +320,17 @@ async function main() {
     { groupId: 'g-cardio-club', actorKey: 'm-aarav', role: 'owner' },
     { groupId: 'g-cardio-club', actorKey: 'm-arjun', role: 'member' },
     { groupId: 'g-cardio-club', actorKey: 'm-sanya', role: 'member' },
+    // 'you' starts in the daily NEET-PG group with sharing OFF — the
+    // leaderboard demonstrates the explicit consent switch from day one.
+    { groupId: 'g-neetpg-daily', actorKey: 'you', role: 'member' },
   ]
-  await db.groupMembership.createMany({ data: memberships.map((m) => ({ ...m, profileId: '', shareData: false })) })
+  // Seeded demo peers share a DEMO progress snapshot with their groups
+  // (labelled everywhere) — this powers the consent-gated Motivation
+  // leaderboards. 'you' joins groups with shareData false until the student
+  // explicitly opts in per group (P16 consent, P17 leaderboard consumes it).
+  await db.groupMembership.createMany({
+    data: memberships.map((m) => ({ ...m, profileId: '', shareData: m.actorKey !== 'you' })),
+  })
   console.log(`memberships: ${memberships.length}`)
 
   const challenges = [

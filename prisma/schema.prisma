@@ -1105,3 +1105,75 @@ model CommunitySettings {
   aiAssist            Boolean   @default(true)
   updatedAt           DateTime  @updatedAt
 }
+
+// ═════════════ GAMIFIED MEDICAL LEARNING & MOTIVATION ENGINE (PRODUCT 17) ═════════════
+// Additive, STANDALONE models (no FK, plain string profileId) — db:push stays
+// non-destructive (same pattern as SimCaseAttempt / VoiceSession / Community).
+//
+// Honesty rules: XP is materialized ONLY from measured study activity
+// (QuestionAttempt / StudySession / RevisionSession / submitted ExamAttempt /
+// SimCaseAttempt / FlashcardReview / KnowledgeState mastery / resolved
+// MistakeRecord). Opening the app earns nothing. Achievements are code-
+// versioned definitions evaluated against measurement; ChallengeEnrollment
+// stores the measured baseline snapshot for adaptive targets. Leaderboards
+// reuse the P16 per-group shareData consent — no new sharing surface.
+
+// One measured learning action that earned XP. Unique on
+// (profileId, kind, refId) makes every grant idempotent — re-syncing never
+// double-counts. refId is the source row id (attempt id / session id /
+// exam id / case id / topicId / mistakeId / `${cardId}:${dayKey}` /
+// enrollment id; '' only for the per-day study cap rows).
+model XpEvent {
+  id        String   @id @default(cuid())
+  profileId String
+  kind      String // mcq-correct|mcq-repeat-correct|mcq-attempt|revision|flashcards|study|mock|case|topic-mastered|mistake-corrected|challenge-completed
+  refId     String   @default("")
+  dayKey    String // IST day key the activity belongs to
+  xp        Int
+  meta      Json? // measured snapshot ({subjectCode, correct, accuracy} …) kept small
+  createdAt DateTime @default(now())
+
+  @@unique([profileId, kind, refId])
+  @@index([profileId, dayKey])
+  @@index([profileId, createdAt])
+}
+
+// Unlock record for a code-versioned achievement definition. Evaluated
+// deterministically from measurement on every engine sync; the unique
+// constraint makes evaluation idempotent.
+model AchievementUnlock {
+  id            String   @id @default(cuid())
+  profileId     String
+  achievementId String // definition id in gamify-engine (e.g. 'mcq-100')
+  meta          Json? // measured snapshot at unlock time
+  earnedAt      DateTime @default(now())
+
+  @@unique([profileId, achievementId])
+  @@index([profileId])
+}
+
+// One enrollment on a code-versioned challenge definition. startSnap freezes
+// the measured baseline (volume/accuracy/weak topics) the adaptive target was
+// computed from; progress is ALWAYS re-measured live from real activity.
+model ChallengeEnrollment {
+  id           String    @id @default(cuid())
+  profileId    String
+  challengeId  String // definition id in gamify-engine (e.g. 'mcq-100-challenge')
+  status       String    @default("active") // active | completed | abandoned
+  startSnap    Json? // measured baseline at enrollment
+  startedAt    DateTime  @default(now())
+  completedAt  DateTime?
+  bonusXpEvent String    @default("") // XpEvent id for the one-time completion bonus
+
+  @@unique([profileId, challengeId])
+  @@index([profileId, status])
+}
+
+// Per-profile motivation preferences. featured = up to 3 achievement ids
+// showcased in the Motivation header. No new sharing surface lives here —
+// leaderboard sharing reuses GroupMembership.shareData (P16 consent).
+model MotivationSettings {
+  profileId String   @id
+  featured  Json     @default("[]") // string[] of achievement ids, capped 3
+  updatedAt DateTime @updatedAt
+}

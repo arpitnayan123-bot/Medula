@@ -30,6 +30,7 @@ export type View =
   | 'library'
   | 'ask' // PRODUCT 15 — AI Medical Search & Answer Engine
   | 'community' // PRODUCT 16 — Medical Learning Community & Accountability
+  | 'gamify' // PRODUCT 17 — Gamified Medical Learning & Motivation Engine
 
 export interface Profile {
   id: string
@@ -3030,4 +3031,225 @@ export interface CommunityAiResponse {
     note: string
   }
   moderation?: { verdict: 'clean' | 'flag' | 'violation'; reasons: { kind: string; note: string }[]; guidance: string }
+}
+
+// ═══════════════ GAMIFIED MEDICAL LEARNING & MOTIVATION ENGINE (PRODUCT 17) ═══════════════
+// «Learn → Practice → Improve → Achieve → Continue»
+// HONESTY & SAFETY RULES (binding for every consumer of these types):
+//   · Every XP point, streak day, level, achievement and challenge percent is
+//     MEASURED from real study activity (QuestionAttempt / StudySession /
+//     RevisionSession / submitted ExamAttempt / SimCaseAttempt /
+//     FlashcardReview / KnowledgeState mastery / resolved MistakeRecord) —
+//     never granted for opening the app, never for raw screen time.
+//   · The XP table, level curve and streak-recovery rule are PUBLISHED
+//     in-product. No loot boxes, no random rewards, no engagement loops,
+//     no notification pressure.
+//   · Streaks are a healthy view of consistency: one missed day with a real
+//     habit (9+ active days in the trailing 14) shows RECOVERED, not broken.
+//     Copy is never guilt-based; there is no "you missed X days" shaming.
+//   · Achievements are a curated set (~14) with honest progress lines — no
+//     badge clutter, no vanity counters.
+//   · Leaderboards are opt-in per study group (reuses the P16 shareData
+//     consent). Peer rows are labelled demo snapshots; your row is measured.
+//     Rank is secondary — the headline is always you vs your own last week.
+//   · Challenge targets adapt to the student's measured baseline.
+//   · Motivation cards are deterministic rules over measured signals (no AI,
+//     no chain-of-thought), capped at 4, each carrying one hand-off action.
+//   · Rewards are non-monetary: accent themes for this section, featured
+//     badges, challenge badges, group recognition.
+
+/** The full published XP table — mirrors src/lib/gamify-engine.ts. */
+export const XP_TABLE: { kind: string; xp: number; unit: string; note: string }[] = [
+  { kind: 'mcq-correct', xp: 10, unit: 'per question', note: 'First correct answer at a question' },
+  { kind: 'mcq-repeat-correct', xp: 3, unit: 'per question', note: 'Correct on a redo — the win is remembering, not the first hit' },
+  { kind: 'mcq-attempt', xp: 2, unit: 'per question', note: 'An honest wrong attempt reviewed is practice too' },
+  { kind: 'revision', xp: 8, unit: 'per session', note: 'A completed revision block' },
+  { kind: 'flashcards', xp: 1, unit: 'per card/day', note: 'Active recall — counted once per card per day' },
+  { kind: 'study', xp: 5, unit: 'per session', note: 'A logged study block — max 3 counted per day' },
+  { kind: 'mock', xp: 40, unit: '+ accuracy bonus', note: 'Submitted mock + up to +25 by accuracy' },
+  { kind: 'case', xp: 15, unit: 'per case', note: 'Completed clinical case' },
+  { kind: 'topic-mastered', xp: 50, unit: 'one-time', note: 'A topic crosses the mastery bar' },
+  { kind: 'mistake-corrected', xp: 15, unit: 'one-time', note: 'A repeated mistake you fixed for good' },
+  { kind: 'challenge-completed', xp: 60, unit: 'one-time', note: 'Challenge bonus on completion' },
+]
+
+/** Level curve: total XP needed for level L = 50 · (L−1) · L (L2=100, L3=300, L4=600, L5=1000…). */
+export const GAMIFY_TIERS: { upTo: number; name: string }[] = [
+  { upTo: 2, name: 'Foundation' },
+  { upTo: 4, name: 'Core' },
+  { upTo: 6, name: 'Clinical' },
+  { upTo: 8, name: 'Advanced' },
+  { upTo: 10, name: 'Exam-Ready' },
+  { upTo: Infinity, name: 'Mastery' },
+]
+
+export interface GamifyLevelInfo {
+  level: number
+  tier: string
+  xp: number // total measured XP
+  xpIntoLevel: number
+  xpForNextLevel: number // XP needed at this level (next threshold − previous threshold)
+  xpToNext: number
+}
+
+export type GamifyStreakState = 'intact' | 'recovered' | 'open' | 'none'
+
+export interface GamifyStreakLine {
+  days: number
+  state: GamifyStreakState
+  todayActive: boolean
+  note: string // honest one-liner (never guilt)
+}
+
+export interface GamifyStreaks {
+  learning: GamifyStreakLine
+  revision: GamifyStreakLine
+  mcq: GamifyStreakLine
+  weekly: { weekStart: string; activeDays: number; total: number }[] // last 6 IST weeks, oldest → newest
+  activeDays14: number
+  recoveryRule: string // the published recovery rule, verbatim
+}
+
+/** Deterministic, measured motivation card — capped at 4, one hand-off each. */
+export interface GamifyMotivationCard {
+  id: string // '<kind>:<ref>'
+  kind: 'close-topic' | 'accuracy-up' | 'blockers' | 'revision-backlog' | 'streak'
+  title: string
+  detail: string // the measured numbers behind it
+  action: { label: string; view: import('./types').View; topicId?: string; subjectCode?: string }
+}
+
+export interface GamifyXpEventView {
+  id: string
+  kind: string
+  label: string // human one-liner, e.g. "Correct answer — nephrotic syndrome"
+  xp: number
+  dayKey: string
+  at: string
+}
+
+export interface GamifyAchievementView {
+  id: string
+  title: string
+  description: string
+  icon: string // lucide icon hint
+  group: 'starters' | 'practice' | 'consistency' | 'mocks' | 'repair' | 'mastery'
+  unlocked: boolean
+  earnedAt: string | null
+  progress: number | null // 0..100 for locked achievements with a measurable line
+  progressNote: string | null // "78 / 100 MCQs solved"
+  featured: boolean
+}
+
+export interface GamifyChallengeView {
+  id: string
+  title: string
+  description: string
+  icon: string
+  durationDays: number
+  target: number // adaptive final target (measured baseline → suggestion)
+  unit: string
+  adaptedNote: string // why this target — measured baseline sentence
+  enrolled: boolean
+  status: 'not-enrolled' | 'active' | 'completed' | 'abandoned'
+  progress: number | null
+  percent: number | null
+  daysLeft: number | null
+  startedAt: string | null
+  completedAt: string | null
+  suggested: boolean
+  suggestReason: string | null
+  bonusXp: number
+}
+
+export interface GamifyBoardRow {
+  actorKey: string
+  name: string
+  demo: boolean
+  you: boolean
+  weeklyXp: number | null
+  weeklyMcqs: number | null
+  weeklyAccuracy: number | null // 0..100, null when not shared
+  streak: number | null
+  rank: number
+  note: string | null // e.g. "+38 XP vs your last week"
+}
+
+export interface GamifyLeaderboardPayload {
+  groups: { id: string; name: string; shareData: boolean; memberCount: number; demo: boolean }[]
+  groupId: string | null
+  consentOn: boolean // your shareData for the selected group
+  rows: GamifyBoardRow[]
+  yourLastWeekXp: number | null
+  yourThisWeekXp: number | null
+  framing: string // non-shaming framing sentence
+  privacyNote: string
+}
+
+export interface GamifyJourneySubject {
+  id: string
+  code: string
+  name: string
+  color: string
+  neetWeight: number
+  topicsTotal: number
+  topicsMastered: number
+  engagedPct: number // % of topics engaged (any mastery signal)
+  masteryPct: number | null // mean engaged-topic mastery 0..100
+  status: 'new' | 'developing' | 'strong'
+}
+
+export interface GamifyJourneyPayload {
+  generatedAt: string
+  ladder: { label: string; detail: string; percent: number }[] // Subjects → Topics → Mastery → Milestones → Exam Readiness
+  subjects: GamifyJourneySubject[]
+  milestones: { unlocked: number; total: number; recent: { id: string; title: string; earnedAt: string }[] }
+  readiness: { current: number | null; band: string; note: string }
+  insufficientData: boolean
+  dataBasis: { conceptsTouched: number; conceptsTotal: number; attempts: number; mocks: number }
+  honestNote: string
+}
+
+export interface GamifyHomePayload {
+  generatedAt: string
+  level: GamifyLevelInfo
+  streaks: GamifyStreaks
+  today: { mcqs: number; revision: number; studyMinutes: number; mocks: number; xp: number; active: boolean }
+  weekXp: number
+  lastWeekXp: number
+  recent: GamifyXpEventView[] // newest 12
+  totals: { mcqsSolved: number; revisionSessions: number; mocksSubmitted: number; casesCompleted: number; flashcardsReviewed: number; topicsMastered: number; mistakesResolved: number; studySessions: number }
+  achievements: { unlocked: number; total: number; latest: GamifyAchievementView | null }
+  challenges: { active: number; completed: number; next: GamifyChallengeView | null }
+  motivation: GamifyMotivationCard[]
+  dataBasis: { events: number; measuredSources: string[] }
+  honestNote: string
+}
+
+export interface GamifyAchievementsPayload {
+  achievements: GamifyAchievementView[]
+  featured: string[]
+  note: string
+}
+
+export interface GamifyChallengesPayload {
+  challenges: GamifyChallengeView[]
+  activeCount: number
+  completedCount: number
+  note: string
+}
+
+export interface GamifyXpLedgerPayload {
+  days: { dayKey: string; label: string; xp: number; events: { kind: string; label: string; xp: number; at: string }[] }[]
+  byKind: { kind: string; label: string; xp: number }[]
+  totalXp: number
+  hasMore: boolean
+}
+
+export interface GamifyRewardsPayload {
+  accents: { id: string; name: string; unlockLevel: number; unlocked: boolean; description: string }[]
+  featured: string[]
+  badges: { unlocked: number; total: number; challengeBadges: { id: string; title: string; completedAt: string }[] }
+  groupRecognition: { groupName: string; note: string }[]
+  note: string
 }

@@ -48,6 +48,8 @@ import type {
   CommunityThreadPayload, CommunityGroupsPayload, CommunityGroupSummary, CommunityGroupDetail,
   CommunityAccountabilityPayload, CommunityGoalResult, CommunityAiResponse,
   CommunityReplySummary, CommunitySpaceSummary,
+  GamifyHomePayload, GamifyJourneyPayload, GamifyAchievementsPayload, GamifyChallengesPayload,
+  GamifyLeaderboardPayload, GamifyXpLedgerPayload, GamifyRewardsPayload, GamifyChallengeView,
 } from './types'
 
 export const api = {
@@ -485,6 +487,32 @@ export const api = {
     const qs = new URLSearchParams({ q })
     return get<{ posts: { id: string; title: string; score: number; resolved: boolean }[] }>(`/api/community/similar?${qs.toString()}`)
   },
+
+  // ── Gamified Medical Learning & Motivation Engine (PRODUCT 17) ──
+  // Shapes are the frozen Gamify* contract in types.ts. Honesty rules the
+  // client relies on: every number is measured (the UI never invents values),
+  // leaderboard peers arrive labelled via demo:true, consent is per-group
+  // (reuses the P16 shareData flag), and challenge targets adapt to the
+  // measured baseline — the UI only renders what the engine publishes.
+  gamifyHome: () => get<GamifyHomePayload>('/api/gamify/home'),
+  gamifyJourney: () => get<GamifyJourneyPayload>('/api/gamify/journey'),
+  gamifyAchievements: () => get<GamifyAchievementsPayload>('/api/gamify/achievements'),
+  // Feature picker (max 3 — server enforces the cap): POST the full list.
+  gamifyAchievementsFeatured: (featured: string[]) =>
+    post<{ ok: boolean; featured: string[] }>('/api/gamify/achievements', { featured }),
+  gamifyChallenges: () => get<GamifyChallengesPayload>('/api/gamify/challenges'),
+  // Enroll / abandon — one route, two intents; returns the refreshed challenge.
+  gamifyChallengeAction: (challengeId: string, action: 'enroll' | 'abandon') =>
+    post<{ ok: boolean; challenge: GamifyChallengeView }>('/api/gamify/challenges', { challengeId, action }),
+  gamifyLeaderboard: (groupId?: string) =>
+    get<GamifyLeaderboardPayload>(`/api/gamify/leaderboard${groupId ? `?groupId=${encodeURIComponent(groupId)}` : ''}`),
+  // Per-group sharing consent (explicit opt-in, off by default).
+  gamifyConsent: (groupId: string, on: boolean) =>
+    post<{ ok: boolean; consentOn: boolean }>('/api/gamify/consent', { groupId, on }),
+  // Full XP ledger — grouped by IST day, newest first.
+  gamifyXpLedger: (limit = 120) =>
+    get<GamifyXpLedgerPayload>(`/api/gamify/xp?limit=${limit}`),
+  gamifyRewards: () => get<GamifyRewardsPayload>('/api/gamify/rewards'),
 }
 
 // ── Adaptive Engine aux payloads (defined here — types.ts is frozen) ──
