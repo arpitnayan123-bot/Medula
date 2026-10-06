@@ -891,3 +891,217 @@ model AskThread {
 
   @@index([profileId, updatedAt])
 }
+
+// ─── PRODUCT 16 — MEDICAL LEARNING COMMUNITY & ACCOUNTABILITY ───────────────
+// Focused, moderated learning community (NOT a social network). All tables are
+// STANDALONE (no FK relations) like the other engine models → db:push stays
+// non-destructive. Identity model: "you" is the single demo StudentProfile;
+// every other member is a SEEDED DEMO PEER (CommunityMember.seeded, labelled in
+// the UI). Accountability numbers are always MEASURED from real study activity
+// — nothing here invents progress. Patient-identifying content is blocked by
+// deterministic scans at write time (src/lib/community-engine.ts).
+
+// Structured spaces: exam hubs (NEET-PG/FMGE), subject-wise (from the registry),
+// doubt clearance, PYQ discussions, case discussions, revision circle.
+// Topic-wise discussions live inside these spaces as topic-tagged posts.
+model CommunitySpace {
+  id          String   @id // stable seed id 'c-space-…'
+  kind        String // exam|subject|doubt|pyq|case|revision
+  name        String
+  description String   @default("")
+  subjectCode String   @default("") // subject spaces
+  rules       Json     @default("[]") // string[] space rules
+  createdAt   DateTime @default(now())
+
+  @@index([kind])
+}
+
+// Seeded demo peers. The real user is never stored here — 'you' is derived
+// from the signed-in StudentProfile at read time.
+model CommunityMember {
+  id        String   @id @default(cuid())
+  handle    String   @unique // 'aarav-s'
+  name      String
+  year      Int      @default(3)
+  bio       String   @default("")
+  seeded    Boolean  @default(true)
+  createdAt DateTime @default(now())
+}
+
+// One discussion thread. groupId optionally scopes it to a study group
+// (group discussions are posts too — one table, one moderation path).
+// authorProfileId is '' for seeded peer posts; authorMemberId is '' for 'you'.
+model CommunityPost {
+  id              String   @id @default(cuid())
+  profileId       String   @default("") // author profile id ('' = seeded peer)
+  authorMemberId  String   @default("") // seeded peer author ('' = you)
+  spaceId         String
+  groupId         String   @default("") // '' = regular space post
+  kind            String // question|discussion|pyq|mcq|case
+  title           String
+  body            String
+  tags            Json     @default("[]") // string[]
+  subjectCode     String   @default("")
+  topicId         String   @default("")
+  questionRef     String   @default("") // platform Question id for MCQ/PYQ threads
+  upvotes         Int      @default(0)
+  views           Int      @default(0)
+  replyCount      Int      @default(0)
+  resolved        Boolean  @default(false)
+  answeredReplyId String   @default("")
+  status          String   @default("open") // open|review|removed
+  flagged         String   @default("") // ''|spam|abuse — review-hold reason
+  removedReason   String   @default("")
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([spaceId, status])
+  @@index([groupId, status])
+  @@index([profileId])
+  @@index([authorMemberId])
+}
+
+model CommunityReply {
+  id             String   @id @default(cuid())
+  postId         String
+  profileId      String   @default("") // '' = seeded peer
+  authorMemberId String   @default("") // '' = you
+  body           String
+  upvotes        Int      @default(0)
+  isAnswer       Boolean  @default(false) // marked by the asker
+  aiAssisted     Boolean  @default(false) // drafted with AI help — labelled
+  status         String   @default("open") // open|review|removed
+  createdAt      DateTime @default(now())
+
+  @@index([postId, status])
+  @@index([profileId])
+  @@index([authorMemberId])
+}
+
+// "You" upvotes only (toggle). Peer upvotes are pre-seeded into the counters.
+model CommunityVote {
+  id         String   @id @default(cuid())
+  profileId  String
+  targetType String // post|reply
+  targetId   String
+  createdAt  DateTime @default(now())
+
+  @@unique([profileId, targetType, targetId])
+}
+
+model SavedDiscussion {
+  id        String   @id @default(cuid())
+  profileId String
+  postId    String
+  createdAt DateTime @default(now())
+
+  @@unique([profileId, postId])
+}
+
+// Moderation queue: spam | abuse | misinformation | privacy | other.
+model CommunityReport {
+  id         String   @id @default(cuid())
+  profileId  String
+  targetType String // post|reply|member
+  targetId   String
+  reason     String
+  details    String   @default("")
+  status     String   @default("open") // open|reviewed|actioned
+  createdAt  DateTime @default(now())
+
+  @@index([status])
+  @@index([profileId])
+}
+
+// Block / mute a peer. Blocking hides their content everywhere for you.
+model MemberBlock {
+  id        String   @id @default(cuid())
+  profileId String
+  memberId  String
+  kind      String // block|mute
+  createdAt DateTime @default(now())
+
+  @@unique([profileId, memberId, kind])
+}
+
+// Study groups — public or private, subject/topic/exam focused.
+model StudyGroup {
+  id             String   @id @default(cuid())
+  slug           String   @unique
+  name           String
+  description    String   @default("")
+  privacy        String   @default("public") // public|private
+  focusKind      String   @default("mixed") // subject|topic|exam|mixed
+  focusRef       String   @default("") // subjectCode / topicId / exam label
+  goalText       String   @default("")
+  meetCadence    String   @default("")
+  plan           Json     @default("[]") // shared study plan [{id,line,addedBy,at}] capped 20
+  ownerProfileId String   @default("") // '' = seeded owner (ownerMemberId)
+  ownerMemberId  String   @default("")
+  seeded         Boolean  @default(true)
+  status         String   @default("open") // open|archived
+  createdAt      DateTime @default(now())
+}
+
+// One row per member. actorKey is 'you' for the signed-in student or the
+// CommunityMember id for peers (unique per group). shareData is the EXPLICIT
+// per-group privacy opt-in for sharing personal progress (default false).
+model GroupMembership {
+  id        String   @id @default(cuid())
+  groupId   String
+  actorKey  String // 'you' | CommunityMember id
+  profileId String   @default("")
+  role      String   @default("member") // owner|member
+  shareData Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@unique([groupId, actorKey])
+}
+
+// Group accountability: MCQ / mock / revision / case challenges.
+// Peer progress lines are a SEEDED SNAPSHOT in progress json — your line is
+// always measured live from real activity since the challenge started.
+model GroupChallenge {
+  id        String    @id @default(cuid())
+  groupId   String
+  kind      String // mcq|mock|revision|case
+  title     String
+  detail    String    @default("")
+  target    Int       @default(0)
+  unit      String    @default("mcqs") // mcqs|mocks|sessions|cases
+  dueAt     DateTime?
+  status    String    @default("active") // active|complete|archived
+  progress  Json      @default("[]") // [{actorKey,label,count,at}] — seed snapshot
+  seeded    Boolean   @default(true)
+  createdAt DateTime  @default(now())
+
+  @@index([groupId, status])
+}
+
+// Personal accountability goals (IST-day windows like PlannerTask).
+// scope: daily | weekly | commitment. Progress is ALWAYS measured from real
+// activity tables — never self-reported counters.
+model AccountabilityGoal {
+  id        String    @id @default(cuid())
+  profileId String
+  scope     String // daily|weekly|commitment
+  kind      String // mcqs|study|revision|mock|case|custom
+  title     String    @default("")
+  target    Int
+  unit      String    @default("mcqs") // mcqs|minutes|sessions|mocks|cases
+  dueAt     DateTime?
+  active    Boolean   @default(true)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  @@index([profileId, scope])
+}
+
+// Per-profile community settings (guidelines acceptance + AI assist toggle).
+model CommunitySettings {
+  profileId           String    @id
+  guidelinesAccepted  Boolean   @default(false)
+  acceptedAt          DateTime?
+  aiAssist            Boolean   @default(true)
+  updatedAt           DateTime  @updatedAt
+}

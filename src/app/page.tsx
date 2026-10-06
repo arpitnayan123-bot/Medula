@@ -37,6 +37,7 @@ import { ExploreView } from '@/components/explore/explore-view'
 import { ResearchView } from '@/components/research/research-view'
 import { LibraryView } from '@/components/library/library-view'
 import { AskView } from '@/components/ask/ask-view'
+import { CommunityView } from '@/components/community/community-view'
 import { Loader2 } from 'lucide-react'
 
 export default function Home() {
@@ -114,6 +115,7 @@ export default function Home() {
       {view === 'research' && <ResearchView initialQuery={researchSeedQuery ?? undefined} />}
       {view === 'library' && <LibraryView />}
       {view === 'ask' && <AskView />}
+      {view === 'community' && <CommunityView />}
       {view === 'understand' && <UnderstandView />}
       {view === 'learn' && <LearnView />}
       {view === 'hub' && <HubView />}

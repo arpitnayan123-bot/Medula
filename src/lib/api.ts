@@ -44,6 +44,10 @@ import type {
   LibraryHomePayload, LibraryResourcesPayload, LibraryDetailPayload, LibraryTopicFeedPayload,
   LibrarySavedPayload, LibraryReportResult, LibraryAiResponse,
   AskLevel, AskHomePayload, AskAnswerPayload, AskFollowPayload, AskQuizPayload, AskRevisionResult, AskThreadDetail,
+  CommunityHomePayload, CommunitySpaceDetail, CommunityPostsPayload, CommunityCreatePostResult,
+  CommunityThreadPayload, CommunityGroupsPayload, CommunityGroupSummary, CommunityGroupDetail,
+  CommunityAccountabilityPayload, CommunityGoalResult, CommunityAiResponse,
+  CommunityReplySummary, CommunitySpaceSummary,
 } from './types'
 
 export const api = {
@@ -367,6 +371,120 @@ export const api = {
     post<AskQuizPayload>('/api/ask/quiz', body),
   askRevision: (body: { threadId: string }) => post<AskRevisionResult>('/api/ask/revision', body),
   askThread: (id: string) => get<{ thread: AskThreadDetail }>(`/api/ask/thread/${encodeURIComponent(id)}`),
+
+  // ── Medical Learning Community & Accountability (PRODUCT 16) ──
+  // Shapes are the frozen Community* contract in types.ts. Honesty rules:
+  // peers are seeded demo data, AI answers always carry badge + disclaimer,
+  // accountability numbers are measured in IST windows, PHI is blocked at
+  // write time by the server (the UI mirrors a gentle hint only).
+  communityHome: () => get<CommunityHomePayload>('/api/community/home'),
+  communitySpaces: () => get<{ spaces: CommunitySpaceSummary[] }>('/api/community/spaces'),
+  communitySpace: (id: string) =>
+    get<CommunitySpaceDetail>(`/api/community/spaces/${encodeURIComponent(id)}`),
+  communityPosts: (params: { feed?: string; q?: string; spaceId?: string }) => {
+    const qs = new URLSearchParams()
+    if (params.feed) qs.set('feed', params.feed)
+    if (params.q) qs.set('q', params.q)
+    if (params.spaceId) qs.set('spaceId', params.spaceId)
+    const s = qs.toString()
+    return get<CommunityPostsPayload>(`/api/community/posts${s ? `?${s}` : ''}`)
+  },
+  // Post creation: the deterministic PHI scan can answer 400 with the SAME
+  // CommunityCreatePostResult shape (blocked + reasons + guidance). Parse the
+  // body on 400 so the composer can render the reasons; throw only on 5xx /
+  // network / non-JSON failures.
+  communityPostCreate: async (body: {
+    spaceId: string; kind: string; title: string; body: string; tags?: string[]
+    subjectCode?: string; topicId?: string; questionRef?: string; groupId?: string
+  }): Promise<CommunityCreatePostResult> => {
+    const res = await fetch('/api/community/posts', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    })
+    let data: (Partial<CommunityCreatePostResult> & { blocked?: boolean }) | null = null
+    try { data = (await res.json()) as Partial<CommunityCreatePostResult> } catch { /* non-JSON */ }
+    if (!res.ok) {
+      if (data && (data.blocked || data.reasons?.length)) {
+        return { post: null, blocked: true, reasons: data.reasons ?? [], guidance: data.guidance ?? null }
+      }
+      throw new Error(`POST /api/community/posts → ${res.status}`)
+    }
+    return { post: data?.post ?? null, blocked: !!data?.blocked, reasons: data?.reasons ?? [], guidance: data?.guidance ?? null }
+  },
+  communityThread: (id: string) =>
+    get<CommunityThreadPayload>(`/api/community/posts/${encodeURIComponent(id)}`),
+  communityPostDelete: (id: string) =>
+    fetch(`/api/community/posts/${encodeURIComponent(id)}`, { method: 'DELETE' })
+      .then(r => r.json()) as Promise<{ ok: boolean }>,
+  // Replies use the same blocked-with-reasons contract as post creation.
+  communityReply: async (postId: string, body: { body: string; aiAssisted?: boolean }): Promise<CommunityCreatePostResult & { reply: CommunityReplySummary | null }> => {
+    const res = await fetch(`/api/community/posts/${encodeURIComponent(postId)}/reply`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    })
+    let data: (Partial<CommunityCreatePostResult> & { reply?: CommunityReplySummary | null }) | null = null
+    try { data = (await res.json()) as Partial<CommunityCreatePostResult> } catch { /* non-JSON */ }
+    if (!res.ok) {
+      if (data && (data.blocked || data.reasons?.length)) {
+        return { post: null, reply: null, blocked: true, reasons: data.reasons ?? [], guidance: data.guidance ?? null }
+      }
+      throw new Error(`POST /api/community/posts/${postId}/reply → ${res.status}`)
+    }
+    return { post: data?.post ?? null, reply: data?.reply ?? null, blocked: !!data?.blocked, reasons: data?.reasons ?? [], guidance: data?.guidance ?? null }
+  },
+  // Resolve = mark a reply as the answer (replyId) or toggle the thread's own
+  // resolved flag (resolved). One route, two intents.
+  communityResolve: (postId: string, body: { replyId?: string; resolved?: boolean }) =>
+    post<{ ok: boolean; resolved?: boolean; answeredReplyId?: string | null }>(
+      `/api/community/posts/${encodeURIComponent(postId)}/resolve`, body,
+    ),
+  // Post/reply-level toggles live on one actions route: vote (upvote) and
+  // save are toggles; report carries reason + details.
+  communityAction: (body: {
+    action: 'vote' | 'save' | 'report'
+    postId?: string; replyId?: string
+    reason?: string; details?: string
+  }) =>
+    post<{ ok: boolean; voted?: boolean; saved?: boolean; upvotes?: number; reported?: boolean }>('/api/community/actions', body),
+  communityGroups: () => get<CommunityGroupsPayload>('/api/community/groups'),
+  communityGroupCreate: (body: {
+    name: string; description: string; privacy: 'public' | 'private'
+    focusKind: string; focusRef: string; goalText: string; meetCadence: string
+  }) => post<{ group: CommunityGroupSummary }>('/api/community/groups', body),
+  communityGroup: (id: string) =>
+    get<{ group: CommunityGroupDetail }>(`/api/community/groups/${encodeURIComponent(id)}`).then((r) => r.group),
+  // Group-scoped mutations return the refreshed detail when the backend can
+  // provide it — the UI refetches when `group` is missing.
+  communityGroupAction: (id: string, body:
+    | { action: 'join' }
+    | { action: 'leave' }
+    | { action: 'share'; on: boolean }
+    | { action: 'plan-add'; line: string }
+    | { action: 'challenge-create'; kind: string; title: string; detail: string; target: number; unit: string; dueAt?: string | null }
+    | { action: 'challenge-archive'; challengeId: string }) =>
+    post<{ ok: boolean; group?: CommunityGroupDetail }>(
+      `/api/community/groups/${encodeURIComponent(id)}`, body,
+    ),
+  communityAccountability: () => get<CommunityAccountabilityPayload>('/api/community/accountability'),
+  // add/update/pause/delete — one goal route, one result shape.
+  communityGoal: (body: {
+    op: 'add' | 'pause' | 'resume' | 'delete'
+    id?: string
+    scope?: 'daily' | 'weekly' | 'commitment'
+    kind?: string
+    title?: string
+    target?: number
+    unit?: string
+    dueAt?: string | null
+  }) => post<CommunityGoalResult>('/api/community/goals', body),
+  communityAi: (body: { mode: 'summarize' | 'explain' | 'suggest'; postId?: string; query?: string }) =>
+    post<CommunityAiResponse>('/api/community/ai', body),
+  communitySimilar: (q: string) => {
+    const qs = new URLSearchParams({ q })
+    return get<{ posts: { id: string; title: string; score: number; resolved: boolean }[] }>(`/api/community/similar?${qs.toString()}`)
+  },
 }
 
 // ── Adaptive Engine aux payloads (defined here — types.ts is frozen) ──

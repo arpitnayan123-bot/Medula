@@ -29,6 +29,7 @@ export type View =
   | 'cases' | 'lab' | 'voice' | 'revise' | 'tutor' | 'progress' | 'roadmap' | 'profile'
   | 'library'
   | 'ask' // PRODUCT 15 — AI Medical Search & Answer Engine
+  | 'community' // PRODUCT 16 — Medical Learning Community & Accountability
 
 export interface Profile {
   id: string
@@ -2759,4 +2760,274 @@ export interface AskHomePayload {
     dueRevision: number
   }
   examples: string[] // measured, resolvable starters (concept-name templated)
+}
+
+// ═══════════════════ MEDICAL LEARNING COMMUNITY & ACCOUNTABILITY (PRODUCT 16) ═══════════════════
+// «Learn Together → Discuss → Stay Accountable → Improve» — a focused, moderated,
+// educational community (NOT a social network). Honesty rules frozen with the contract:
+//  • "You" is the real signed-in profile; every other member is a SEEDED DEMO PEER —
+//    peers, peer posts and peer progress are demo data and are labelled as such in the UI.
+//  • AI assistance (summarize/explain) is always badged AI-ASSISTED, grounded in thread
+//    content or platform lessons, never presented as verified medical advice, never CoT.
+//  • Suggested content (lessons/resources/MCQs) is MEASURED from the platform, never invented.
+//  • Accountability numbers (streaks, goal progress, planned-vs-completed, challenges) are
+//    MEASURED from real study activity (QuestionAttempt / StudySession / RevisionSession /
+//    ExamAttempt / FlashcardReview) in IST day-windows. Peer numbers are labelled demo.
+//  • Privacy: private-group content is only visible to members; personal performance is
+//    never shared with a group without the explicit per-group `shareData` opt-in.
+//  • Patient-identifying content is blocked at post/reply time by deterministic scans.
+
+export type CommunitySpaceKind = 'exam' | 'subject' | 'doubt' | 'pyq' | 'case' | 'revision'
+export type CommunityPostKind = 'question' | 'discussion' | 'pyq' | 'mcq' | 'case'
+export type CommunityBadge = 'newcomer' | 'contributor' | 'guide' | 'mentor'
+export type CommunityPostStatus = 'open' | 'review' | 'removed'
+
+export interface CommunityActor {
+  kind: 'you' | 'peer'
+  id: string // profileId when 'you', CommunityMember id when peer
+  name: string
+  handle: string
+  year: number
+  badge: CommunityBadge
+  bio?: string
+  muted?: boolean
+  blocked?: boolean
+}
+
+export interface CommunitySpaceSummary {
+  id: string
+  kind: CommunitySpaceKind
+  name: string
+  description: string
+  subjectCode: string
+  topicId: string
+  posts: number // measured
+  replies: number // measured
+  unresolved: number // measured open questions
+  activeToday: number // measured posts+replies since IST midnight
+  groupCount: number // measured open study groups focused here
+  reasonTag?: string | null // personalised why-this (measured), null when no signal
+}
+
+export interface CommunityPostSummary {
+  id: string
+  spaceId: string
+  spaceName: string
+  groupId: string
+  groupName: string
+  kind: CommunityPostKind
+  title: string
+  body: string
+  author: CommunityActor
+  tags: string[]
+  subjectCode: string
+  topicId: string
+  topicName: string
+  questionRef: string
+  upvotes: number
+  replies: number
+  views: number
+  resolved: boolean
+  answered: boolean // has a reply marked as the answer
+  status: CommunityPostStatus
+  flagged: string // '' | 'spam' | 'abuse' — held for review note when set
+  createdAt: string
+  lastActivityAt: string
+  votedByYou: boolean
+  savedByYou: boolean
+  mine: boolean
+}
+
+export interface CommunityReplySummary {
+  id: string
+  postId: string
+  author: CommunityActor
+  body: string
+  upvotes: number
+  isAnswer: boolean
+  aiAssisted: boolean
+  status: CommunityPostStatus
+  createdAt: string
+  votedByYou: boolean
+  mine: boolean
+}
+
+/** Measured accountability snapshot — shared by community home + accountability view. */
+export interface AccountabilitySnapshot {
+  streak: { current: number; longest: number; todayActive: boolean }
+  today: { mcqs: number; studyMinutes: number; revisionSessions: number; mocks: number; cases: number; active: boolean }
+  week: { mcqs: number; studyMinutes: number; revisionSessions: number; mocks: number; cases: number; daysActive: number }
+  goals: CommunityGoalView[]
+  plannedVsCompleted: { today: { planned: number; completed: number }; week: { planned: number; completed: number } }
+  challenges: CommunityChallengeView[]
+  healthNote: string
+}
+
+export interface CommunityGoalView {
+  id: string
+  scope: 'daily' | 'weekly' | 'commitment'
+  kind: string // mcqs | study | revision | mock | case | custom
+  title: string
+  target: number
+  unit: string // mcqs | minutes | sessions | mocks | cases
+  progress: number // measured for the current window
+  done: boolean
+  dueAt: string | null
+  active: boolean
+  createdAt: string
+}
+
+export interface CommunityChallengeView {
+  id: string
+  groupId: string
+  groupName: string
+  kind: 'mcq' | 'mock' | 'revision' | 'case'
+  title: string
+  detail: string
+  target: number
+  unit: string // mcqs | mocks | sessions | cases
+  dueAt: string | null
+  status: 'active' | 'complete' | 'archived'
+  youJoined: boolean
+  youCount: number // MEASURED from your real activity since the challenge started
+  peerCounts: { label: string; count: number }[] // seeded demo snapshot — labelled in UI
+  seeded: boolean
+}
+
+export interface CommunityContribution {
+  score: number // 5×resolved answers + 3×resolved threads + 2×upvotes + posts/replies
+  answers: number // replies marked as the answer
+  resolvedThreads: number // your question threads resolved
+  upvotesReceived: number
+  posts: number
+  replies: number
+  badge: CommunityBadge
+}
+
+/** GET /api/community/home */
+export interface CommunityHomePayload {
+  stats: {
+    spaces: number
+    posts: number
+    replies: number
+    resolved: number
+    unresolved: number
+    groups: number
+    you: CommunityContribution
+  }
+  accountability: AccountabilitySnapshot
+  featured: { unresolved: CommunityPostSummary[]; active: CommunityPostSummary[] }
+  spaces: CommunitySpaceSummary[]
+  forYou: { spaces: CommunitySpaceSummary[]; groups: CommunityGroupSummary[]; note: string } | null // null when no learning signal
+  myGroups: CommunityGroupSummary[]
+  guidelinesAccepted: boolean
+  demoNotice: string
+  blocks: { muted: number; blocked: number }
+}
+
+/** GET /api/community/spaces and /api/community/spaces/[id] */
+export interface CommunitySpaceDetail {
+  space: CommunitySpaceSummary
+  rules: string[]
+  posts: CommunityPostSummary[]
+}
+
+/** GET /api/community/posts (feed=mine|saved|unresolved|topic&q=) */
+export interface CommunityPostsPayload {
+  posts: CommunityPostSummary[]
+  feed: string
+}
+
+/** POST /api/community/posts — creation result; blocked carries the deterministic scan verdict. */
+export interface CommunityCreatePostResult {
+  post: CommunityPostSummary | null
+  blocked: boolean
+  reasons: { kind: string; note: string }[]
+  guidance: string | null
+}
+
+/** GET /api/community/posts/[id] — thread page with grounded side rails. */
+export interface CommunityThreadPayload {
+  post: CommunityPostSummary
+  replies: CommunityReplySummary[]
+  similar: { id: string; title: string; score: number; resolved: boolean }[] // deterministic similarity scan
+  relatedMcqs: { count: number; subjectCode: string; topicId: string; topicName: string } | null // measured pool
+  youCanResolve: boolean
+}
+
+/** GET /api/community/groups */
+export interface CommunityGroupsPayload {
+  groups: CommunityGroupSummary[]
+  mine: CommunityGroupSummary[]
+}
+
+export interface CommunityGroupSummary {
+  id: string
+  name: string
+  slug: string
+  description: string
+  privacy: 'public' | 'private'
+  focusKind: string // subject | topic | exam | mixed
+  focusRef: string
+  focusLabel: string
+  goalText: string
+  meetCadence: string
+  members: number // measured
+  youMember: boolean
+  youOwner: boolean
+  challengeCount: number
+  activeToday: number // measured posts+plan activity today
+  seeded: boolean
+  createdAt: string
+}
+
+export interface CommunityGroupDetail extends Omit<CommunityGroupSummary, 'members'> {
+  privacyLocked: boolean // private && !youMember — members/plan/challenges hidden
+  members: { actor: CommunityActor; role: 'owner' | 'member'; joinedAt: string; sharesData: boolean }[]
+  challenges: CommunityChallengeView[]
+  plan: { id: string; line: string; addedBy: string; at: string }[]
+  discussions: CommunityPostSummary[]
+  youShareData: boolean // YOUR explicit per-group opt-in (default false)
+  joinRequestNote: string | null
+}
+
+/** GET /api/community/accountability */
+export interface CommunityAccountabilityPayload {
+  accountability: AccountabilitySnapshot
+  history: { dayKey: string; label: string; mcqs: number; studyMinutes: number; revisionSessions: number; active: boolean }[] // last 14 IST days, measured
+  commitments: CommunityGoalView[]
+  tip: string | null // one gentle, measured coaching line (never shaming)
+}
+
+/** POST /api/community/goals — add/update/pause/delete. */
+export interface CommunityGoalResult {
+  ok: boolean
+  goal: CommunityGoalView | null
+  goals: CommunityGoalView[]
+}
+
+/** POST /api/community/ai — modes frozen here; every mode carries badge+disclaimer. */
+export interface CommunityAiResponse {
+  mode: 'summarize' | 'explain' | 'suggest' | 'moderate'
+  aiBadge: string
+  disclaimer: string
+  fallback: boolean
+  summary?: { overview: string; keyPoints: string[]; openQuestions: string[] }
+  explanation?: {
+    grounded: boolean
+    text: string
+    keyPoints: string[]
+    uncertain: boolean
+    conceptId?: string
+    conceptName?: string
+    topicId?: string
+    practiceCount?: number
+  }
+  suggestions?: {
+    lessons: { topicId: string; topicName: string; lessonCount: number }[]
+    resources: { id: string; title: string; sourceName: string; url: string; urlVerified: boolean; kind: string }[]
+    mcqs: { count: number; subjectCode: string; topicId: string; topicName: string } | null
+    note: string
+  }
+  moderation?: { verdict: 'clean' | 'flag' | 'violation'; reasons: { kind: string; note: string }[]; guidance: string }
 }

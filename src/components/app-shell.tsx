@@ -8,7 +8,7 @@ import { Logo } from '@/components/brand/logo'
 import { cn } from '@/lib/utils'
 import {
   Home, Brain, BookMarked, BookOpen, CalendarCheck, CalendarClock, CircleHelp, ClipboardList, LibraryBig, Network, Stethoscope, RefreshCcw,
-  Sparkles, UserRound, Search, Menu, X, ScanEye, ScanSearch, Mic, Gauge,
+  Sparkles, UserRound, Search, Menu, X, ScanEye, ScanSearch, Mic, Gauge, Users,
   Keyboard, WifiOff, LayoutGrid, Compass, FlaskConical, Target, Bandage,
 } from 'lucide-react'
 import type { View } from '@/lib/types'
@@ -36,6 +36,7 @@ const NAV: { id: View; label: string; icon: typeof Home; hint?: string }[] = [
   { id: 'explore', label: 'Explore', icon: Compass },
   { id: 'library', label: 'Resource Hub', icon: LibraryBig },
   { id: 'ask', label: 'Ask Engine', icon: ScanSearch },
+  { id: 'community', label: 'Community', icon: Users },
   { id: 'tutor', label: 'AI Tutor', icon: Sparkles },
   { id: 'profile', label: 'Profile', icon: UserRound },
 ]
@@ -46,6 +47,7 @@ const NAV: { id: View; label: string; icon: typeof Home; hint?: string }[] = [
 const NAV_GROUPS: { title: string; items: View[] }[] = [
   { title: 'Daily study', items: ['home', 'map', 'hub', 'learn', 'questions', 'adaptive', 'exam', 'mistakes', 'revision', 'planner', 'graph', 'performance', 'revise'] },
   { title: 'Clinical & deep dives', items: ['understand', 'cases', 'lab', 'voice'] },
+  { title: 'Community', items: ['community'] },
   { title: 'Discover', items: ['ask', 'research', 'explore', 'library', 'tutor'] },
 ]
 
