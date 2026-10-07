@@ -5,6 +5,7 @@ import { useAppStore } from '@/lib/store'
 import { useOnline } from '@/hooks/use-online'
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
 import { Logo } from '@/components/brand/logo'
+import { SPRING_SOFT, SPRING_SNAP } from '@/components/primitives/motion'
 import { cn } from '@/lib/utils'
 import {
   Home, Brain, BookMarked, BookOpen, CalendarCheck, CalendarClock, CircleHelp, ClipboardList, GraduationCap, LibraryBig, Network, Stethoscope, RefreshCcw,
@@ -92,6 +93,14 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const moreSheetRef = useRef<HTMLDivElement>(null)
   const online = useOnline()
   const reduce = useReducedMotion()
+  // Scroll-reactive header — the glass bar gains depth once the page travels.
+  const [scrolled, setScrolled] = useState(false)
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 10)
+    onScroll()
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [])
 
   // "More" bottom sheet: Escape closes (focus returns to the toggle) and a
   // light focus trap keeps Tab cycling inside the sheet while it's open.
@@ -165,7 +174,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         onClick={() => onGo(item.id)}
         aria-current={active ? 'page' : undefined}
         className={cn(
-          'group flex min-h-11 w-full items-center gap-3 rounded-xl px-3 py-2 text-sm transition-all duration-200',
+          'group flex min-h-11 w-full items-center gap-3 rounded-xl px-3 py-2 text-sm transition-all duration-200 active:scale-[0.985]',
           active
             ? 'clay text-primary font-medium'
             : 'text-ink-soft hover:bg-surface-2/70 hover:text-foreground hover:translate-x-0.5',
@@ -233,7 +242,14 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       {/* ── Main column ── */}
       <div className="flex flex-1 flex-col lg:pl-60">
         {/* Top bar — warm glass */}
-        <header className="glass-strong sticky top-0 z-30 flex h-16 items-center gap-2 border-b border-line/70 px-3 shadow-[0_8px_24px_-20px_oklch(0.55_0.05_65/45%)] md:px-5">
+        <header
+          className={cn(
+            'glass-strong sticky top-0 z-30 flex h-16 items-center gap-2 border-b border-line/70 px-3 transition-shadow duration-300 md:px-5',
+            scrolled
+              ? 'shadow-[0_14px_36px_-20px_oklch(0.55_0.05_65/55%)]'
+              : 'shadow-[0_8px_24px_-20px_oklch(0.55_0.05_65/45%)]',
+          )}
+        >
           <button
             className="press flex size-10 items-center justify-center rounded-xl text-ink-soft hover:bg-surface-2/70 hover:text-foreground lg:hidden"
             onClick={() => setMobileNavOpen(!mobileNavOpen)}
@@ -278,11 +294,25 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           </div>
         </header>
 
-        {/* Mobile drawer */}
-        {mobileNavOpen && (
+        {/* Mobile drawer — porcelain panel glides in on a soft spring */}
+        <AnimatePresence>
+          {mobileNavOpen && (
           <div className="fixed inset-0 z-40 lg:hidden" role="dialog" aria-modal="true">
-            <div className="absolute inset-0 bg-[oklch(0.35_0.04_60/45%)] backdrop-blur-sm" onClick={() => setMobileNavOpen(false)} />
-            <nav className="absolute inset-y-0 left-0 w-80 max-w-[86vw] border-r border-line bg-sidebar p-4 pt-6 shadow-[24px_0_60px_-30px_oklch(0.4_0.05_60/50%)]">
+            <motion.div
+              className="absolute inset-0 bg-[oklch(0.35_0.04_60/45%)] backdrop-blur-sm"
+              initial={reduce ? false : { opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={reduce ? { opacity: 0 } : { opacity: 0 }}
+              transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
+              onClick={() => setMobileNavOpen(false)}
+            />
+            <motion.nav
+              className="absolute inset-y-0 left-0 w-80 max-w-[86vw] border-r border-line bg-sidebar p-4 pt-6 shadow-[24px_0_60px_-30px_oklch(0.4_0.05_60/50%)]"
+              initial={reduce ? false : { x: '-100%' }}
+              animate={{ x: 0 }}
+              exit={reduce ? { opacity: 0 } : { x: '-100%' }}
+              transition={SPRING_SOFT}
+            >
               <div className="mb-4 flex items-center justify-between">
                 <button onClick={() => setMobileNavOpen(false)} aria-label="Close menu" className="rounded-xl"><Logo /></button>
               </div>
@@ -291,9 +321,10 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 {groupsBlock(go)}
                 <div className="border-t border-line/70 pt-3">{navRow('profile', go)}</div>
               </div>
-            </nav>
+            </motion.nav>
           </div>
-        )}
+          )}
+        </AnimatePresence>
 
         {/* Offline banner — calm, never blocks; everything loaded keeps working */}
         <AnimatePresence>
@@ -326,9 +357,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         <main id="main-content" aria-label="Main content" tabIndex={-1} className="flex-1 pb-safe-nav">
           <motion.div
             key={view}
-            initial={reduce ? false : { opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+            initial={reduce ? false : { opacity: 0, y: 12, scale: 0.996 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
           >
             {children}
           </motion.div>
@@ -364,7 +395,17 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 )}
                 aria-current={active ? 'page' : undefined}
               >
-                {active && <span className="clay absolute inset-x-2 inset-y-1 -z-10 rounded-xl" aria-hidden />}
+                {active &&
+                  (reduce ? (
+                    <span className="clay absolute inset-x-2 inset-y-1 -z-10 rounded-xl" aria-hidden />
+                  ) : (
+                    <motion.span
+                      layoutId="dock-active-pill"
+                      className="clay absolute inset-x-2 inset-y-1 -z-10 rounded-xl"
+                      transition={SPRING_SNAP}
+                      aria-hidden
+                    />
+                  ))}
                 <item.icon className="size-5" />
                 {item.label}
               </button>
@@ -387,16 +428,29 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       </nav>
 
       {/* ── "More" bottom sheet — the remaining views, mobile only ── */}
-      {moreOpen && (
+      <AnimatePresence>
+        {moreOpen && (
         <div className="fixed inset-0 z-50 lg:hidden">
-          <div className="absolute inset-0 bg-[oklch(0.35_0.04_60/45%)] backdrop-blur-sm" onClick={() => setMoreOpen(false)} aria-hidden />
-          <div
+          <motion.div
+            className="absolute inset-0 bg-[oklch(0.35_0.04_60/45%)] backdrop-blur-sm"
+            initial={reduce ? false : { opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
+            onClick={() => setMoreOpen(false)}
+            aria-hidden
+          />
+          <motion.div
             ref={moreSheetRef}
             role="dialog"
             aria-modal="true"
             aria-label="More sections"
             tabIndex={-1}
             className="pb-safe-inset glass-strong absolute inset-x-0 bottom-0 max-h-[85dvh] overflow-y-auto rounded-t-3xl p-4 pt-3 shadow-float outline-none"
+            initial={reduce ? false : { y: '100%' }}
+            animate={{ y: 0 }}
+            exit={reduce ? { opacity: 0 } : { y: '100%' }}
+            transition={SPRING_SOFT}
           >
             <div className="mx-auto mb-3 h-1 w-10 rounded-full bg-line" aria-hidden />
             <p className="mb-2 px-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-ink-soft">All sections</p>
@@ -422,9 +476,10 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 )
               })}
             </div>
-          </div>
+          </motion.div>
         </div>
-      )}
+        )}
+      </AnimatePresence>
     </div>
   )
 }

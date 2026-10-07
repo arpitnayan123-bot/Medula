@@ -17,6 +17,7 @@ import type { LucideIcon } from 'lucide-react'
 import { api } from '@/lib/api'
 import type { ExamAiAction, ExamAiResponse, ExamAnalysis, ExamConfig } from '@/lib/types'
 import { Button } from '@/components/ui/button'
+import { Pop, Stagger, StaggerItem } from '@/components/primitives/motion'
 import { cn } from '@/lib/utils'
 import {
   AnimatedNumber, BarRow, EASE, Reveal, SectionTitle, accuracyText, accuracyTone, asPct,
@@ -205,7 +206,9 @@ export function ExamAnalysisView({ analysis, onOpenReview, onRetest, onHome, onH
       {/* ── Score hero ── */}
       <Reveal index={0}>
         <section className="clay flex flex-col items-center gap-6 rounded-2xl p-6 text-center md:flex-row md:p-8 md:text-left" aria-label="Score summary">
-          <ScoreRing pct={pct} />
+          <Pop>
+            <ScoreRing pct={pct} />
+          </Pop>
           <div className="min-w-0 flex-1 space-y-3">
             <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-ink-soft">{analysis.label}</p>
             <p className="text-4xl font-semibold tabular-nums tracking-tight">
@@ -259,21 +262,23 @@ export function ExamAnalysisView({ analysis, onOpenReview, onRetest, onHome, onH
       {/* ── What went wrong — mistake profile ── */}
       <Reveal index={2} className="space-y-3">
         <SectionTitle className="text-sev-warn">What went wrong — mistake profile</SectionTitle>
-        <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3">
+        <Stagger className="grid grid-cols-2 gap-2.5 sm:grid-cols-3">
           {mistakeTiles.map((m) => {
             const v = analysis.mistakes[m.key]
             return (
-              <div key={m.key} className="clay flex min-w-0 flex-col gap-1 rounded-2xl p-4">
-                <span className={cn('grid size-8 place-items-center rounded-lg bg-surface-2', m.tone)}>
-                  <m.icon className="size-4" aria-hidden />
-                </span>
-                <span className="mt-1 text-2xl font-semibold tabular-nums leading-none">{v}</span>
-                <span className="text-xs font-semibold">{m.label}</span>
-                <span className="text-[11px] leading-snug text-ink-soft">{m.sub}</span>
-              </div>
+              <StaggerItem key={m.key}>
+                <div className="clay flex h-full min-w-0 flex-col gap-1 rounded-2xl p-4">
+                  <span className={cn('grid size-8 place-items-center rounded-lg bg-surface-2', m.tone)}>
+                    <m.icon className="size-4" aria-hidden />
+                  </span>
+                  <span className="mt-1 text-2xl font-semibold tabular-nums leading-none">{v}</span>
+                  <span className="text-xs font-semibold">{m.label}</span>
+                  <span className="text-[11px] leading-snug text-ink-soft">{m.sub}</span>
+                </div>
+              </StaggerItem>
             )
           })}
-        </div>
+        </Stagger>
         {analysis.repeatedWrong.length > 0 && (
           <div className="clay rounded-2xl p-4">
             <p className="text-xs font-semibold text-sev-crit">Repeated offenders — missed again today</p>

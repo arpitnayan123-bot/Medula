@@ -7,7 +7,7 @@
 // ONLY — cards open our detail sheet, and the only "open" for external
 // content ever points at the original source.
 
-import { motion, useReducedMotion } from 'framer-motion'
+import { Children } from 'react'
 import type { LucideIcon } from 'lucide-react'
 import {
   BookOpen, ClipboardList, CircleHelp, FileQuestion, GraduationCap, Images,
@@ -17,6 +17,7 @@ import {
 import type { LibraryResource, ResourceAccess, ResourceKind } from '@/lib/types'
 import { RESOURCE_KIND_META } from '@/lib/types'
 import { Skeleton } from '@/components/ui/skeleton'
+import { ScrollReveal, Stagger, StaggerItem } from '@/components/primitives/motion'
 import { cn } from '@/lib/utils'
 
 export const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1]
@@ -50,16 +51,10 @@ export function KindIcon({ kind, className }: { kind: ResourceKind; className?: 
 // ── Motion + label primitives (same recipe as graph/revision shared parts) ───
 
 export function Reveal({ index = 0, className, children }: { index?: number; className?: string; children: React.ReactNode }) {
-  const reduce = useReducedMotion()
   return (
-    <motion.div
-      className={className}
-      initial={reduce ? false : { opacity: 0, y: 14 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.45, delay: reduce ? 0 : 0.05 * index, ease: EASE }}
-    >
+    <ScrollReveal className={className} delay={0.05 * index} amount={0.08}>
       {children}
-    </motion.div>
+    </ScrollReveal>
   )
 }
 
@@ -317,10 +312,15 @@ export function LibraryCard({
   )
 }
 
-/** Card grid — 1 column mobile, 2 columns ≥lg (low-clutter rule). */
+/** Card grid — 1 column mobile, 2 columns ≥lg (low-clutter rule).
+ *  Cards arrive in a gentle Stagger cascade (reduced-motion safe). */
 export function CardGrid({ children, className }: { children: React.ReactNode; className?: string }) {
   return (
-    <div className={cn('grid grid-cols-1 gap-3 lg:grid-cols-2', className)}>{children}</div>
+    <Stagger className={cn('grid grid-cols-1 gap-3 lg:grid-cols-2', className)}>
+      {Children.map(children, (child) =>
+        child == null ? child : <StaggerItem>{child}</StaggerItem>,
+      )}
+    </Stagger>
   )
 }
 

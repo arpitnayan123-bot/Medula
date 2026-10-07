@@ -22,6 +22,7 @@ import { api } from '@/lib/api'
 import { Button } from '@/components/ui/button'
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
 import { Skeleton } from '@/components/ui/skeleton'
+import { LiveDot, SpringNumber } from '@/components/primitives/motion'
 import { cn } from '@/lib/utils'
 
 export const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1]
@@ -243,8 +244,12 @@ export function StreakChip({ label, line, className }: { label: string; line: Ga
     >
       <Flame className={cn('size-3.5 shrink-0', line.state === 'intact' || line.state === 'recovered' ? 'text-primary' : 'text-ink-soft/50')} aria-hidden />
       <span className="font-medium">{label}</span>
-      <span className="font-semibold tabular-nums">{line.days}{line.state === 'none' ? '' : 'd'}</span>
-      <span className={cn('size-2 shrink-0 rounded-full', STREAK_DOT[line.state])} aria-hidden />
+      <span className="font-semibold"><SpringNumber value={line.days} suffix={line.state === 'none' ? '' : 'd'} /></span>
+      {line.state === 'intact' ? (
+        <LiveDot tone="bg-primary" />
+      ) : (
+        <span className={cn('size-2 shrink-0 rounded-full', STREAK_DOT[line.state])} aria-hidden />
+      )}
       <span className="sr-only">{line.note}</span>
     </span>
   )

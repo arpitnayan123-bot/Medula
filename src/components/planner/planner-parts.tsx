@@ -5,7 +5,6 @@
 // task rows, phase timeline, progress bars, subject rows. Everything renders
 // measured data verbatim — reasons are engine-written, never invented here.
 
-import { motion } from 'framer-motion'
 import {
   BookOpen, CalendarClock, CheckCircle2, CircleDashed, GraduationCap, ListChecks,
   RefreshCcw, Sparkles, Target,
@@ -14,6 +13,7 @@ import type { LucideIcon } from 'lucide-react'
 
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import { ScrollReveal } from '@/components/primitives/motion'
 import { cn } from '@/lib/utils'
 import { PLANNER_SLOT_LABELS } from '@/lib/types'
 import type { PlannerHandoff, PlannerPhase, PlannerSlot, PlannerSubjectRow, PlannerTask } from '@/lib/types'
@@ -37,18 +37,13 @@ export const HANDOFF_META: Record<PlannerHandoff['type'], { icon: LucideIcon; la
   'mock-lab': { icon: GraduationCap, label: 'Mock Lab' },
 }
 
-// ─── reveal (shared micro-animation) ─────────────────────────────────────────
+// ─── reveal (shared micro-animation — viewport-aware, below-fold friendly) ──
 
 export function Reveal({ children, delay = 0, className }: { children: React.ReactNode; delay?: number; className?: string }) {
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.28, delay, ease: 'easeOut' }}
-      className={className}
-    >
+    <ScrollReveal className={className} delay={delay} amount={0.08}>
       {children}
-    </motion.div>
+    </ScrollReveal>
   )
 }
 

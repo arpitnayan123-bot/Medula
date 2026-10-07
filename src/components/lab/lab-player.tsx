@@ -26,6 +26,7 @@ import {
   Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle,
 } from '@/components/ui/dialog'
 import { cn } from '@/lib/utils'
+import { SpringBar } from '@/components/primitives/motion'
 import { LAB_STEP_IDS, LAB_VERDICT_META, EASE, fmtClock, verdictTextTone } from './lab-shared'
 import { LabViewer } from './lab-viewer'
 import type { LabPinMarker } from './lab-viewer'
@@ -377,12 +378,10 @@ export function LabPlayer({ detail, mode, resume, rapidScope, onComplete, onExit
                   ? `Step ${stepIndex + 1} of ${steps.length}`
                   : ''}
             </p>
-            <div className="h-1.5 min-w-0 flex-1 overflow-hidden rounded-full bg-surface-2" role="presentation">
-              <div
-                className="h-full rounded-full bg-primary transition-[width] duration-300"
-                style={{ width: `${Math.min(100, (stepIndex / Math.max(1, steps.length)) * 100)}%` }}
-              />
-            </div>
+            <SpringBar
+              className="h-1.5 min-w-0 flex-1"
+              value={Math.min(100, (stepIndex / Math.max(1, steps.length)) * 100)}
+            />
           </div>
         )}
 

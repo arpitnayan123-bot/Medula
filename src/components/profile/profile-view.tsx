@@ -37,6 +37,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Skeleton } from '@/components/ui/skeleton'
+import { Stagger, StaggerItem } from '@/components/primitives/motion'
 import { Slider } from '@/components/ui/slider'
 import { Switch } from '@/components/ui/switch'
 import { ERROR_TYPE_LABELS, PREP_STAGE_LABELS, YEAR_LABELS } from '@/lib/types'
@@ -425,12 +426,12 @@ function ReadinessCard() {
         <div className="space-y-5">
           <ScoreRing value={readiness.overall} band={readiness.band} />
 
-          <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
-            <StatBlock value={String(dash.stats.streak)} label="Day streak" accent="text-primary" />
-            <StatBlock value={String(dash.stats.dueQuestions)} label="Due questions" />
-            <StatBlock value={String(dash.stats.dueFlashcards)} label="Due flashcards" />
-            <StatBlock value={String(dash.stats.topicsAtRisk)} label="Topics at risk" accent="text-sev-warn" />
-          </div>
+          <Stagger className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+            <StaggerItem><StatBlock value={String(dash.stats.streak)} label="Day streak" accent="text-primary" /></StaggerItem>
+            <StaggerItem><StatBlock value={String(dash.stats.dueQuestions)} label="Due questions" /></StaggerItem>
+            <StaggerItem><StatBlock value={String(dash.stats.dueFlashcards)} label="Due flashcards" /></StaggerItem>
+            <StaggerItem><StatBlock value={String(dash.stats.topicsAtRisk)} label="Topics at risk" accent="text-sev-warn" /></StaggerItem>
+          </Stagger>
 
           <div className="space-y-3">
             {readiness.components.map((c) => (
@@ -533,16 +534,18 @@ function ProgressDigestCard() {
       {state === 'error' && <DigestError hint="Open Progress" onOpen={() => setView('progress')} />}
       {state === 'ready' && data && (
         <div className="space-y-5">
-          <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
-            <StatBlock value={`${data.overall.accuracy}%`} label="Accuracy" accent="text-primary" />
-            <StatBlock value={`${data.overall.mastery}%`} label="Avg mastery" />
-            <StatBlock
-              value={`${data.overall.trend >= 0 ? '+' : ''}${data.overall.trend} pts`}
-              label="Trend"
-              accent={data.overall.trend >= 0 ? 'text-sev-ok' : 'text-sev-crit'}
-            />
-            <StatBlock value={`${data.weeklyReport.consistency}%`} label="Consistency (14d)" />
-          </div>
+          <Stagger className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+            <StaggerItem><StatBlock value={`${data.overall.accuracy}%`} label="Accuracy" accent="text-primary" /></StaggerItem>
+            <StaggerItem><StatBlock value={`${data.overall.mastery}%`} label="Avg mastery" /></StaggerItem>
+            <StaggerItem>
+              <StatBlock
+                value={`${data.overall.trend >= 0 ? '+' : ''}${data.overall.trend} pts`}
+                label="Trend"
+                accent={data.overall.trend >= 0 ? 'text-sev-ok' : 'text-sev-crit'}
+              />
+            </StaggerItem>
+            <StaggerItem><StatBlock value={`${data.weeklyReport.consistency}%`} label="Consistency (14d)" /></StaggerItem>
+          </Stagger>
 
           <div className="grid gap-2 sm:grid-cols-2">
             <InfoRow icon={TrendingUp} label="This week vs last" value={`${data.weeklyReport.accuracyNow}% vs ${data.weeklyReport.accuracyPrev}%`} />
@@ -638,12 +641,12 @@ function RoadmapDigestCard() {
             )}
           </div>
 
-          <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
-            <StatBlock value={String(data.neetClock.daysLeft)} label="Days to exam (est.)" accent="text-primary" />
-            <StatBlock value={String(data.neetClock.weeksLeft)} label="Weeks left" />
-            <StatBlock value={`${data.neetClock.weeklyTarget}`} label="Questions / week target" />
-            <StatBlock value={String(data.neetClock.revisionCyclesLeft)} label="Revision cycles left" />
-          </div>
+          <Stagger className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+            <StaggerItem><StatBlock value={String(data.neetClock.daysLeft)} label="Days to exam (est.)" accent="text-primary" /></StaggerItem>
+            <StaggerItem><StatBlock value={String(data.neetClock.weeksLeft)} label="Weeks left" /></StaggerItem>
+            <StaggerItem><StatBlock value={`${data.neetClock.weeklyTarget}`} label="Questions / week target" /></StaggerItem>
+            <StaggerItem><StatBlock value={String(data.neetClock.revisionCyclesLeft)} label="Revision cycles left" /></StaggerItem>
+          </Stagger>
 
           {data.phases.length > 0 && (
             <div className="rounded-xl border border-line bg-surface-2/60 px-3.5 py-3">

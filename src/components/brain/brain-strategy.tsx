@@ -11,6 +11,7 @@
 import { ClipboardList, Flag, Gauge, HeartPulse, ShieldCheck, Target } from 'lucide-react'
 import type { BrainStrategyPayload } from '@/lib/types'
 import { api } from '@/lib/api'
+import { ScrollReveal, Stagger, StaggerItem } from '@/components/primitives/motion'
 import { cn } from '@/lib/utils'
 import {
   ActionButton, BrainErrorState, EmptyNote, SectionCard, SkeletonRow, WeightDots,
@@ -76,23 +77,26 @@ export function BrainStrategy() {
               icon={Flag}
               subtitle="Where effort moves the measured needle most — exam weight × measured weakness."
             >
-              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+              <Stagger className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                 {data.highImpactWeaknesses.map((w) => (
-                  <section key={w.conceptId} className="flex flex-col gap-2.5 rounded-2xl border border-line bg-surface-2/40 p-3.5">
-                    <div className="flex items-start justify-between gap-2">
-                      <h4 className="min-w-0 text-sm font-semibold leading-snug tracking-tight">{w.name}</h4>
-                      <WeightDots weight={w.examWeight} className="mt-1 shrink-0" />
-                    </div>
-                    <p className="text-xs leading-relaxed text-ink-soft">{w.line}</p>
-                    <ActionButton action={w.action} className="mt-auto w-full justify-center" />
-                  </section>
+                  <StaggerItem key={w.conceptId} className="h-full">
+                    <section className="flex h-full flex-col gap-2.5 rounded-2xl border border-line bg-surface-2/40 p-3.5">
+                      <div className="flex items-start justify-between gap-2">
+                        <h4 className="min-w-0 text-sm font-semibold leading-snug tracking-tight">{w.name}</h4>
+                        <WeightDots weight={w.examWeight} className="mt-1 shrink-0" />
+                      </div>
+                      <p className="text-xs leading-relaxed text-ink-soft">{w.line}</p>
+                      <ActionButton action={w.action} className="mt-auto w-full justify-center" />
+                    </section>
+                  </StaggerItem>
                 ))}
-              </div>
+              </Stagger>
             </SectionCard>
           )}
 
           {/* strong areas — protect, don't grind */}
           {data.strongAreas.length > 0 && (
+            <ScrollReveal>
             <SectionCard
               title="Strong areas"
               icon={ShieldCheck}
@@ -110,9 +114,11 @@ export function BrainStrategy() {
                 ))}
               </ul>
             </SectionCard>
+            </ScrollReveal>
           )}
 
           {/* time management + test taking */}
+          <ScrollReveal>
           <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
             <SectionCard title="Time management" icon={Gauge}>
               <dl className="space-y-2 text-xs">
@@ -132,9 +138,11 @@ export function BrainStrategy() {
               <p className="mt-3 text-xs leading-relaxed text-ink-soft">{data.testTaking.line}</p>
             </SectionCard>
           </div>
+          </ScrollReveal>
 
           {/* mistake patterns → tactics */}
           {data.mistakePatterns.length > 0 && (
+            <ScrollReveal>
             <SectionCard title="Mistake patterns" icon={Flag} subtitle="Your measured error types, each with the tactic that fits it.">
               <ul className="space-y-1.5" aria-label="Mistake patterns">
                 {data.mistakePatterns.map((m) => (
@@ -148,9 +156,11 @@ export function BrainStrategy() {
                 ))}
               </ul>
             </SectionCard>
+            </ScrollReveal>
           )}
 
           {/* revision gaps */}
+          <ScrollReveal>
           <SectionCard title="Revision gaps" icon={ClipboardList}>
             <div className="flex flex-wrap gap-1.5">
               <span className="inline-flex min-h-9 items-center gap-1.5 rounded-full border border-line bg-surface-2/60 px-3 py-1.5 text-[11px]">
@@ -164,9 +174,11 @@ export function BrainStrategy() {
             </div>
             <p className="mt-3 text-xs leading-relaxed text-ink-soft">{data.revisionGaps.line}</p>
           </SectionCard>
+          </ScrollReveal>
 
           {/* playbook */}
           {data.playbook.length > 0 && (
+            <ScrollReveal>
             <SectionCard title="Your playbook" icon={Target} subtitle="Numbered, evidence-based lines — each traceable to the measurements above.">
               <ol className="space-y-2">
                 {data.playbook.map((line, i) => (
@@ -179,6 +191,7 @@ export function BrainStrategy() {
                 ))}
               </ol>
             </SectionCard>
+            </ScrollReveal>
           )}
 
           {/* disclaimer — verbatim */}

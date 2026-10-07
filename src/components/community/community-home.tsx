@@ -11,9 +11,11 @@ import { ArrowUpRight, Award, CheckCircle2, Flame, Info, MessageSquare, ScrollTe
 import type { CommunityGroupSummary, CommunityHomePayload, CommunitySpaceKind, CommunitySpaceSummary } from '@/lib/types'
 import { useAppStore } from '@/lib/store'
 import { Button } from '@/components/ui/button'
+import { ScrollReveal, SpringNumber, Stagger, StaggerItem } from '@/components/primitives/motion'
+import { DotMatrix } from '@/components/primitives/scenery'
 import { cn } from '@/lib/utils'
 import {
-  EmptyState, GroupCard, MicroLabel, PostCard, ProgressMeter, Reveal,
+  EmptyState, GroupCard, MicroLabel, PostCard, ProgressMeter,
   SPACE_KIND_LABEL, SpaceCard, StreakFlame,
 } from './community-shared'
 
@@ -36,21 +38,23 @@ export function CommunityHomeScreen({
   return (
     <div className="space-y-8">
       {/* ── hero ── */}
-      <Reveal index={0}>
-        <header className="space-y-3">
+      <ScrollReveal>
+        <header className="relative space-y-3">
+          <DotMatrix className="rounded-2xl" />
+          <div className="relative z-10 space-y-3">
           <MicroLabel>Medical learning community</MicroLabel>
           <h1 className="text-xl font-bold leading-snug tracking-tight md:text-2xl">
             Learn Together <span className="text-ink-soft">→</span> Discuss <span className="text-ink-soft">→</span>{' '}
             <span className="text-primary">Stay Accountable</span> <span className="text-ink-soft">→</span> Improve
           </h1>
-          <div className="flex flex-wrap items-center gap-2">
-            <StatChip value={home.stats.spaces} label="spaces" />
-            <StatChip value={home.stats.posts} label="posts" />
-            <StatChip value={home.stats.replies} label="replies" />
-            <StatChip value={home.stats.resolved} label="resolved" tone="ok" />
-            <StatChip value={home.stats.unresolved} label="unresolved" tone="warn" />
-            <StatChip value={home.stats.groups} label="study groups" />
-          </div>
+          <Stagger className="flex flex-wrap items-center gap-2">
+            <StaggerItem><StatChip value={home.stats.spaces} label="spaces" /></StaggerItem>
+            <StaggerItem><StatChip value={home.stats.posts} label="posts" /></StaggerItem>
+            <StaggerItem><StatChip value={home.stats.replies} label="replies" /></StaggerItem>
+            <StaggerItem><StatChip value={home.stats.resolved} label="resolved" tone="ok" /></StaggerItem>
+            <StaggerItem><StatChip value={home.stats.unresolved} label="unresolved" tone="warn" /></StaggerItem>
+            <StaggerItem><StatChip value={home.stats.groups} label="study groups" /></StaggerItem>
+          </Stagger>
           <p
             className="flex items-start gap-2 rounded-xl border border-line bg-surface-2/60 px-3.5 py-3 text-[11px] leading-relaxed text-ink-soft"
             role="note"
@@ -58,12 +62,13 @@ export function CommunityHomeScreen({
             <Info className="mt-0.5 size-3.5 shrink-0" aria-hidden />
             {home.demoNotice}
           </p>
+          </div>
         </header>
-      </Reveal>
+      </ScrollReveal>
 
       {/* ── guidelines CTA (until accepted) ── */}
       {!home.guidelinesAccepted && (
-        <Reveal index={1}>
+        <ScrollReveal>
           <button
             type="button"
             onClick={onOpenGuidelines}
@@ -80,11 +85,11 @@ export function CommunityHomeScreen({
             </span>
             <ArrowUpRight className="mt-1 size-4 shrink-0 text-sev-warn" aria-hidden />
           </button>
-        </Reveal>
+        </ScrollReveal>
       )}
 
       {/* ── accountability strip — measured, gentle, one tap away ── */}
-      <Reveal index={1}>
+      <ScrollReveal>
         <button
           type="button"
           onClick={onOpenAccountability}
@@ -120,31 +125,31 @@ export function CommunityHomeScreen({
             </span>
           </span>
         </button>
-      </Reveal>
+      </ScrollReveal>
 
       {/* ── For You — personalised from real learning signals ── */}
       {home.forYou && (
-        <Reveal index={2}>
+        <ScrollReveal>
           <section aria-labelledby="community-foryou">
             <div className="mb-2.5 flex items-center gap-2">
               <Sparkles className="size-4 text-primary" aria-hidden />
               <h2 id="community-foryou" className="text-sm font-semibold tracking-tight">For you</h2>
             </div>
             <p className="mb-3 text-[11px] leading-relaxed text-ink-soft">{home.forYou.note}</p>
-            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            <Stagger className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
               {home.forYou.spaces.slice(0, 3).map((s) => (
-                <SpaceCard key={s.id} space={s} onOpen={onOpenSpace} />
+                <StaggerItem key={s.id}><SpaceCard space={s} onOpen={onOpenSpace} /></StaggerItem>
               ))}
               {home.forYou.groups.slice(0, 3).map((g) => (
-                <GroupCard key={g.id} group={g} onOpen={onOpenGroup} />
+                <StaggerItem key={g.id}><GroupCard group={g} onOpen={onOpenGroup} /></StaggerItem>
               ))}
-            </div>
+            </Stagger>
           </section>
-        </Reveal>
+        </ScrollReveal>
       )}
 
       {/* ── featured: unresolved questions + recently active ── */}
-      <Reveal index={2}>
+      <ScrollReveal>
         <section aria-labelledby="community-featured">
           <h2 id="community-featured" className="mb-3 flex items-center gap-2 text-sm font-semibold tracking-tight">
             <MessageSquare className="size-4 text-primary" aria-hidden /> In the discussion
@@ -183,10 +188,10 @@ export function CommunityHomeScreen({
             </div>
           )}
         </section>
-      </Reveal>
+      </ScrollReveal>
 
       {/* ── my groups ── */}
-      <Reveal index={3}>
+      <ScrollReveal>
         <section aria-labelledby="community-mygroups">
           <div className="mb-3 flex items-center justify-between gap-2">
             <h2 id="community-mygroups" className="flex items-center gap-2 text-sm font-semibold tracking-tight">
@@ -204,22 +209,22 @@ export function CommunityHomeScreen({
               action={<Button className="min-h-11" onClick={onOpenGroups}>Browse study groups</Button>}
             />
           ) : (
-            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            <Stagger className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
               {home.myGroups.slice(0, 3).map((g) => (
-                <GroupCard key={g.id} group={g} onOpen={onOpenGroup} mine />
+                <StaggerItem key={g.id}><GroupCard group={g} onOpen={onOpenGroup} mine /></StaggerItem>
               ))}
-            </div>
+            </Stagger>
           )}
         </section>
-      </Reveal>
+      </ScrollReveal>
 
       {/* ── spaces grouped by kind ── */}
-      <Reveal index={3}>
+      <ScrollReveal>
         <SpacesByKind spaces={home.spaces} onOpenSpace={onOpenSpace} limit />
-      </Reveal>
+      </ScrollReveal>
 
       {/* ── contribution card ── */}
-      <Reveal index={4}>
+      <ScrollReveal>
         <section aria-labelledby="community-contribution" className="clay rounded-2xl p-4 sm:p-5">
           <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
             <h2 id="community-contribution" className="flex items-center gap-2 text-sm font-semibold tracking-tight">
@@ -231,7 +236,7 @@ export function CommunityHomeScreen({
           </div>
           <div className="flex flex-wrap items-end gap-x-8 gap-y-3">
             <div>
-              <p className="text-3xl font-bold tabular-nums leading-none">{home.stats.you.score}</p>
+              <p className="text-3xl font-bold tabular-nums leading-none"><SpringNumber value={home.stats.you.score} /></p>
               <p className="mt-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-ink-soft">score</p>
             </div>
             <ContributionStat value={home.stats.you.answers} label="answers marked" />
@@ -244,7 +249,7 @@ export function CommunityHomeScreen({
             Earned by helping others — solved doubts weigh more than upvotes. Answer a marked question or resolve your own thread to grow it.
           </p>
         </section>
-      </Reveal>
+      </ScrollReveal>
     </div>
   )
 }
@@ -277,11 +282,11 @@ export function SpacesByKind({
                 {g.kind === 'subject' && <span className="ml-1.5 font-normal normal-case">one per subject — follow the ones you study</span>}
                 <span className="ml-2 font-normal normal-case text-ink-soft/70">{g.items.length}</span>
               </p>
-              <div className={cn('grid grid-cols-1 gap-3', limit ? 'sm:grid-cols-2 lg:grid-cols-3' : 'sm:grid-cols-2 lg:grid-cols-3')}>
+              <Stagger className={cn('grid grid-cols-1 gap-3', limit ? 'sm:grid-cols-2 lg:grid-cols-3' : 'sm:grid-cols-2 lg:grid-cols-3')}>
                 {(limit ? g.items.slice(0, 6) : g.items).map((s) => (
-                  <SpaceCard key={s.id} space={s} onOpen={onOpenSpace} />
+                  <StaggerItem key={s.id}><SpaceCard space={s} onOpen={onOpenSpace} /></StaggerItem>
                 ))}
-              </div>
+              </Stagger>
             </div>
           ))}
         </div>

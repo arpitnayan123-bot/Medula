@@ -29,6 +29,7 @@ import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Textarea } from '@/components/ui/textarea'
 import { EmptyState, PageHeader } from '@/components/primitives/kit'
+import { Stagger, StaggerItem } from '@/components/primitives/motion'
 import { cn } from '@/lib/utils'
 
 const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1]
@@ -470,7 +471,7 @@ function WeakCard({ w, pinned = false, onHandoff }: { w: PerformanceWeakItem; pi
 
 function StrengthCard({ s }: { s: PerformancePayload['strengths'][number] }) {
   return (
-    <div className="clay rounded-2xl p-4">
+    <div className="clay h-full rounded-2xl p-4">
       <div className="flex items-start gap-3">
         <span className="grid size-9 shrink-0 place-items-center rounded-lg bg-sev-ok/10">
           <ShieldCheck className="size-4 text-sev-ok" />
@@ -540,7 +541,7 @@ function IndicatorTile(props: {
       type="button"
       onClick={() => props.onTab(props.tab)}
       aria-label={props.aria}
-      className="clay clay-hover group rounded-xl px-3 py-2.5 text-left transition-colors"
+      className="clay clay-hover group h-full rounded-xl px-3 py-2.5 text-left transition-colors"
     >
       <div className="flex items-center gap-1.5">
         <Icon className="size-3.5 text-ink-soft transition-colors group-hover:text-primary" />
@@ -720,7 +721,8 @@ function OverviewTab({ data, onTab, onHandoff }: { data: PerformancePayload; onT
       {/* 4 · KEY INDICATORS */}
       <Reveal index={3} className="space-y-3">
         <SectionHeading>Key indicators</SectionHeading>
-        <div className="grid grid-cols-2 gap-3 md:grid-cols-3">
+        <Stagger className="grid grid-cols-2 gap-3 md:grid-cols-3">
+          <StaggerItem className="h-full">
           <IndicatorTile
             icon={Target}
             label="Question accuracy"
@@ -738,6 +740,8 @@ function OverviewTab({ data, onTab, onHandoff }: { data: PerformancePayload; onT
             aria="Question accuracy — open trends"
             onTab={onTab}
           />
+          </StaggerItem>
+          <StaggerItem className="h-full">
           <IndicatorTile
             icon={Brain}
             label="Recall"
@@ -747,6 +751,8 @@ function OverviewTab({ data, onTab, onHandoff }: { data: PerformancePayload; onT
             aria="Recall — open readiness"
             onTab={onTab}
           />
+          </StaggerItem>
+          <StaggerItem className="h-full">
           <IndicatorTile
             icon={Timer}
             label="Speed"
@@ -756,6 +762,8 @@ function OverviewTab({ data, onTab, onHandoff }: { data: PerformancePayload; onT
             aria="Speed — open readiness"
             onTab={onTab}
           />
+          </StaggerItem>
+          <StaggerItem className="h-full">
           <IndicatorTile
             icon={Flame}
             label="Consistency"
@@ -765,6 +773,8 @@ function OverviewTab({ data, onTab, onHandoff }: { data: PerformancePayload; onT
             aria="Consistency — open trends"
             onTab={onTab}
           />
+          </StaggerItem>
+          <StaggerItem className="h-full">
           <IndicatorTile
             icon={History}
             label="Revision debt"
@@ -774,6 +784,8 @@ function OverviewTab({ data, onTab, onHandoff }: { data: PerformancePayload; onT
             aria="Revision debt — open focus"
             onTab={onTab}
           />
+          </StaggerItem>
+          <StaggerItem className="h-full">
           <IndicatorTile
             icon={ClipboardList}
             label="Mocks"
@@ -783,7 +795,8 @@ function OverviewTab({ data, onTab, onHandoff }: { data: PerformancePayload; onT
             aria="Mock tests — open trends"
             onTab={onTab}
           />
-        </div>
+          </StaggerItem>
+        </Stagger>
       </Reveal>
 
       <p className="text-center text-[11px] leading-relaxed text-ink-soft">
@@ -1173,11 +1186,13 @@ function FocusTab({ data, onHandoff }: { data: PerformancePayload; onHandoff: (h
             hint="strengths appear once mastery holds across attempts."
           />
         ) : (
-          <div className="grid gap-3 md:grid-cols-2">
+          <Stagger className="grid gap-3 md:grid-cols-2">
             {strengths.map((s) => (
-              <StrengthCard key={s.id} s={s} />
+              <StaggerItem key={s.id} className="h-full">
+                <StrengthCard s={s} />
+              </StaggerItem>
             ))}
-          </div>
+          </Stagger>
         )}
       </Reveal>
 

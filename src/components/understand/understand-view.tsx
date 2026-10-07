@@ -8,12 +8,14 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
 import {
-  BrainCircuit, Brain, ChevronLeft, ChevronRight, CircleCheck, CircleCheckBig, Clapperboard, Lightbulb,
-  Pause, Play, RotateCcw, Search, Sparkles, GraduationCap, Layers, AlertTriangle,
+  BrainCircuit, Brain, Check, ChevronLeft, ChevronRight, CircleCheck, CircleCheckBig, Clapperboard, Lightbulb,
+  Lock, LockOpen, Pause, Play, RotateCcw, Search, Sparkles, GraduationCap, Layers, AlertTriangle,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { PageHeader } from '@/components/primitives/kit'
+import { Stagger, StaggerItem, ScrollReveal } from '@/components/primitives/motion'
+import { MoleculeDrift } from '@/components/primitives/scenery'
 import { useToast } from '@/hooks/use-toast'
 import { api } from '@/lib/api'
 import { UNDERSTAND_SUBJECTS, SEVERITY_META, YIELD_META } from '@/lib/understand-types'
@@ -154,14 +156,15 @@ export function UnderstandView() {
     <div className="mx-auto w-full max-w-7xl px-4 py-6 sm:px-6">
       <StepTimer topic={topic} playing={playing} reduce={reduce} step={step} setStep={setStep} />
 
-      {/* ── header — porcelain editorial on a clay card ── */}
+      {/* ── header — porcelain editorial on a clay card, molecule drifting behind ── */}
       <motion.div
         initial={reduce ? false : { opacity: 0, y: 18 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, ease: EASE }}
-        className="clay rounded-3xl p-5 sm:p-6"
+        className="clay relative overflow-hidden rounded-3xl p-5 sm:p-6"
       >
-        <div className="flex flex-wrap items-start justify-between gap-4">
+        <MoleculeDrift className="opacity-40" />
+        <div className="relative z-10 flex flex-wrap items-start justify-between gap-4">
           <PageHeader
             className="min-w-0"
             eyebrow={
@@ -191,7 +194,7 @@ export function UnderstandView() {
           </div>
         </div>
         {/* understood progress */}
-        <div className="mt-4 flex items-center gap-3">
+        <div className="relative z-10 mt-4 flex items-center gap-3">
           <CircleCheckBig className="size-4 shrink-0 text-sev-ok" aria-hidden />
           <div className="h-2 flex-1 overflow-hidden rounded-full bg-surface-2" role="progressbar"
             aria-valuenow={understood.size} aria-valuemin={0} aria-valuemax={ALL_TOPICS.length}>
@@ -252,12 +255,13 @@ export function UnderstandView() {
             {filtered.length} topic{filtered.length === 1 ? '' : 's'}
           </p>
           <div className="space-y-1.5">
+            <Stagger className="space-y-1.5">
             {filtered.map((t) => {
               const meta = UNDERSTAND_SUBJECTS[t.subjectCode]
               const active = t.id === resolvedTopicId
               return (
+                <StaggerItem key={t.id}>
                 <button
-                  key={t.id}
                   onClick={() => selectTopic(t.id)}
                   aria-current={active ? 'true' : undefined}
                   className={cn(
@@ -285,11 +289,13 @@ export function UnderstandView() {
                     </span>
                   </span>
                 </button>
+                </StaggerItem>
               )
             })}
             {filtered.length === 0 && (
               <p className="px-2 py-8 text-center text-sm text-ink-soft">No topics match those filters — try widening them.</p>
             )}
+            </Stagger>
           </div>
         </aside>
 
@@ -410,6 +416,7 @@ export function UnderstandView() {
               </section>
 
               {/* plain words */}
+              <ScrollReveal>
               <section aria-label="Plain words explanation" className="clay rounded-3xl p-4 sm:p-5">
                 <h3 className="flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-ink-soft">
                   <GraduationCap className="size-4 text-primary" aria-hidden /> In plain words
@@ -420,9 +427,10 @@ export function UnderstandView() {
                   <span>{topic.oneLiner}</span>
                 </p>
               </section>
+              </ScrollReveal>
 
               {/* weak points + traps */}
-              <div className="grid gap-4 md:grid-cols-2">
+              <ScrollReveal className="grid gap-4 md:grid-cols-2">
                 <section aria-label="Where students slip" className="clay rounded-3xl p-4 sm:p-5">
                   <h3 className="flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-ink-soft">
                     <AlertTriangle className="size-4 text-sev-warn" aria-hidden /> Where students slip
@@ -478,7 +486,9 @@ export function UnderstandView() {
                             aria-expanded={open}
                             className="flex w-full items-start gap-2 p-3 text-left min-h-11"
                           >
-                            <span aria-hidden className="mt-0.5 text-sm">{open ? '🔓' : '🔒'}</span>
+                            <span aria-hidden className="mt-0.5 text-ink-soft">
+                              {open ? <LockOpen className="size-3.5" /> : <Lock className="size-3.5" />}
+                            </span>
                             <span className="text-sm font-medium">{tr.q}</span>
                           </button>
                           <AnimatePresence initial={false}>
@@ -490,8 +500,9 @@ export function UnderstandView() {
                                 transition={{ duration: 0.24, ease: EASE }}
                                 className="overflow-hidden"
                               >
-                                <p className="border-t border-line px-3 py-2.5 text-xs leading-relaxed text-sev-ok">
-                                  ✓ {tr.a}
+                                <p className="flex items-start gap-1.5 border-t border-line px-3 py-2.5 text-xs leading-relaxed text-sev-ok">
+                                  <Check className="mt-0.5 size-3.5 shrink-0" aria-hidden />
+                                  <span>{tr.a}</span>
                                 </p>
                               </motion.div>
                             )}
@@ -501,9 +512,10 @@ export function UnderstandView() {
                     })}
                   </div>
                 </section>
-              </div>
+              </ScrollReveal>
 
               {/* footer actions */}
+              <ScrollReveal>
               <div className="clay flex flex-wrap items-center gap-3 rounded-3xl p-4 sm:p-5">
                 <Button
                   onClick={() => toggleUnderstood(topic.id)}
@@ -520,6 +532,7 @@ export function UnderstandView() {
                   </Button>
                 )}
               </div>
+              </ScrollReveal>
             </>
           )}
         </div>

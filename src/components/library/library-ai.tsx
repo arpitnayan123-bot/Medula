@@ -15,6 +15,7 @@ import { Button } from '@/components/ui/button'
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Pop } from '@/components/primitives/motion'
 import { cn } from '@/lib/utils'
 
 type Action = 'key-points' | 'compare' | 'recommend'
@@ -157,9 +158,11 @@ export function LibraryAiPanel({ resource, related }: { resource: LibraryResourc
             {result && (
               <div className="space-y-2.5" role="status">
                 <p className="flex flex-wrap items-center gap-2">
-                  <span className="inline-flex items-center gap-1 rounded-full border border-primary/35 bg-primary/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-primary">
-                    <Sparkles className="size-3" aria-hidden /> {result.aiBadge}
-                  </span>
+                  <Pop className="inline-flex">
+                    <span className="inline-flex items-center gap-1 rounded-full border border-primary/35 bg-primary/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-primary">
+                      <Sparkles className="size-3" aria-hidden /> {result.aiBadge}
+                    </span>
+                  </Pop>
                   {result.fallback && (
                     <span className="text-[10px] font-medium text-ink-soft">
                       Answered from the catalog&apos;s own metadata (assistant offline)

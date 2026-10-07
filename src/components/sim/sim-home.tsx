@@ -6,7 +6,7 @@
 // weak areas, repeated errors, the recommended next case and recent runs.
 
 import { useMemo, useState } from 'react'
-import { motion, useReducedMotion } from 'framer-motion'
+import { useReducedMotion } from 'framer-motion'
 import {
   Activity, Award, Bot, CheckCircle2, Clock3, Compass, Image as ImageIcon, Play,
   RotateCcw, Stethoscope, Target, Timer, TrendingUp, XCircle, Zap,
@@ -21,6 +21,7 @@ import type { SimCaseSummary, SimDifficulty, SimHome } from '@/lib/types'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Progress } from '@/components/ui/progress'
+import { Stagger, StaggerItem, ScrollReveal } from '@/components/primitives/motion'
 import { cn } from '@/lib/utils'
 import { DIFF_TONE, MicroLabel, Reveal, AnimatedNumber, relTime, SCROLL_SLIM } from './sim-shared'
 
@@ -45,15 +46,11 @@ function StatChip({ icon: Icon, value, label, accent }: { icon: LucideIcon; valu
   )
 }
 
-function CaseCard({ c, index, onOpen }: { c: SimCaseSummary; index: number; onOpen: (id: string) => void }) {
+function CaseCard({ c, onOpen }: { c: SimCaseSummary; onOpen: (id: string) => void }) {
   return (
-    <motion.button
+    <button
       type="button"
       onClick={() => onOpen(c.id)}
-      initial={{ opacity: 0, y: 14 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: '-24px' }}
-      transition={{ duration: 0.4, delay: Math.min(index, 8) * 0.04, ease: [0.22, 1, 0.36, 1] }}
       className="clay clay-hover flex w-full min-w-0 flex-col gap-3 rounded-2xl p-4 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
       aria-label={`Open case: ${c.title} — ${c.specialty}, ${SIM_DIFFICULTY_META[c.difficulty].label}, about ${c.minutes} minutes`}
     >
@@ -108,7 +105,7 @@ function CaseCard({ c, index, onOpen }: { c: SimCaseSummary; index: number; onOp
           </span>
         )}
       </div>
-    </motion.button>
+    </button>
   )
 }
 
@@ -175,7 +172,7 @@ export function SimHomeScreen({ home, onOpenCase }: Props) {
           <button
             type="button"
             onClick={() => onOpenCase(home.resume!.caseId)}
-            className="warm-card flex w-full min-w-0 items-center gap-3 rounded-2xl p-4 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            className="warm-card clay-hover flex w-full min-w-0 items-center gap-3 rounded-2xl p-4 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             aria-label={`Resume case ${home.resume.caseTitle} at saved stage`}
           >
             <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-sev-warn/15 text-sev-warn">
@@ -320,17 +317,19 @@ export function SimHomeScreen({ home, onOpenCase }: Props) {
             </div>
           </Reveal>
         ) : (
-          <div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3">
-            {filteredCases.map((c, i) => (
-              <CaseCard key={c.id} c={c} index={i} onOpen={onOpenCase} />
+          <Stagger className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3">
+            {filteredCases.map((c) => (
+              <StaggerItem key={c.id}>
+                <CaseCard c={c} onOpen={onOpenCase} />
+              </StaggerItem>
             ))}
-          </div>
+          </Stagger>
         )}
       </section>
 
       {/* ── Weak areas ── */}
       {home.weakAreas.length > 0 && (
-        <Reveal index={6} className="space-y-3">
+        <ScrollReveal className="space-y-3">
           <MicroLabel className="text-sev-warn">Weak areas — below 70% measured</MicroLabel>
           <div className="clay space-y-3.5 rounded-2xl p-4 md:p-5">
             {home.weakAreas.map((w, i) => {
@@ -349,12 +348,12 @@ export function SimHomeScreen({ home, onOpenCase }: Props) {
               )
             })}
           </div>
-        </Reveal>
+        </ScrollReveal>
       )}
 
       {/* ── Repeated errors ── */}
       {home.repeatedErrors.length > 0 && (
-        <Reveal index={7} className="space-y-3">
+        <ScrollReveal className="space-y-3">
           <MicroLabel className="text-sev-crit">Repeated misses — same decision, several runs</MicroLabel>
           <div className="clay divide-y divide-line/70 rounded-2xl p-2 md:p-3">
             {home.repeatedErrors.map((e, i) => (
@@ -371,12 +370,12 @@ export function SimHomeScreen({ home, onOpenCase }: Props) {
               </div>
             ))}
           </div>
-        </Reveal>
+        </ScrollReveal>
       )}
 
       {/* ── Recommended next case ── */}
       {home.recommended && (
-        <Reveal index={8}>
+        <ScrollReveal>
           <section className="clay space-y-3 rounded-2xl border-primary/25 p-4 md:p-5" aria-label="Recommended next case">
             <div className="flex items-center gap-2">
               <span className="grid size-8 shrink-0 place-items-center rounded-lg bg-primary/12 text-primary">
@@ -390,12 +389,12 @@ export function SimHomeScreen({ home, onOpenCase }: Props) {
               <Play className="size-4" /> Begin this case
             </Button>
           </section>
-        </Reveal>
+        </ScrollReveal>
       )}
 
       {/* ── Recent runs ── */}
       {home.recent.length > 0 && (
-        <Reveal index={9} className="space-y-3">
+        <ScrollReveal className="space-y-3">
           <MicroLabel>Recent runs</MicroLabel>
           <div className={cn('flex gap-2 overflow-x-auto pb-1', SCROLL_SLIM)}>
             {home.recent.map((r, i) => (
@@ -424,18 +423,18 @@ export function SimHomeScreen({ home, onOpenCase }: Props) {
               </button>
             ))}
           </div>
-        </Reveal>
+        </ScrollReveal>
       )}
 
       {/* Measured-data footnote (only when the profile has no runs yet) */}
       {stats.attempted === 0 && (
-        <Reveal index={10}>
+        <ScrollReveal>
           <p className="rounded-xl border border-line bg-surface-2/40 px-4 py-3 text-xs leading-relaxed text-ink-soft">
             Scores, accuracy and the recommended ladder appear here as measured values once you complete your
             first case — nothing is estimated or assumed.
             {!reduce && <Activity className="ml-1 inline size-3.5 align-[-2px]" aria-hidden />}
           </p>
-        </Reveal>
+        </ScrollReveal>
       )}
     </div>
   )

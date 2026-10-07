@@ -19,6 +19,8 @@ import { useAppStore } from '@/lib/store'
 import { Concept3D } from '@/components/concept/concept-3d'
 import { LessonSections } from '@/components/learn/lesson-sections'
 import { ProgressMark } from '@/components/learn/learn-study'
+import { ScrollReveal } from '@/components/primitives/motion'
+import { ContourAtlas } from '@/components/primitives/scenery'
 import { cn } from '@/lib/utils'
 import type { LearnStatus } from '@/lib/types'
 
@@ -451,8 +453,10 @@ export function ConceptExplorer() {
                     </div>
                   )}
 
-                  {/* 1 · HEADER */}
-                  <header className="space-y-3">
+                  {/* 1 · HEADER — Atlas contours drift under the title */}
+                  <div className="relative">
+                    <ContourAtlas opacity={0.4} />
+                    <header className="relative z-10 space-y-3">
                     <div className="flex flex-wrap items-center gap-2">
                       <KindBadge kind={detail.kind} />
                       <span className="inline-flex items-center gap-1.5 rounded-full border border-line bg-surface px-2.5 py-1 text-[11px] text-ink-soft">
@@ -484,6 +488,7 @@ export function ConceptExplorer() {
                       <MetaChip label="Clinical relevance" value={detail.clinicalRelevance} />
                     </div>
                   </header>
+                  </div>
 
                   {/* 1b · 30-SECOND VERSION — pinned, from the full lesson */}
                   {detail.lesson && (
@@ -521,6 +526,7 @@ export function ConceptExplorer() {
                   )}
 
                   {/* 2b · 3D VISUAL — every topic as a layered 3D diagram */}
+                  <ScrollReveal>
                   <section className="clay overflow-hidden rounded-2xl">
                     <button
                       type="button"
@@ -552,6 +558,7 @@ export function ConceptExplorer() {
                       </motion.div>
                     )}
                   </section>
+                  </ScrollReveal>
 
                   {/* 3 · HOW THIS CONNECTS */}
                   {detail.whyChain.length > 0 && (
@@ -630,6 +637,7 @@ export function ConceptExplorer() {
                   )}
 
                   {/* 5 · CONNECTIONS */}
+                  <ScrollReveal className="space-y-3">
                   <section className="space-y-3">
                     <SectionTitle>Connections</SectionTitle>
                     <div className="grid gap-4 md:grid-cols-2">
@@ -647,9 +655,11 @@ export function ConceptExplorer() {
                       />
                     </div>
                   </section>
+                  </ScrollReveal>
 
                   {/* 6 · FLASHCARDS */}
                   {detail.flashcards.length > 0 && (
+                    <ScrollReveal>
                     <section>
                       <SectionTitle>Flashcards · {detail.flashcards.length}</SectionTitle>
                       <div className="-mx-4 mt-3 flex snap-x gap-4 overflow-x-auto px-4 pb-2 md:-mx-8 md:px-8">
@@ -664,9 +674,11 @@ export function ConceptExplorer() {
                         ))}
                       </div>
                     </section>
+                    </ScrollReveal>
                   )}
 
                   {/* 7 · QUESTION BANK */}
+                  <ScrollReveal>
                   <section className="clay flex flex-col gap-3 rounded-2xl p-4 md:flex-row md:items-center md:justify-between md:p-5">
                     <div>
                       <h3 className="text-sm font-semibold">Question bank</h3>
@@ -676,9 +688,11 @@ export function ConceptExplorer() {
                     </div>
                     <Button onClick={practiceNow} className="shrink-0 tracking-wide">PRACTICE NOW</Button>
                   </section>
+                  </ScrollReveal>
 
                   {/* 8 · MNEMONIC — legacy rendering, kept when no lesson */}
                   {!detail.lesson && detail.mnemonic && (
+                    <ScrollReveal>
                     <section className="flex gap-3 rounded-2xl border border-gold/30 bg-gold/10 p-4">
                       <Lightbulb className="mt-0.5 size-4 shrink-0 text-gold" />
                       <div>
@@ -686,6 +700,7 @@ export function ConceptExplorer() {
                         <p className="mt-1 text-sm leading-relaxed">{detail.mnemonic}</p>
                       </div>
                     </section>
+                    </ScrollReveal>
                   )}
 
                   {/* 9 · DISCLAIMER */}

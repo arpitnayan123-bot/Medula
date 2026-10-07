@@ -28,6 +28,7 @@ import {
   Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle,
 } from '@/components/ui/dialog'
 import { cn } from '@/lib/utils'
+import { Stagger, StaggerItem } from '@/components/primitives/motion'
 import {
   AI_QUICK_CHIPS, AI_SCENE_NOTE, DIFF_TONE, EASE, MicroLabel, STAGE_META, VERDICT_META,
   fmtClock, imgSrc, isAiChatStage, SCROLL_SLIM,
@@ -380,7 +381,8 @@ export function SimPlayer({ detail, resume, onComplete, onExit }: PlayerProps) {
               <p className="text-sm leading-relaxed text-ink-soft">
                 This case can run two ways — both are graded by the same deterministic engine.
               </p>
-              <div className="grid gap-3 sm:grid-cols-2">
+              <Stagger className="grid gap-3 sm:grid-cols-2">
+                <StaggerItem>
                 <button
                   type="button"
                   disabled={starting}
@@ -395,6 +397,8 @@ export function SimPlayer({ detail, resume, onComplete, onExit }: PlayerProps) {
                     Work the structured encounter: gather history, examine, order investigations, decide.
                   </span>
                 </button>
+                </StaggerItem>
+                <StaggerItem>
                 <button
                   type="button"
                   disabled={starting}
@@ -410,7 +414,8 @@ export function SimPlayer({ detail, resume, onComplete, onExit }: PlayerProps) {
                     as usual.
                   </span>
                 </button>
-              </div>
+                </StaggerItem>
+              </Stagger>
             </>
           ) : startError ? (
             <div className="clay flex flex-col items-start gap-3 rounded-2xl p-5">

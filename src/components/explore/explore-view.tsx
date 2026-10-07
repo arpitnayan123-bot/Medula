@@ -16,6 +16,8 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { FEATURES } from '@/lib/feature-flags'
 import { PageHeader } from '@/components/primitives/kit'
+import { Stagger, StaggerItem } from '@/components/primitives/motion'
+import { OrbitRings } from '@/components/primitives/scenery'
 import type { SourceRecord } from '@/lib/institutions-registry'
 import { cn } from '@/lib/utils'
 
@@ -199,7 +201,10 @@ function ExploreInner({ onNavigate }: { onNavigate?: (view: string, payload?: st
 
   return (
     <div className="mx-auto w-full max-w-3xl px-4 pb-16 pt-6 sm:px-6">
-      {/* ── HERO ─────────────────────────────────────────────────────────── */}
+      {/* ── HERO (scenery: faint knowledge orbits behind the search zone) ─── */}
+      <div className="relative">
+        <OrbitRings className="opacity-25" />
+        <div className="relative z-10">
       <header>
         <PageHeader
           eyebrow={
@@ -251,6 +256,8 @@ function ExploreInner({ onNavigate }: { onNavigate?: (view: string, payload?: st
           </button>
         ))}
       </div>
+        </div>
+      </div>
 
       {/* ── LEGEND (pre-search) ──────────────────────────────────────────── */}
       {!submitted && !loading && (
@@ -261,22 +268,24 @@ function ExploreInner({ onNavigate }: { onNavigate?: (view: string, payload?: st
           className="mt-8"
           aria-label="What this search covers"
         >
-          <div className="grid gap-3 sm:grid-cols-2">
+          <Stagger className="grid gap-3 sm:grid-cols-2">
             {[
               { icon: BookOpen, t: 'Learn', d: 'Your local curriculum graph — topics and concepts, offline and yours.' },
               { icon: FlaskConical, t: 'Research', d: 'Real paper metadata from Europe PMC — always linked to the original.' },
               { icon: Landmark, t: 'Institutions', d: 'Official sources with an honest verification badge for every URL.' },
               { icon: Globe2, t: 'On the web', d: 'Live discovery of courses, guidelines and resources — linked, never hosted.' },
             ].map((c) => (
-              <div key={c.t} className="clay rounded-2xl p-4">
-                <div className="flex items-center gap-2.5">
-                  <c.icon className="h-4 w-4 text-primary" aria-hidden="true" />
-                  <p className="text-sm font-bold text-foreground">{c.t}</p>
+              <StaggerItem key={c.t}>
+                <div className="clay rounded-2xl p-4">
+                  <div className="flex items-center gap-2.5">
+                    <c.icon className="h-4 w-4 text-primary" aria-hidden="true" />
+                    <p className="text-sm font-bold text-foreground">{c.t}</p>
+                  </div>
+                  <p className="mt-1.5 text-xs leading-relaxed text-ink-soft">{c.d}</p>
                 </div>
-                <p className="mt-1.5 text-xs leading-relaxed text-ink-soft">{c.d}</p>
-              </div>
+              </StaggerItem>
             ))}
-          </div>
+          </Stagger>
         </motion.section>
       )}
 

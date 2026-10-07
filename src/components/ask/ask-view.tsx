@@ -20,6 +20,7 @@ import { useToast } from '@/hooks/use-toast'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Skeleton } from '@/components/ui/skeleton'
+import { BlobField } from '@/components/primitives/scenery'
 import { cn } from '@/lib/utils'
 import {
   AiBadgeRow, ConnectionGroup, HighYieldList, KeyPoints, LevelChips, MasteryChip,
@@ -621,7 +622,10 @@ export function AskView() {
   // ═════════════════════════════════════════════════════════════════════ HOME ╗
   return (
     <div className="mx-auto max-w-3xl px-4 pb-10 pt-6 md:px-6 md:pt-10">
-      {/* ── hero ── */}
+      {/* ── hero (scenery: one soft BlobField wash behind the search zone) ── */}
+      <div className="relative">
+        <BlobField className="opacity-60" />
+        <div className="relative z-10">
       <Reveal index={0} className="space-y-3 text-center">
         <p className="flex items-center justify-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-ink-soft">
           <ScanSearch className="size-3.5 text-primary" aria-hidden /> MEDULA Ask Engine
@@ -681,6 +685,8 @@ export function AskView() {
           <div role="alert" className="mt-3 rounded-xl border border-sev-crit/40 bg-sev-crit/10 p-3 text-sm text-sev-crit">{error}</div>
         )}
       </Reveal>
+        </div>
+      </div>
 
       {/* ── personal shortcuts — only from real signals, never invented ── */}
       {home && (home.personal.weak.length > 0 || home.personal.missed.length > 0 || home.personal.dueRevision > 0) && (

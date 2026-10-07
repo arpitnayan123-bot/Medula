@@ -16,7 +16,7 @@ import type { OsCommandCenter } from '@/lib/types'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { MicroLabel, FootNote } from '@/components/os/os-shared'
-import { Reveal } from '@/components/primitives/kit'
+import { ScrollReveal } from '@/components/primitives/motion'
 import { OsHero } from '@/components/os/os-hero'
 import { OsTodaySections } from '@/components/os/os-sections'
 import { OsConnections } from '@/components/os/os-connections'
@@ -109,18 +109,18 @@ export function OsView() {
 
       {state === 'ready' && data && (
         <div className="space-y-3">
-          <Reveal index={0}>
+          <ScrollReveal>
             <OsHero data={data} />
-          </Reveal>
-          <Reveal index={1}>
+          </ScrollReveal>
+          <ScrollReveal>
             <OsTodaySections data={data} />
-          </Reveal>
-          <Reveal index={2}>
+          </ScrollReveal>
+          <ScrollReveal>
             <OsConnections data={data} />
-          </Reveal>
+          </ScrollReveal>
 
           {/* honesty footer */}
-          <Reveal index={3}>
+          <ScrollReveal>
           <div className="rounded-2xl border border-dashed border-line bg-surface-2/50 p-3.5">
             <MicroLabel>Why you can trust this page</MicroLabel>
             <FootNote>
@@ -128,7 +128,7 @@ export function OsView() {
               {data.insufficientData ? ' Right now there is not enough activity for full recommendations — start below and this page fills with measured guidance.' : ''}
             </FootNote>
           </div>
-          </Reveal>
+          </ScrollReveal>
         </div>
       )}
     </div>

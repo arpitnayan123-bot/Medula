@@ -110,7 +110,7 @@ function ResultRow({
   children?: React.ReactNode
 }) {
   return (
-    <div className="group flex min-h-12 w-full items-center gap-2 rounded-xl border border-line bg-card/70 py-1 pl-1 pr-3 transition-colors focus-within:ring-2 focus-within:ring-ring hover:border-primary/40 hover:bg-primary/5">
+    <div className="group flex min-h-12 w-full items-center gap-2 rounded-xl border border-line bg-card/70 py-1 pl-1 pr-3 transition-all clay-hover focus-within:ring-2 focus-within:ring-ring hover:border-primary/40 hover:bg-primary/5">
       <button
         type="button"
         onClick={onClick}
@@ -502,7 +502,7 @@ export function DoubtSearchView() {
             <button
               type="button"
               onClick={() => practiceOn(8)}
-              className="flex min-h-12 items-center gap-3 rounded-xl border border-line bg-card/70 px-3 text-left transition-colors hover:border-primary/40"
+              className="clay-hover flex min-h-12 items-center gap-3 rounded-xl border border-line bg-card/70 px-3 text-left transition-all hover:border-primary/40"
             >
               <RowIcon icon={Timer} />
               <span className="min-w-0 flex-1 text-sm font-medium">Practice 8 questions on this</span>
@@ -511,7 +511,7 @@ export function DoubtSearchView() {
             <button
               type="button"
               onClick={searchJournals}
-              className="flex min-h-12 items-center gap-3 rounded-xl border border-line bg-card/70 px-3 text-left transition-colors hover:border-primary/40"
+              className="clay-hover flex min-h-12 items-center gap-3 rounded-xl border border-line bg-card/70 px-3 text-left transition-all hover:border-primary/40"
             >
               <RowIcon icon={FlaskConical} />
               <span className="min-w-0 flex-1 text-sm font-medium">

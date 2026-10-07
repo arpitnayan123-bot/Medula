@@ -12,9 +12,10 @@ import { api } from '@/lib/api'
 import { useAppStore } from '@/lib/store'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
+import { ScrollReveal } from '@/components/primitives/motion'
 import { cn } from '@/lib/utils'
 import {
-  Bar, EmptyState, ErrorState, FootNote, MicroLabel, PercentRing, Reveal, SectionCard, SkeletonRow,
+  Bar, EmptyState, ErrorState, FootNote, MicroLabel, PercentRing, SectionCard, SkeletonRow,
   useGamifyPayload,
 } from './gamify-shared'
 
@@ -68,7 +69,7 @@ export function GamifyJourney() {
   return (
     <div className="space-y-4">
       {/* ── the 5-stage ladder ── */}
-      <Reveal index={0}>
+      <ScrollReveal>
         <SectionCard
           title="The ladder"
           icon={Route}
@@ -101,10 +102,10 @@ export function GamifyJourney() {
             ))}
           </ol>
         </SectionCard>
-      </Reveal>
+      </ScrollReveal>
 
       {/* ── subjects ── */}
-      <Reveal index={1}>
+      <ScrollReveal>
         <SectionCard
           title="Subjects"
           icon={GraduationCap}
@@ -114,10 +115,10 @@ export function GamifyJourney() {
             {data.subjects.map((s) => <SubjectRow key={s.id} s={s} />)}
           </ul>
         </SectionCard>
-      </Reveal>
+      </ScrollReveal>
 
       {/* ── milestones ── */}
-      <Reveal index={2}>
+      <ScrollReveal>
         <SectionCard
           title="Milestones"
           icon={Award}
@@ -144,12 +145,12 @@ export function GamifyJourney() {
             </ul>
           )}
         </SectionCard>
-      </Reveal>
+      </ScrollReveal>
 
       {/* ── exam readiness ── */}
-      <Reveal index={3}>
+      <ScrollReveal>
         <ReadinessCard data={data} />
-      </Reveal>
+      </ScrollReveal>
 
       <FootNote>{data.honestNote} Generated {new Date(data.generatedAt).toLocaleString('en-IN')}.</FootNote>
     </div>

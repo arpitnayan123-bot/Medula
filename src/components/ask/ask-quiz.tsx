@@ -10,6 +10,7 @@ import { ArrowRight, CheckCircle2, Lightbulb, ListChecks, Target, XCircle } from
 import type { AskQuizItem } from '@/lib/types'
 import { Button } from '@/components/ui/button'
 import { Progress } from '@/components/ui/progress'
+import { SpringNumber } from '@/components/primitives/motion'
 import { cn } from '@/lib/utils'
 
 export function AskQuiz({
@@ -53,7 +54,7 @@ export function AskQuiz({
       <div className="space-y-3">
         <div className="rounded-2xl border border-line bg-surface-1 p-4 text-center">
           <p className="text-3xl font-semibold tracking-tight">
-            {score}<span className="text-lg text-ink-soft">/{items.length}</span>
+            <SpringNumber value={score} /><span className="text-lg text-ink-soft">/{items.length}</span>
           </p>
           <p className="mt-1 text-xs text-ink-soft">
             {score === items.length

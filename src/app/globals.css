@@ -716,3 +716,59 @@ body::before {
 @media (prefers-reduced-motion: reduce) {
   .glyph-float, .glyph-float-slow, .glyph-float-fast { animation: none; }
 }
+
+/* ═══ ATELIER ELEVATION — ambient hour + scenery rules ══════════════════════ */
+
+/* ── Ambient Hour: the canvas breathes with the day (realtime warm color) ──
+   Only decorative washes shift. Text, tokens, and contrast stay identical. */
+:root {
+  --ambient-a: #f3d5a4;  /* primary glow wash */
+  --ambient-b: #bfe3ea;  /* counter glow wash */
+  --ambient-c: #c9e8d4;  /* floor wash */
+  --ambient-veil: 0.9;   /* overall wash strength */
+}
+[data-ambient='dawn'] {
+  --ambient-a: #f7cfae;  /* rose-peach sunrise */
+  --ambient-b: #f3dfd2;
+  --ambient-c: #e9dcc8;
+}
+[data-ambient='morning'] {
+  --ambient-a: #f0dcae;  /* crisp champagne */
+  --ambient-b: #c8e6dd;
+  --ambient-c: #d5e9dc;
+}
+[data-ambient='dusk'] {
+  --ambient-a: #f2cda2;  /* golden hour */
+  --ambient-b: #ecd3c4;
+  --ambient-c: #d8e2d2;
+}
+[data-ambient='evening'] {
+  --ambient-a: #eed3b4;  /* lamplight amber, muted */
+  --ambient-b: #dde0d4;
+  --ambient-c: #d9ddcf;
+}
+[data-ambient='night'] {
+  --ambient-a: #e4d9c6;  /* low-chroma quiet */
+  --ambient-b: #d3dcd8;
+  --ambient-c: #d6dccf;
+}
+
+body::before {
+  background:
+    radial-gradient(ellipse 64% 46% at 8% -6%, color-mix(in oklab, var(--ambient-a) 26%, transparent), transparent 62%),
+    radial-gradient(ellipse 52% 40% at 96% 2%, color-mix(in oklab, var(--ambient-b) 20%, transparent), transparent 60%),
+    radial-gradient(ellipse 76% 48% at 50% 110%, color-mix(in oklab, var(--ambient-c) 18%, transparent), transparent 66%);
+  transition: background 1.8s ease;
+}
+
+.podium {
+  background:
+    radial-gradient(ellipse 62% 46% at 50% 24%, color-mix(in oklab, oklch(1 0.005 95) 75%, transparent), transparent 72%),
+    linear-gradient(165deg, color-mix(in oklab, var(--ambient-a) 20%, transparent), color-mix(in oklab, var(--ambient-b) 15%, transparent) 62%, color-mix(in oklab, var(--ambient-c) 14%, transparent));
+}
+
+/* ── Scenery primitives — soft borders on svg art, motion kill-switch ── */
+.scenery-drift { will-change: transform; }
+@media (prefers-reduced-motion: reduce) {
+  .scenery-drift, [data-scenery] * { animation: none !important; transition: none !important; }
+}

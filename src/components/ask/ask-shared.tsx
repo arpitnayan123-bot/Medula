@@ -5,7 +5,6 @@
 // source rows (platform / lesson-ref / question-pool / external link-out),
 // knowledge-graph connection chips and the measured high-yield list.
 
-import { motion, useReducedMotion } from 'framer-motion'
 import {
   BookOpenCheck, CircleAlert, ExternalLink, FlaskConical, Landmark, Quote,
   ShieldCheck, Sparkles, Trophy,
@@ -13,6 +12,7 @@ import {
 import type { AskAnswerPayload, AskLevel, AskSource } from '@/lib/types'
 import { GRAPH_GROUP_META } from '@/lib/types'
 import { Badge } from '@/components/ui/badge'
+import { ScrollReveal } from '@/components/primitives/motion'
 import { cn } from '@/lib/utils'
 
 export const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1]
@@ -22,16 +22,10 @@ export const ASK_LEVEL_LABEL: Record<AskLevel, string> = {
 }
 
 export function Reveal({ index = 0, className, children }: { index?: number; className?: string; children: React.ReactNode }) {
-  const reduce = useReducedMotion()
   return (
-    <motion.div
-      className={className}
-      initial={reduce ? false : { opacity: 0, y: 14 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.45, delay: reduce ? 0 : 0.05 * index, ease: EASE }}
-    >
+    <ScrollReveal className={className} delay={0.05 * index} amount={0.08}>
       {children}
-    </motion.div>
+    </ScrollReveal>
   )
 }
 

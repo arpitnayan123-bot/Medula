@@ -22,6 +22,8 @@ import { api } from '@/lib/api'
 import { readHubKeys, useAppStore, writeHubKeys } from '@/lib/store'
 import { TopicHub } from '@/components/hub/topic-hub'
 import type { HubHomePayload, SearchResults } from '@/lib/types'
+import { Stagger, StaggerItem } from '@/components/primitives/motion'
+import { DotMatrix } from '@/components/primitives/scenery'
 import { cn } from '@/lib/utils'
 
 const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1]
@@ -122,7 +124,8 @@ function HubHome({ onOpen }: { onOpen: (topicId: string, conceptId?: string | nu
     <div className="pb-safe-nav">
       {/* hero */}
       <div className="podium relative overflow-hidden rounded-3xl p-5 md:p-8">
-        <div className="mx-auto max-w-2xl space-y-4 text-center">
+        <DotMatrix />
+        <div className="relative z-10 mx-auto max-w-2xl space-y-4 text-center">
           <span className="inline-flex items-center gap-1.5 rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-primary">
             <BookMarked className="size-3.5" /> Topic Hub
           </span>
@@ -192,23 +195,24 @@ function HubHome({ onOpen }: { onOpen: (topicId: string, conceptId?: string | nu
         {results && results.topics.length > (resolved ? 1 : 0) && (
           <section aria-label="More topic matches" className="space-y-2">
             <h2 className="text-xs font-semibold uppercase tracking-[0.18em] text-ink-soft">More topics</h2>
-            <div className="grid gap-2 sm:grid-cols-2">
+            <Stagger className="grid gap-2 sm:grid-cols-2">
               {results.topics
                 .filter((tp) => tp.id !== resolved?.topicId)
                 .slice(0, 4)
                 .map((tp) => (
-                  <button
-                    key={tp.id}
-                    type="button"
-                    onClick={() => open(tp.id, tp.name)}
-                    className="flex min-w-0 items-center gap-2.5 rounded-xl clay p-3 text-left transition-colors clay-hover"
-                  >
-                    <BookMarked className="size-4 shrink-0 text-primary" />
-                    <span className="min-w-0 flex-1 truncate text-sm font-medium">{tp.name}</span>
-                    <span className="shrink-0 text-[10px] text-muted-foreground">{tp.subject}</span>
-                  </button>
+                  <StaggerItem key={tp.id}>
+                    <button
+                      type="button"
+                      onClick={() => open(tp.id, tp.name)}
+                      className="flex h-full min-w-0 w-full items-center gap-2.5 rounded-xl clay p-3 text-left transition-colors clay-hover"
+                    >
+                      <BookMarked className="size-4 shrink-0 text-primary" />
+                      <span className="min-w-0 flex-1 truncate text-sm font-medium">{tp.name}</span>
+                      <span className="shrink-0 text-[10px] text-muted-foreground">{tp.subject}</span>
+                    </button>
+                  </StaggerItem>
                 ))}
-            </div>
+            </Stagger>
           </section>
         )}
 
@@ -261,31 +265,29 @@ function HubHome({ onOpen }: { onOpen: (topicId: string, conceptId?: string | nu
               {[0, 1, 2, 3].map((i) => <Skeleton key={i} className="h-20 rounded-2xl" />)}
             </div>
           ) : (
-            <div className="grid gap-2 sm:grid-cols-2">
-              {home.suggested.map((s, i) => (
-                <motion.button
-                  key={s.id}
-                  type="button"
-                  initial={{ opacity: 0, y: 8 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.25, ease: EASE, delay: i * 0.03 }}
-                  onClick={() => open(s.id, s.name)}
-                  className="group flex min-w-0 items-center gap-3 rounded-2xl clay p-3.5 text-left transition-all clay-hover"
-                >
-                  <span className="grid size-10 shrink-0 place-items-center rounded-xl text-sm font-bold text-white" style={{ backgroundColor: s.subjectColor }}>
-                    {s.importance}
-                  </span>
-                  <span className="min-w-0 flex-1">
-                    <span className="block truncate text-sm font-semibold group-hover:text-primary">{s.name}</span>
-                    <span className="block truncate text-[11px] text-ink-soft">
-                      {s.subjectName}{s.systemLabel ? ` · ${s.systemLabel}` : ''}
+            <Stagger className="grid gap-2 sm:grid-cols-2">
+              {home.suggested.map((s) => (
+                <StaggerItem key={s.id}>
+                  <motion.button
+                    type="button"
+                    onClick={() => open(s.id, s.name)}
+                    className="group flex h-full min-w-0 w-full items-center gap-3 rounded-2xl clay p-3.5 text-left transition-all clay-hover"
+                  >
+                    <span className="grid size-10 shrink-0 place-items-center rounded-xl text-sm font-bold text-white" style={{ backgroundColor: s.subjectColor }}>
+                      {s.importance}
                     </span>
-                    <span className="mt-0.5 block truncate text-[10px] text-muted-foreground">{s.reason}</span>
-                  </span>
-                  <ChevronRight className="size-4 shrink-0 text-muted-foreground" />
-                </motion.button>
+                    <span className="min-w-0 flex-1">
+                      <span className="block truncate text-sm font-semibold group-hover:text-primary">{s.name}</span>
+                      <span className="block truncate text-[11px] text-ink-soft">
+                        {s.subjectName}{s.systemLabel ? ` · ${s.systemLabel}` : ''}
+                      </span>
+                      <span className="mt-0.5 block truncate text-[10px] text-muted-foreground">{s.reason}</span>
+                    </span>
+                    <ChevronRight className="size-4 shrink-0 text-muted-foreground" />
+                  </motion.button>
+                </StaggerItem>
               ))}
-            </div>
+            </Stagger>
           )}
         </section>
 

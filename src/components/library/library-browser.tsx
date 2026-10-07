@@ -461,10 +461,8 @@ function ListResults({
           : `${payload.total} ${payload.total === 1 ? 'resource' : 'resources'} in the catalog`}
       </p>
       <CardGrid>
-        {payload.resources.map((r, i) => (
-          <Reveal key={r.id} index={Math.min(i, 5)}>
-            <LibraryCard resource={r} onOpen={onOpenResource} />
-          </Reveal>
+        {payload.resources.map((r) => (
+          <LibraryCard key={r.id} resource={r} onOpen={onOpenResource} />
         ))}
       </CardGrid>
       <Pagination

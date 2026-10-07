@@ -27,6 +27,7 @@ import { Input } from '@/components/ui/input'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Textarea } from '@/components/ui/textarea'
 import { PageHeader } from '@/components/primitives/kit'
+import { Stagger, StaggerItem } from '@/components/primitives/motion'
 import { cn } from '@/lib/utils'
 import {
   MicroLabel, MiniStat, PhaseTimeline, Reveal, SLOT_META, SubjectBar, TaskRow, slotLabel,
@@ -328,19 +329,21 @@ export function PlannerView() {
                   </Badge>
                 )}
               </div>
-              <div className="mt-3 space-y-2.5">
+              <Stagger className="mt-3 space-y-2.5">
                 {slot.tasks.length === 0 && (
                   <p className="rounded-xl border border-dashed border-border/70 p-3 text-center text-[11px] text-ink-soft">
                     Nothing needed here today — {PLANNER_SLOT_HINTS[slot.slot].toLowerCase()} is already covered.
                   </p>
                 )}
                 {slot.tasks.map((t) => (
-                  <TaskRow key={t.id} task={t} busy={busyTask === t.id} onStart={(x) => void startTask(x)} onDone={(x) => void setTaskStatus(x, 'done')} onSkip={(x) => void setTaskStatus(x, 'skipped')} />
+                  <StaggerItem key={t.id}>
+                    <TaskRow task={t} busy={busyTask === t.id} onStart={(x) => void startTask(x)} onDone={(x) => void setTaskStatus(x, 'done')} onSkip={(x) => void setTaskStatus(x, 'skipped')} />
+                  </StaggerItem>
                 ))}
                 {pending.length === 0 && slot.tasks.length > 0 && (
                   <p className="text-center text-[11px] font-semibold text-sev-ok">All clear in this slot ✓</p>
                 )}
-              </div>
+              </Stagger>
             </section>
           </Reveal>
         )

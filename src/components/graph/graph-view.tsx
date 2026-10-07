@@ -26,6 +26,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Skeleton } from '@/components/ui/skeleton'
+import { ScrollReveal, Stagger, StaggerItem } from '@/components/primitives/motion'
 import { cn } from '@/lib/utils'
 import {
   EASE, GROUP_COLORS, MicroLabel, Minimap, ExplainLinkDialog,
@@ -464,7 +465,7 @@ function HomeScreen({
 
       {/* ── your connections (only sections with data) ── */}
       {hasPersonal && (
-        <Reveal index={3}>
+        <ScrollReveal>
           <section className="space-y-3" aria-label="Your connections">
             <div className="flex items-center justify-between gap-2">
               <MicroLabel>Your connections</MicroLabel>
@@ -566,12 +567,12 @@ function HomeScreen({
               </div>
             )}
           </section>
-        </Reveal>
+        </ScrollReveal>
       )}
 
       {/* ── recommended today ── */}
       {p.recommendedToday.length > 0 && (
-        <Reveal index={4}>
+        <ScrollReveal>
           <section className="clay space-y-2.5 rounded-2xl p-4" aria-label="Recommended today">
             <MicroLabel>Recommended today</MicroLabel>
             {p.recommendedToday.map((r) => (
@@ -590,21 +591,21 @@ function HomeScreen({
               </button>
             ))}
           </section>
-        </Reveal>
+        </ScrollReveal>
       )}
 
       {/* ── top hubs ── */}
       {home.topHubs.length > 0 && (
-        <Reveal index={5}>
+        <ScrollReveal className="space-y-2.5">
           <section className="space-y-2.5" aria-label="Top hubs">
             <MicroLabel>Top hubs · busiest crossroads on the map</MicroLabel>
-            <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+            <Stagger className="grid grid-cols-2 gap-2 sm:grid-cols-3">
               {home.topHubs.map((h) => (
+                <StaggerItem key={h.id}>
                 <button
-                  key={h.id}
                   type="button"
                   onClick={() => onOpenHub(h.id, h.name)}
-                  className="flex min-h-24 flex-col justify-between gap-2 rounded-xl border border-line border-l-[3px] bg-surface-2/40 p-3 text-left transition-colors hover:border-primary/40 focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:outline-none"
+                  className="clay-hover flex min-h-24 w-full flex-col justify-between gap-2 rounded-xl border border-line border-l-[3px] bg-surface-2/40 p-3 text-left transition-colors hover:border-primary/40 focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:outline-none"
                   style={{ borderLeftColor: h.subjectColor }}
                 >
                   <span className="min-w-0">
@@ -623,25 +624,26 @@ function HomeScreen({
                     {h.questionCount > 0 && <span className="text-[9px] font-bold tabular-nums text-ink-soft">{h.questionCount}Q</span>}
                   </span>
                 </button>
+                </StaggerItem>
               ))}
-            </div>
+            </Stagger>
           </section>
-        </Reveal>
+        </ScrollReveal>
       )}
 
       {/* ── browse by subject ── */}
       {home.subjects.length > 0 && (
-        <Reveal index={6}>
+        <ScrollReveal>
           <section className="space-y-2.5" aria-label="Browse by subject">
             <MicroLabel>Browse by subject</MicroLabel>
             <SubjectExplorer subjects={home.subjects} onOpenHub={onOpenHub} onOpenTopicHub={onOpenTopicHub} />
           </section>
-        </Reveal>
+        </ScrollReveal>
       )}
 
       {/* ── recent hubs ── */}
       {recentNamed.length > 0 && (
-        <Reveal index={7}>
+        <ScrollReveal>
           <section className="space-y-1.5" aria-label="Recently opened hubs">
             <p className="flex items-center gap-1.5 text-xs font-bold text-ink-soft">
               <History className="size-3.5" aria-hidden /> Recently opened
@@ -659,7 +661,7 @@ function HomeScreen({
               ))}
             </div>
           </section>
-        </Reveal>
+        </ScrollReveal>
       )}
     </div>
   )
@@ -818,7 +820,7 @@ function HubScreen({
       </Reveal>
 
       {/* ── related knowledge (personal callouts first, then server-ordered groups) ── */}
-      <Reveal index={1}>
+      <ScrollReveal>
         <section className="space-y-4" aria-label="Related knowledge">
           <MicroLabel>Related knowledge</MicroLabel>
 
@@ -902,11 +904,11 @@ function HubScreen({
             </div>
           )}
         </section>
-      </Reveal>
+      </ScrollReveal>
 
       {/* ── minimap ── */}
       {hub.minimap.nodes.length > 0 && (
-        <Reveal index={2}>
+        <ScrollReveal>
           <section className="clay rounded-2xl p-4" aria-label="Neighbourhood map">
             <MicroLabel>The neighbourhood at a glance</MicroLabel>
             <div className="mt-1">
@@ -921,16 +923,16 @@ function HubScreen({
               ))}
             </div>
           </section>
-        </Reveal>
+        </ScrollReveal>
       )}
 
       {/* ── knowledge path CTA ── */}
       {hasPathGroups && (
-        <Reveal index={3}>
+        <ScrollReveal>
           <button
             type="button"
             onClick={onOpenPath}
-            className="flex min-h-11 w-full items-center gap-3 rounded-2xl border border-primary/30 bg-primary/5 p-4 text-left transition-colors hover:border-primary/60 focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:outline-none"
+            className="clay-hover flex min-h-11 w-full items-center gap-3 rounded-2xl border border-primary/30 bg-primary/5 p-4 text-left transition-colors hover:border-primary/60 focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:outline-none"
           >
             <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-primary/10">
               <Route className="size-5 text-primary" aria-hidden />
@@ -941,12 +943,12 @@ function HubScreen({
             </span>
             <ArrowRight className="size-5 shrink-0 text-primary" aria-hidden />
           </button>
-        </Reveal>
+        </ScrollReveal>
       )}
 
       {/* ── resources (measured counts only) ── */}
       {(resourceItems.length > 0 || hub.topic.id) && (
-        <Reveal index={4}>
+        <ScrollReveal>
           <section className="clay space-y-2.5 rounded-2xl p-4" aria-label="Practice this concept elsewhere">
             <MicroLabel>Put it to work</MicroLabel>
             <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
@@ -955,7 +957,7 @@ function HubScreen({
                   key={r.key}
                   type="button"
                   onClick={r.onClick}
-                  className="flex min-h-16 flex-col justify-center gap-0.5 rounded-xl border border-line bg-surface-2/40 p-3 text-left transition-colors hover:border-primary/40 focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:outline-none"
+                  className="clay-hover flex min-h-16 flex-col justify-center gap-0.5 rounded-xl border border-line bg-surface-2/40 p-3 text-left transition-colors hover:border-primary/40 focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:outline-none"
                 >
                   <span className="flex items-center gap-1.5 text-base font-semibold tabular-nums">
                     <r.icon className="size-4 text-primary" aria-hidden /> {r.count}
@@ -967,7 +969,7 @@ function HubScreen({
                 <button
                   type="button"
                   onClick={() => onOpenTopicHub(hub.topic.id)}
-                  className="flex min-h-16 flex-col justify-center gap-0.5 rounded-xl border border-line bg-surface-2/40 p-3 text-left transition-colors hover:border-primary/40 focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:outline-none"
+                  className="clay-hover flex min-h-16 flex-col justify-center gap-0.5 rounded-xl border border-line bg-surface-2/40 p-3 text-left transition-colors hover:border-primary/40 focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:outline-none"
                 >
                   <span className="flex items-center gap-1.5 text-sm font-semibold">
                     <BookMarked className="size-4 text-primary" aria-hidden /> Topic Hub
@@ -977,13 +979,13 @@ function HubScreen({
               )}
             </div>
           </section>
-        </Reveal>
+        </ScrollReveal>
       )}
 
       {/* ── AI panel ── */}
-      <Reveal index={5}>
+      <ScrollReveal>
         <WhyPathPanel conceptId={c.id} triggerLabel="Why does this happen?" />
-      </Reveal>
+      </ScrollReveal>
 
       <FeedbackDialog key={flagTarget ? flagTarget.neighbor.id : 'fb-closed'} target={flagTarget} onClose={() => setFlagTarget(null)} />
       <ExplainLinkDialog key={explainTarget ? explainTarget.neighbor.id : 'ex-closed'} target={explainTarget} onClose={() => setExplainTarget(null)} />
@@ -1054,12 +1056,12 @@ function PathScreen({
           No path seeded for this concept yet — open its hub to explore the raw links.
         </p>
       ) : (
-        <Reveal index={1}>
+        <ScrollReveal>
           <div className="relative space-y-3 before:absolute before:bottom-3 before:left-[19px] before:top-3 before:w-px before:bg-line">
             {stages.map((stage, i) => {
               const StageIcon = STAGE_ICONS[stage.stage] ?? CircleHelp
               return (
-                <div key={stage.stage} className="relative pl-11">
+                <ScrollReveal key={stage.stage} className="relative pl-11" delay={Math.min(i * 0.05, 0.25)}>
                   <span
                     className="absolute left-0 top-3 grid size-10 place-items-center rounded-xl border border-line bg-background"
                     style={{ color: GROUP_COLORS[stage.stage === 'why' ? 'caused_by' : stage.stage === 'mechanism' ? 'mechanism' : stage.stage === 'clinical' ? 'manifestation' : stage.stage === 'diagnosis' ? 'investigation' : 'treatment'] }}
@@ -1096,16 +1098,16 @@ function PathScreen({
                       ))}
                     </div>
                   </section>
-                </div>
+                </ScrollReveal>
               )
             })}
           </div>
-        </Reveal>
+        </ScrollReveal>
       )}
 
       {/* ── narrative ── */}
       {path.narrative.length > 0 && (
-        <Reveal index={2}>
+        <ScrollReveal>
           <section className="clay space-y-2 rounded-2xl p-4" aria-label="The story in one pass">
             <MicroLabel>{path.concept.name} — the story in one pass</MicroLabel>
             <ol className="space-y-1.5">
@@ -1117,13 +1119,13 @@ function PathScreen({
               ))}
             </ol>
           </section>
-        </Reveal>
+        </ScrollReveal>
       )}
 
       {/* ── AI ── */}
-      <Reveal index={3}>
+      <ScrollReveal>
         <WhyPathPanel conceptId={conceptId} triggerLabel="Explain this path" />
-      </Reveal>
+      </ScrollReveal>
     </div>
   )
 }

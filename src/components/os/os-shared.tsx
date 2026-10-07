@@ -9,6 +9,7 @@
 import { useCallback } from 'react'
 import { useAppStore } from '@/lib/store'
 import { Button } from '@/components/ui/button'
+import { SpringBar } from '@/components/primitives/motion'
 import { cn } from '@/lib/utils'
 import type { View } from '@/lib/types'
 import {
@@ -141,11 +142,7 @@ export function FootNote({ children }: { children: React.ReactNode }) {
 
 export function MiniBar({ value, className }: { value: number; className?: string }) {
   const pct = Math.max(0, Math.min(100, value))
-  return (
-    <div className={cn('h-1.5 w-full overflow-hidden rounded-full bg-surface-2 shadow-well', className)} role="presentation">
-      <div className="h-full rounded-full bg-gradient-to-r from-primary to-[oklch(0.62_0.105_158)]" style={{ width: `${pct}%` }} />
-    </div>
-  )
+  return <SpringBar value={pct} className={cn('h-1.5', className)} />
 }
 
 export function StatusDot({ status }: { status: 'active' | 'quiet' }) {

@@ -25,6 +25,7 @@ import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Textarea } from '@/components/ui/textarea'
+import { SpringNumber } from '@/components/primitives/motion'
 import { cn } from '@/lib/utils'
 
 export const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1]
@@ -287,7 +288,9 @@ export function StreakFlame({ current, longest, todayActive, className }: { curr
         <Flame className={cn('size-5', todayActive ? 'text-gold' : 'text-ink-soft/50')} />
       </span>
       <span className="leading-tight">
-        <span className="block text-lg font-bold tabular-nums">{current} day{current === 1 ? '' : 's'}</span>
+        <span className="block text-lg font-bold tabular-nums">
+          <SpringNumber value={current} /> day{current === 1 ? '' : 's'}
+        </span>
         <span className="block text-[10px] font-semibold uppercase tracking-[0.12em] text-ink-soft">
           streak · best {longest}
           {todayActive ? ' · active today' : ''}

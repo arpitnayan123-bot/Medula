@@ -16,6 +16,8 @@ import {
 import { Button } from '@/components/ui/button'
 import { LogoMark } from '@/components/brand/logo'
 import { HeroAnatomy } from '@/components/brand/hero-anatomy'
+import { Magnetic, ScrollReveal, Stagger, StaggerItem } from '@/components/primitives/motion'
+import { ContourAtlas } from '@/components/primitives/scenery'
 import { useAppStore } from '@/lib/store'
 
 const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1]
@@ -28,29 +30,6 @@ function usePrefersReducedMotion() {
     setReduce(prefers === true)
   }, [prefers])
   return reduce
-}
-
-// ─── Reveal-on-scroll helper ───
-function Reveal({
-  children,
-  className,
-  delay = 0,
-}: {
-  children: ReactNode
-  className?: string
-  delay?: number
-}) {
-  return (
-    <motion.div
-      className={className}
-      initial={{ opacity: 0, y: 28 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: '-80px' }}
-      transition={{ duration: 0.7, delay, ease: EASE }}
-    >
-      {children}
-    </motion.div>
-  )
 }
 
 function Eyebrow({ children }: { children: ReactNode }) {
@@ -336,6 +315,7 @@ export function LandingPage() {
       <main id="top">
         {/* ─── HERO ─── */}
         <section className="relative overflow-hidden">
+          <ContourAtlas className="opacity-60" />
           <div className="med-grid absolute inset-0" aria-hidden />
           <div
             className="absolute left-1/2 top-[-20%] h-[480px] w-[720px] -translate-x-1/2 rounded-full bg-gold/[0.12] blur-3xl"
@@ -398,26 +378,30 @@ export function LandingPage() {
               transition={{ duration: 0.8, delay: 0.36, ease: EASE }}
               className="mt-10 flex flex-col items-center gap-4 sm:flex-row"
             >
-              <Button
-                size="lg"
-                className="h-12 rounded-full px-8 text-sm font-semibold tracking-wide"
-                onClick={() => setView('signin')}
-              >
-                START YOUR MEDICAL JOURNEY
-              </Button>
-              <Button
-                size="lg"
-                variant="ghost"
-                className="h-12 rounded-full border border-line px-8 text-sm font-semibold tracking-wide text-ink-soft transition-transform hover:scale-[1.03] hover:text-foreground"
-                onClick={() => {
-                  // Sign-in is always explicit — no silent entry into the app.
-                  // With an active session the sign-in page shows the one-tap
-                  // "Welcome back" resume card; without one, the full form.
-                  setView('signin')
-                }}
-              >
-                SEARCH ANY DOUBT, FREE
-              </Button>
+              <Magnetic>
+                <Button
+                  size="lg"
+                  className="h-12 rounded-full px-8 text-sm font-semibold tracking-wide"
+                  onClick={() => setView('signin')}
+                >
+                  START YOUR MEDICAL JOURNEY
+                </Button>
+              </Magnetic>
+              <Magnetic>
+                <Button
+                  size="lg"
+                  variant="ghost"
+                  className="h-12 rounded-full border border-line px-8 text-sm font-semibold tracking-wide text-ink-soft transition-transform hover:scale-[1.03] hover:text-foreground"
+                  onClick={() => {
+                    // Sign-in is always explicit — no silent entry into the app.
+                    // With an active session the sign-in page shows the one-tap
+                    // "Welcome back" resume card; without one, the full form.
+                    setView('signin')
+                  }}
+                >
+                  SEARCH ANY DOUBT, FREE
+                </Button>
+              </Magnetic>
             </motion.div>
 
             <motion.p
@@ -443,9 +427,9 @@ export function LandingPage() {
         {/* ─── Fragmented → connected ─── */}
         <section id="philosophy" className="scroll-mt-24 px-4 py-24 sm:px-6 sm:py-32">
           <div className="mx-auto max-w-4xl">
-            <Reveal className="mb-10 flex justify-center">
+            <ScrollReveal className="mb-10 flex justify-center">
               <Eyebrow>The philosophy</Eyebrow>
-            </Reveal>
+            </ScrollReveal>
             <Constellation />
           </div>
         </section>
@@ -453,7 +437,7 @@ export function LandingPage() {
         {/* ─── Feature grid ─── */}
         <section id="features" className="scroll-mt-24 border-t border-line px-4 py-24 sm:px-6 sm:py-32">
           <div className="mx-auto max-w-6xl">
-            <Reveal className="max-w-2xl">
+            <ScrollReveal className="max-w-2xl">
               <Eyebrow>One system · six instruments</Eyebrow>
               <h2 className="mt-4 text-3xl font-semibold tracking-tight sm:text-5xl">
                 The learning operating system
@@ -461,11 +445,11 @@ export function LandingPage() {
               <p className="mt-4 text-ink-soft">
                 Six instruments, one continuous loop: learn → connect → forget a little → repair → repeat.
               </p>
-            </Reveal>
+            </ScrollReveal>
 
-            <div className="mt-14 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-              {FEATURES.map((f, i) => (
-                <Reveal key={f.title} delay={i * 0.06}>
+            <Stagger className="mt-14 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+              {FEATURES.map((f) => (
+                <StaggerItem key={f.title} className="h-full">
                   <motion.div
                     id={f.title === 'Doubt Search' ? 'medical-map' : f.title === 'AI Study Coach' ? 'ai-tutor' : undefined}
                     whileHover={{ scale: 1.02 }}
@@ -481,25 +465,25 @@ export function LandingPage() {
                     <p className="text-[10.5px] font-semibold italic uppercase tracking-wider text-primary/80">{f.latin}</p>
                     <p className="mt-2 text-sm leading-relaxed text-ink-soft">{f.desc}</p>
                   </motion.div>
-                </Reveal>
+                </StaggerItem>
               ))}
-            </div>
+            </Stagger>
           </div>
         </section>
 
         {/* ─── Classroom → NEET-PG chain ─── */}
         <section id="roadmap" className="scroll-mt-24 border-t border-line px-4 py-24 sm:px-6 sm:py-32">
           <div className="mx-auto max-w-5xl text-center">
-            <Reveal>
+            <ScrollReveal>
               <Eyebrow>From classroom to NEET-PG</Eyebrow>
               <h2 className="mt-4 text-3xl font-semibold tracking-tight sm:text-5xl">One chain. No dead ends.</h2>
               <p className="mx-auto mt-4 max-w-2xl text-ink-soft">
                 Every lecture, concept and question you touch is slotted into the same chain — so classroom
                 learning and NEET-PG preparation stop being separate lives.
               </p>
-            </Reveal>
+            </ScrollReveal>
 
-            <Reveal delay={0.1}>
+            <ScrollReveal delay={0.1}>
               <div className="mt-12 flex flex-wrap items-center justify-center gap-2 sm:gap-3">
                 {CHAIN.map((step, i) => (
                   <div key={step} className="flex items-center gap-2 sm:gap-3">
@@ -520,23 +504,23 @@ export function LandingPage() {
                   </div>
                 ))}
               </div>
-            </Reveal>
+            </ScrollReveal>
           </div>
         </section>
 
         {/* ─── Persona strip ─── */}
         <section className="border-t border-line px-4 py-24 sm:px-6 sm:py-32">
           <div className="mx-auto max-w-6xl">
-            <Reveal className="max-w-2xl">
+            <ScrollReveal className="max-w-2xl">
               <Eyebrow>Every stage of the journey</Eyebrow>
               <h2 className="mt-4 text-3xl font-semibold tracking-tight sm:text-5xl">
                 Your first year. Your final year. Your attempt.
               </h2>
-            </Reveal>
+            </ScrollReveal>
 
-            <div className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-              {PERSONAS.map((p, i) => (
-                <Reveal key={p.tag} delay={i * 0.06}>
+            <Stagger className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+              {PERSONAS.map((p) => (
+                <StaggerItem key={p.tag} className="h-full">
                   <div className="clay clay-hover h-full rounded-2xl p-5">
                     <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-primary">
                       {p.tag}
@@ -544,15 +528,15 @@ export function LandingPage() {
                     <h3 className="mt-2 text-lg font-semibold tracking-tight">{p.title}</h3>
                     <p className="mt-1.5 text-sm leading-relaxed text-ink-soft">{p.desc}</p>
                   </div>
-                </Reveal>
+                </StaggerItem>
               ))}
-            </div>
+            </Stagger>
           </div>
         </section>
 
         {/* ─── Final CTA ─── */}
         <section className="px-4 pb-24 sm:px-6 sm:pb-32">
-          <Reveal className="mx-auto max-w-5xl">
+          <ScrollReveal from="scale" className="mx-auto max-w-5xl">
             <div className="podium relative overflow-hidden rounded-3xl px-6 py-16 text-center sm:px-12 sm:py-20">
               <div className="med-grid absolute inset-0 opacity-70" aria-hidden />
               <div className="relative">
@@ -568,7 +552,7 @@ export function LandingPage() {
                 </Button>
               </div>
             </div>
-          </Reveal>
+          </ScrollReveal>
         </section>
       </main>
 

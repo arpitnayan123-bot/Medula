@@ -20,6 +20,8 @@ import { Button } from '@/components/ui/button'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Slider } from '@/components/ui/slider'
+import { ScrollReveal, Stagger, StaggerItem } from '@/components/primitives/motion'
+import { BlobField } from '@/components/primitives/scenery'
 import { cn } from '@/lib/utils'
 
 const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1]
@@ -192,7 +194,9 @@ export function AdaptiveHome({ onStart, onResume, refreshKey, starting, startErr
   return (
     <div className="mx-auto max-w-3xl space-y-6 p-4 md:p-6">
       {/* ── Hero ── */}
-      <header className="space-y-2">
+      <header className="relative space-y-2">
+        <BlobField className="opacity-40" />
+        <div className="relative z-10 space-y-2">
         <div className="flex items-center gap-2.5">
           <span className="grid size-10 place-items-center rounded-xl bg-primary/10">
             <Target className="size-5 text-primary" />
@@ -205,6 +209,7 @@ export function AdaptiveHome({ onStart, onResume, refreshKey, starting, startErr
         <p className="text-sm text-ink-soft">
           Every run is selected from your live knowledge states, error patterns and the exam clock — measured, never random.
         </p>
+        </div>
       </header>
 
       {/* ── Personalization strip ── */}
@@ -311,45 +316,43 @@ export function AdaptiveHome({ onStart, onResume, refreshKey, starting, startErr
       {/* ── Mode cards ── */}
       {status === 'ready' && home && (
         <section aria-label="Engine modes">
-          <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-            {ADAPTIVE_MODES.map((m, i) => {
+          <Stagger className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+            {ADAPTIVE_MODES.map((m) => {
               const Icon = MODE_ICONS[m.id]
               const isPrimary = m.id === 'ai-adaptive'
               const bank = modeBankCount(home.counts, m.id)
               return (
-                <motion.button
-                  key={m.id}
-                  type="button"
-                  initial={{ opacity: 0, y: 12 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.35, ease: EASE, delay: i * 0.04 }}
-                  whileTap={{ scale: 0.98 }}
-                  onClick={() => startMode(m.id)}
-                  disabled={starting}
-                  className={cn(
-                    'flex min-h-36 flex-col rounded-2xl p-4 text-left transition-all disabled:opacity-60',
-                    isPrimary
-                      ? 'bg-primary text-primary-foreground shadow-md hover:shadow-lg'
-                      : 'clay clay-hover',
-                  )}
-                >
-                  <span className={cn('flex items-center justify-between gap-2')}>
-                    <Icon className={cn('size-5 shrink-0', isPrimary ? 'text-primary-foreground' : 'text-primary')} />
-                    <span
-                      className={cn(
-                        'rounded-full px-2 py-0.5 text-[10px] font-bold tabular-nums',
-                        isPrimary ? 'bg-primary-foreground/15 text-primary-foreground' : 'bg-surface-2 text-ink-soft',
-                      )}
-                    >
-                      {bank} Qs
+                <StaggerItem key={m.id}>
+                  <motion.button
+                    type="button"
+                    whileTap={{ scale: 0.98 }}
+                    onClick={() => startMode(m.id)}
+                    disabled={starting}
+                    className={cn(
+                      'flex h-full min-h-36 w-full flex-col rounded-2xl p-4 text-left transition-all disabled:opacity-60',
+                      isPrimary
+                        ? 'bg-primary text-primary-foreground shadow-md hover:shadow-lg'
+                        : 'clay clay-hover',
+                    )}
+                  >
+                    <span className={cn('flex items-center justify-between gap-2')}>
+                      <Icon className={cn('size-5 shrink-0', isPrimary ? 'text-primary-foreground' : 'text-primary')} />
+                      <span
+                        className={cn(
+                          'rounded-full px-2 py-0.5 text-[10px] font-bold tabular-nums',
+                          isPrimary ? 'bg-primary-foreground/15 text-primary-foreground' : 'bg-surface-2 text-ink-soft',
+                        )}
+                      >
+                        {bank} Qs
+                      </span>
                     </span>
-                  </span>
-                  <span className={cn('mt-3 text-sm font-semibold leading-tight', isPrimary && 'text-primary-foreground')}>{m.label}</span>
-                  <span className={cn('mt-1 text-[11px] leading-snug', isPrimary ? 'text-primary-foreground/80' : 'text-ink-soft')}>{m.blurb}</span>
-                </motion.button>
+                    <span className={cn('mt-3 text-sm font-semibold leading-tight', isPrimary && 'text-primary-foreground')}>{m.label}</span>
+                    <span className={cn('mt-1 text-[11px] leading-snug', isPrimary ? 'text-primary-foreground/80' : 'text-ink-soft')}>{m.blurb}</span>
+                  </motion.button>
+                </StaggerItem>
               )
             })}
-          </div>
+          </Stagger>
         </section>
       )}
 
@@ -427,6 +430,7 @@ export function AdaptiveHome({ onStart, onResume, refreshKey, starting, startErr
 
       {/* ── Recent runs ── */}
       {status === 'ready' && home && home.recent.length > 0 && (
+        <ScrollReveal>
         <section className="clay space-y-3 rounded-2xl p-4" aria-label="Recent runs">
           <h2 className="text-sm font-semibold uppercase tracking-[0.14em] text-ink-soft">Recent runs</h2>
           <ul className="space-y-2">
@@ -479,9 +483,11 @@ export function AdaptiveHome({ onStart, onResume, refreshKey, starting, startErr
             })}
           </ul>
         </section>
+        </ScrollReveal>
       )}
 
       {/* ── Bookmarks ── */}
+      <ScrollReveal>
       <section className="clay space-y-3 rounded-2xl p-4" aria-label="Saved questions">
         <div className="flex items-center justify-between gap-2">
           <h2 className="flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.14em] text-ink-soft">
@@ -518,6 +524,7 @@ export function AdaptiveHome({ onStart, onResume, refreshKey, starting, startErr
           </ul>
         )}
       </section>
+      </ScrollReveal>
     </div>
   )
 }

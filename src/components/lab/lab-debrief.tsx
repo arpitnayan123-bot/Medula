@@ -22,6 +22,7 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
 import { Progress } from '@/components/ui/progress'
+import { ScrollReveal } from '@/components/primitives/motion'
 import { cn } from '@/lib/utils'
 import {
   AnimatedNumber, EASE, LAB_VERDICT_META, MicroLabel, Reveal, SCROLL_SLIM,
@@ -76,7 +77,7 @@ function StepItem({ step, index }: { step: LabDebrief['steps'][number]; index: n
   const hasWhys = !!step.perOption && step.perOption.length > 0
 
   return (
-    <Reveal index={Math.min(index, 6)}>
+    <ScrollReveal>
       <li className="clay min-w-0 space-y-2.5 rounded-2xl p-4">
         <div className="flex min-w-0 items-start gap-2.5">
           <StepIcon className={cn('mt-0.5 size-4 shrink-0', stepTone)} aria-hidden />
@@ -137,7 +138,7 @@ function StepItem({ step, index }: { step: LabDebrief['steps'][number]; index: n
           </Collapsible>
         )}
       </li>
-    </Reveal>
+    </ScrollReveal>
   )
 }
 
@@ -258,19 +259,19 @@ export function LabDebriefScreen({ debrief, onReplay, onBackHome, onOpenImage }:
 
       {/* ── Step timeline ── */}
       {debrief.steps.length > 0 && (
-        <Reveal index={3} className="space-y-3">
+        <ScrollReveal className="space-y-3">
           <MicroLabel>What the engine saw</MicroLabel>
           <ol className="space-y-3">
             {debrief.steps.map((step, i) => (
               <StepItem key={`step-${i}`} step={step} index={i} />
             ))}
           </ol>
-        </Reveal>
+        </ScrollReveal>
       )}
 
       {/* ── Teaching pearls ── */}
       {debrief.teaching.length > 0 && (
-        <Reveal index={4} className="space-y-3">
+        <ScrollReveal className="space-y-3">
           <MicroLabel className="text-primary">Teaching pearls</MicroLabel>
           <ul className="clay space-y-3 rounded-2xl p-4 md:p-5">
             {debrief.teaching.map((t, i) => (
@@ -280,12 +281,12 @@ export function LabDebriefScreen({ debrief, onReplay, onBackHome, onOpenImage }:
               </li>
             ))}
           </ul>
-        </Reveal>
+        </ScrollReveal>
       )}
 
       {/* ── Concepts (Knowledge Graph) ── */}
       {debrief.concepts.length > 0 && (
-        <Reveal index={5} className="space-y-3">
+        <ScrollReveal className="space-y-3">
           <MicroLabel>Concepts this image tests</MicroLabel>
           <div className="flex flex-wrap gap-2">
             {debrief.concepts.map((c) => {
@@ -319,12 +320,12 @@ export function LabDebriefScreen({ debrief, onReplay, onBackHome, onOpenImage }:
               )
             })}
           </div>
-        </Reveal>
+        </ScrollReveal>
       )}
 
       {/* ── Related Knowledge (graph neighbourhood) ── */}
       {debrief.related && debrief.related.length > 0 && (
-        <Reveal index={6} className="space-y-3">
+        <ScrollReveal className="space-y-3">
           <MicroLabel>Related Knowledge — from the graph</MicroLabel>
           <div className="grid gap-3 sm:grid-cols-2">
             {debrief.related.map((g) => (
@@ -350,11 +351,11 @@ export function LabDebriefScreen({ debrief, onReplay, onBackHome, onOpenImage }:
               </div>
             ))}
           </div>
-        </Reveal>
+        </ScrollReveal>
       )}
 
       {/* ── Practice similar images (same-modality pool) ── */}
-      <Reveal index={7} className="space-y-3">
+      <ScrollReveal className="space-y-3">
         <MicroLabel>Practice similar images</MicroLabel>
         {debrief.nextImages.length > 0 ? (
           <div className={cn('flex gap-2 overflow-x-auto pb-1', SCROLL_SLIM)} role="group" aria-label="Similar images from the library">
@@ -363,7 +364,7 @@ export function LabDebriefScreen({ debrief, onReplay, onBackHome, onOpenImage }:
                 key={img.id}
                 type="button"
                 onClick={() => onOpenImage(img.id)}
-                className="clay flex w-40 shrink-0 flex-col gap-1.5 rounded-2xl p-2.5 text-left transition-colors hover:border-primary/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                className="clay clay-hover flex w-40 shrink-0 flex-col gap-1.5 rounded-2xl p-2.5 text-left transition-colors hover:border-primary/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 aria-label={`Open image: ${img.title} — ${img.modality}, difficulty ${img.difficulty} of 3`}
               >
                 <span className="block h-16 w-full rounded-lg border border-line/70 bg-surface-2/30 p-1">
@@ -379,10 +380,10 @@ export function LabDebriefScreen({ debrief, onReplay, onBackHome, onOpenImage }:
             No similar images in the pool yet — the library grows with the curriculum.
           </p>
         )}
-      </Reveal>
+      </ScrollReveal>
 
       {/* ── Hand-offs ── */}
-      <Reveal index={8} className="space-y-3">
+      <ScrollReveal className="space-y-3">
         <MicroLabel>Hand-offs</MicroLabel>
         <div className="grid gap-3 sm:grid-cols-2">
           <button
@@ -413,11 +414,11 @@ export function LabDebriefScreen({ debrief, onReplay, onBackHome, onOpenImage }:
             </span>
           </button>
         </div>
-      </Reveal>
+      </ScrollReveal>
 
       {/* ── Mistake Intelligence honesty report ── */}
       {debrief.mistakeFed && (
-        <Reveal index={9}>
+        <ScrollReveal>
           <p
             role="status"
             className={cn(
@@ -435,18 +436,18 @@ export function LabDebriefScreen({ debrief, onReplay, onBackHome, onOpenImage }:
               <span className="text-ink-soft">{debrief.mistakeFed.reason}</span>
             </span>
           </p>
-        </Reveal>
+        </ScrollReveal>
       )}
 
       {/* ── Actions ── */}
-      <Reveal index={10} className="flex flex-col gap-2 sm:flex-row">
+      <ScrollReveal className="flex flex-col gap-2 sm:flex-row">
         <Button className="clay-btn min-h-12 flex-1" onClick={onReplay}>
           <RotateCcw className="size-4" aria-hidden /> Study this image again
         </Button>
         <Button variant="outline" className="min-h-12 flex-1" onClick={onBackHome}>
           <Images className="size-4" aria-hidden /> Back to library
         </Button>
-      </Reveal>
+      </ScrollReveal>
     </div>
   )
 }

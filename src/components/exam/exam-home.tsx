@@ -16,6 +16,8 @@ import type { LucideIcon } from 'lucide-react'
 import type { ExamConfig, ExamHome, ExamMode, ExamModeInfo } from '@/lib/types'
 import { EXAM_MODES } from '@/lib/types'
 import { Button } from '@/components/ui/button'
+import { Stagger, StaggerItem } from '@/components/primitives/motion'
+import { PulseTrace } from '@/components/primitives/scenery'
 import { cn } from '@/lib/utils'
 import {
   Reveal, SectionTitle, StatTile, accuracyText, asPct, formatClock, modeBadge, relTime,
@@ -46,12 +48,12 @@ const MODE_ICON: Record<ExamMode, LucideIcon> = {
 
 // ─── Mode card ────────────────────────────────────────────────────────────────
 
-function ModeCard({ info, index, onStart, onOpenBuilder }: { info: ExamModeInfo; index: number; onStart: (config: ExamConfig) => void; onOpenBuilder: () => void }) {
+function ModeCard({ info, onStart, onOpenBuilder }: { info: ExamModeInfo; onStart: (config: ExamConfig) => void; onOpenBuilder: () => void }) {
   const Icon = MODE_ICON[info.id] ?? ClipboardList
   const isCustom = info.id === 'custom'
   const negative = info.preset.negativeMark
   return (
-    <Reveal index={Math.min(index, 10)} className="min-w-0">
+    <StaggerItem className="min-w-0">
       <div className="clay flex h-full min-w-0 flex-col gap-2.5 rounded-2xl p-4">
         <div className="flex items-start gap-3">
           <span className={cn('grid size-9 shrink-0 place-items-center rounded-xl', isCustom ? 'bg-primary/12 text-primary' : 'bg-surface-2 text-ink-soft')}>
@@ -96,7 +98,7 @@ function ModeCard({ info, index, onStart, onOpenBuilder }: { info: ExamModeInfo;
           )}
         </div>
       </div>
-    </Reveal>
+    </StaggerItem>
   )
 }
 
@@ -119,7 +121,9 @@ export function ExamHomeScreen({ home, onStart, onResume, onOpenHistory, onOpenA
   return (
     <div className="mx-auto max-w-5xl space-y-6 p-4 md:p-6">
       {/* ── Hero ── */}
-      <Reveal index={0} className="min-w-0 space-y-3">
+      <Reveal index={0} className="relative min-w-0 space-y-3">
+        <PulseTrace className="opacity-70" height={90} />
+        <div className="relative z-10 space-y-3">
         <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-primary">Product 12 · Mock tests & exam intelligence</p>
         <h1 className="text-3xl font-semibold tracking-tight md:text-4xl">Exam Lab</h1>
         <p className="max-w-2xl text-sm leading-relaxed text-ink-soft">
@@ -134,6 +138,7 @@ export function ExamHomeScreen({ home, onStart, onResume, onOpenHistory, onOpenA
           <ClipboardList className="size-4" aria-hidden />
           Start Full-Length Mock ({fullPreset.count} Q · {fullPreset.minutes} min)
         </Button>
+        </div>
       </Reveal>
 
       {/* ── Resume banner ── */}
@@ -179,17 +184,16 @@ export function ExamHomeScreen({ home, onStart, onResume, onOpenHistory, onOpenA
       {/* ── The 9 test modes ── */}
       <section aria-label="Test modes" className="space-y-3">
         <SectionTitle>The 9 test modes</SectionTitle>
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          {home.modes.map((m, i) => (
+        <Stagger className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          {home.modes.map((m) => (
             <ModeCard
               key={m.id}
               info={m}
-              index={i + 3}
               onStart={onStart}
               onOpenBuilder={onOpenBuilder}
             />
           ))}
-        </div>
+        </Stagger>
       </section>
 
       {/* ── Recommended next test ── */}

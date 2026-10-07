@@ -8,7 +8,6 @@
 // banner. Card labels stay diagnosis-agnostic — answers unlock in study.
 
 import { useMemo, useState } from 'react'
-import { motion } from 'framer-motion'
 import {
   Activity, ArrowRight, CheckCircle2, Clock3, Compass, Crosshair, Flame, Image as ImageIcon,
   Play, RotateCcw, ScanEye, Target, TrendingUp, XCircle, Zap,
@@ -21,6 +20,8 @@ import {
 import type { LabHome, LabImageSummary, LabMode, LabModality } from '@/lib/types'
 import { Button } from '@/components/ui/button'
 import { Progress } from '@/components/ui/progress'
+import { Stagger, StaggerItem, ScrollReveal } from '@/components/primitives/motion'
+import { DotMatrix } from '@/components/primitives/scenery'
 import { cn } from '@/lib/utils'
 import {
   DifficultyDots, MicroLabel, ProvenanceChip, RelevanceChip, Reveal, ScopeChip, SCROLL_SLIM,
@@ -101,15 +102,11 @@ function resultLine(img: LabImageSummary): React.ReactNode {
   )
 }
 
-function ImageCard({ img, index, onOpen }: { img: LabImageSummary; index: number; onOpen: (id: string) => void }) {
+function ImageCard({ img, onOpen }: { img: LabImageSummary; onOpen: (id: string) => void }) {
   return (
-    <motion.button
+    <button
       type="button"
       onClick={() => onOpen(img.id)}
-      initial={{ opacity: 0, y: 14 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: '-24px' }}
-      transition={{ duration: 0.4, delay: Math.min(index, 8) * 0.04, ease: [0.22, 1, 0.36, 1] }}
       className="clay clay-hover flex w-full min-w-0 flex-col overflow-hidden rounded-2xl text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
       aria-label={`Open image: ${img.title} — ${img.modality}, ${img.system}, difficulty ${img.difficulty} of 3, exam relevance ${img.examRelevance} of 5`}
     >
@@ -144,7 +141,7 @@ function ImageCard({ img, index, onOpen }: { img: LabImageSummary; index: number
 
         <span className="mt-auto block border-t border-line/70 pt-2.5">{resultLine(img)}</span>
       </span>
-    </motion.button>
+    </button>
   )
 }
 
@@ -211,6 +208,7 @@ export function LabHomeScreen({ home, onOpenImage, onStartRapid, rapidSignal }: 
       {/* ── Hero: the learning loop — porcelain podium ── */}
       <Reveal index={0}>
         <div className="podium relative overflow-hidden rounded-3xl p-5 md:p-7">
+          <DotMatrix />
           <div className="pointer-events-none absolute -right-12 -top-16 size-52 rounded-full bg-[#f3d5a4]/35 blur-3xl" aria-hidden />
           <div className="pointer-events-none absolute -left-14 -bottom-8 size-48 rounded-full bg-[#c9e8d4]/30 blur-3xl" aria-hidden />
           <div className="relative min-w-0 space-y-2">
@@ -238,7 +236,7 @@ export function LabHomeScreen({ home, onOpenImage, onStartRapid, rapidSignal }: 
           <button
             type="button"
             onClick={() => onOpenImage(home.resume!.imageId)}
-            className="warm-card flex w-full min-w-0 items-center gap-3 rounded-2xl p-4 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            className="warm-card clay-hover flex w-full min-w-0 items-center gap-3 rounded-2xl p-4 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             aria-label={`Resume ${home.resume.mode} attempt on ${home.resume.imageTitle}`}
           >
             <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-sev-warn/15 text-sev-warn">
@@ -390,17 +388,19 @@ export function LabHomeScreen({ home, onOpenImage, onStartRapid, rapidSignal }: 
             </div>
           </Reveal>
         ) : (
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
-            {filtered.map((img, i) => (
-              <ImageCard key={img.id} img={img} index={i} onOpen={onOpenImage} />
+          <Stagger className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            {filtered.map((img) => (
+              <StaggerItem key={img.id}>
+                <ImageCard img={img} onOpen={onOpenImage} />
+              </StaggerItem>
             ))}
-          </div>
+          </Stagger>
         )}
       </section>
 
       {/* ── Weak modalities ── */}
       {home.weakModalities.length > 0 && (
-        <Reveal index={6} className="space-y-3">
+        <ScrollReveal className="space-y-3">
           <MicroLabel className="text-sev-warn">Weak modalities — below 70% measured</MicroLabel>
           <div className="clay space-y-3.5 rounded-2xl p-4 md:p-5">
             {home.weakModalities.map((w, i) => (
@@ -418,12 +418,12 @@ export function LabHomeScreen({ home, onOpenImage, onStartRapid, rapidSignal }: 
               </div>
             ))}
           </div>
-        </Reveal>
+        </ScrollReveal>
       )}
 
       {/* ── Missed patterns ── */}
       {home.missedPatterns.length > 0 && (
-        <Reveal index={7} className="space-y-3">
+        <ScrollReveal className="space-y-3">
           <MicroLabel className="text-sev-crit">Missed patterns — same finding, several runs</MicroLabel>
           <div className="clay divide-y divide-line/70 rounded-2xl p-2 md:p-3">
             {home.missedPatterns.map((p, i) => (
@@ -440,12 +440,12 @@ export function LabHomeScreen({ home, onOpenImage, onStartRapid, rapidSignal }: 
               </div>
             ))}
           </div>
-        </Reveal>
+        </ScrollReveal>
       )}
 
       {/* ── Recommended next image ── */}
       {home.recommended && (
-        <Reveal index={8}>
+        <ScrollReveal>
           <section className="clay space-y-3 rounded-2xl border-primary/25 p-4 md:p-5" aria-label="Recommended next image">
             <div className="flex items-center gap-2">
               <span className="grid size-8 shrink-0 place-items-center rounded-lg bg-primary/12 text-primary">
@@ -459,12 +459,12 @@ export function LabHomeScreen({ home, onOpenImage, onStartRapid, rapidSignal }: 
               <ImageIcon className="size-4" aria-hidden /> Open this image
             </Button>
           </section>
-        </Reveal>
+        </ScrollReveal>
       )}
 
       {/* ── Recent runs ── */}
       {home.recent.length > 0 && (
-        <Reveal index={9} className="space-y-3">
+        <ScrollReveal className="space-y-3">
           <MicroLabel>Recent runs</MicroLabel>
           <div className={cn('flex gap-2 overflow-x-auto pb-1', SCROLL_SLIM)}>
             {home.recent.map((r, i) => (
@@ -472,7 +472,7 @@ export function LabHomeScreen({ home, onOpenImage, onStartRapid, rapidSignal }: 
                 key={`${r.imageId}-${i}`}
                 type="button"
                 onClick={() => onOpenImage(r.imageId)}
-                className="clay flex w-52 shrink-0 flex-col gap-1 rounded-2xl p-3.5 text-left transition-colors hover:border-primary/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                className="clay clay-hover flex w-52 shrink-0 flex-col gap-1 rounded-2xl p-3.5 text-left transition-colors hover:border-primary/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 aria-label={`Reopen ${r.title} — score ${Math.round(r.score)}, ${r.correct ? 'passed' : 'below pass mark'}`}
               >
                 <span className="flex items-center gap-1.5">
@@ -491,18 +491,18 @@ export function LabHomeScreen({ home, onOpenImage, onStartRapid, rapidSignal }: 
               </button>
             ))}
           </div>
-        </Reveal>
+        </ScrollReveal>
       )}
 
       {/* Measured-data footnote */}
       {stats.attempts === 0 && (
-        <Reveal index={10}>
+        <ScrollReveal>
           <p className="rounded-xl border border-line bg-surface-2/40 px-4 py-3 text-xs leading-relaxed text-ink-soft">
             Accuracy, pin coverage, response time and the rapid record appear here as measured values once you
             complete your first graded attempt — nothing is estimated or assumed.
             <Activity className="ml-1 inline size-3.5 align-[-2px]" aria-hidden />
           </p>
-        </Reveal>
+        </ScrollReveal>
       )}
     </div>
   )

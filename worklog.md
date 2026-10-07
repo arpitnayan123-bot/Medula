@@ -2044,3 +2044,144 @@ Work Log:
 
 Stage Summary:
 - «Same product. Completely new visual soul.» — one warm, bright, tactile, dimensional medical design language across all 20 products: ivory canvas, surgical teal, champagne warmth, porcelain neumorphism, selective warm glass, serif editorial voice, original anatomical hero art, canonical primitives kit, unified headers/cards/empty-states/motion. Zero logic/API/route/schema/auth changes; all 20 products verified working end-to-end. DESIGN_LANGUAGE.md committed as the living system doc.
+
+---
+Task ID: A
+Agent: frontend-styling-expert
+Task: Atelier elevation — entry surfaces (landing, auth, onboarding, os, dashboard, pwa)
+
+Work Log:
+- Read worklog tail, DESIGN_LANGUAGE.md §7 (Atelier Elevation v2), primitives/motion.tsx + scenery.tsx; mapped every scope file before touching anything (presentational-only discipline).
+- landing/landing-page.tsx: hero section (already relative overflow-hidden) gets `<ContourAtlas className="opacity-60" />` as first child, content stays above via its existing relative wrapper; both hero CTAs (START YOUR MEDICAL JOURNEY / SEARCH ANY DOUBT, FREE) wrapped in `<Magnetic>` (2 uses, the per-view max); feature grid + persona strip grids converted from per-card Reveal(delay) to `<Stagger>` container + `<StaggerItem className="h-full">` cards (grid classes moved onto Stagger, card ids/anchors/whileHover preserved); remaining below-fold Reveal blocks (philosophy eyebrow, features header, roadmap ×2, persona header, final CTA) swapped to `ScrollReveal` (final CTA from="scale"); deleted the now-dead local Reveal helper. Zero copy/handler/anchor changes.
+- auth/signin-view.tsx: `<DotMatrix className="opacity-70" />` added as last child of the existing aria-hidden ambient scene container (card zone scenery, one piece); resume-card primary CTA + form submit CTA each wrapped in `<Magnetic className="w-full">` (2 uses); everything else untouched.
+- onboarding/onboarding-wizard.tsx: `<ContourAtlas className="opacity-40" />` faint in the root relative backdrop (behind the clay wizard card, one piece); ENTER MEDULA primary CTA wrapped in `<Magnetic>`. Radiogroup/chip grids deliberately NOT staggered — a div wrapper between role="radiogroup" and its role="radio" children would break ARIA ownership.
+- os/os-view.tsx: kit `Reveal index` mount-reveals → `ScrollReveal` (hero, today sections, connections, honesty footer) so below-fold sections now reveal on travel; Reveal import dropped.
+- os/os-hero.tsx: `<OrbitRings className="opacity-60" />` as first child of the podium card (knowledge orbits behind the next-action content; rule-expander panel given `relative` so it paints above); stat row (grid-cols-2/sm:3/lg:5) → Stagger + StaggerItem className="h-full"; StatChip value prop string→number (sources were already numbers, only display stringified) rendering `<SpringNumber value={n} />`; primary action CTA wrapped in `<Magnetic>`.
+- os/os-sections.tsx: TodayStrip card grid → Stagger + StaggerItem with OsCard className="group h-full w-full" so the button still fills the grid cell (aria-labels/hand-offs unchanged).
+- os/os-shared.tsx: MiniBar internals swapped to `<SpringBar value={pct} className="h-1.5 …" />` — export signature, track tone and teal→mint fill identical, now spring-animated; role="presentation" preserved by SpringBar.
+- os/os-connections.tsx: connection tile grid → Stagger + StaggerItem (h-full) with h-full w-full on the clay-in buttons.
+- dashboard/dashboard-view.tsx: porch podium gets `<BlobField className="opacity-60" />` as first child (very subtle washes under the greeting/mission); "Start today's mission" CTA wrapped in `<Magnetic>` (1 use); 4-tile stat grid → Stagger + StaggerItem (h-full); all local Reveal index blocks → ScrollReveal (porch, stats, audit banner, OS pointer, subjects) and the dead local Reveal helper removed; consistency sweep: unused ProgressRing's old sky-blue ring hex #38bdf8/#0284c7 → sanctioned #16788c/#5cb491.
+- dashboard/internship-panel.tsx: hardcoded 🏅 glyph → lucide `Medal` (text-gold, aria-hidden) in the source-note line (data-driven rotation emojis untouched per subject-identity exception).
+- dashboard/subject-index.tsx: inspected, intentionally unchanged — already has per-card staggered entrance, SubjectGlyph identity and clay-hover.
+- pwa/register-sw.tsx: inspected, renders null (logic-only) — no presentational surface to elevate.
+
+Stage Summary:
+- Files touched (10): landing/landing-page.tsx, auth/signin-view.tsx, onboarding/onboarding-wizard.tsx, os/{os-view,os-hero,os-sections,os-shared,os-connections}.tsx, dashboard/{dashboard-view,internship-panel}.tsx (+2 inspected, no change needed: dashboard/subject-index.tsx, pwa/register-sw.tsx). Presentation only — no logic, handler, route, API, store, aria or keyboard-path edits.
+- Elevation applied: scenery = 1 piece per view (ContourAtlas on landing hero + onboarding backdrop, DotMatrix in auth ambient, OrbitRings on OS podium, BlobField on dashboard porch); Magnetic = ≤2 hero CTAs per view; Stagger/StaggerItem on every stat/card grid in scope (landing ×2, os-hero, today strip, connections, dashboard tiles); SpringNumber on OS stat chips; MiniBar → SpringBar; ScrollReveal below-fold sections on landing/os/dashboard; emoji sweep 🏅→Medal; raw-palette/dark: scan of all scope files = 0 hits (ProgressRing hex re-tinted to the sanctioned chart pair).
+- Verify: `bunx tsc --noEmit | grep -E '^src/components/(landing|auth|onboarding|os|dashboard|pwa)/'` → NO output (0 errors in scope; whole-repo tsc shows only 4 pre-existing errors in examples/ + skills/); `bunx eslint` on all scope files → 0 problems.
+
+---
+Task ID: B
+Agent: frontend-styling-expert
+Task: Atelier elevation — practice spine (learn, hub, questions, exam, adaptive, revision, revise)
+
+Work Log:
+- Read worklog tail + DESIGN_LANGUAGE.md §7 (ATELIER ELEVATION v2) + primitives/motion.tsx + scenery.tsx; baseline scan of the 27 scope files (≈15.2k LOC): 0 raw palette classes, 0 dark:, 0 hex/rgba, 0 hardcoded emoji (SYSTEM_EMOJI in learn is sanctioned data-driven subject identity) — the Porcelain Atlas consistency sweep was already complete, so Wave B = pure elevation layer (motion + scenery + tactility).
+- learn/learn-view.tsx: ContourAtlas opacity-50 as first child of the relative hero (content branches → relative z-10, existing blur orbs stay -z-10); curriculum phase grids (motion.button hand-stagger) → Stagger + StaggerItem (buttons keep onClick/aria-label/clay clay-hover/dimmed logic); AI-in-Medicine podium band + Global Perspective card wrapped in ScrollReveal (below-fold).
+- learn/learn-study.tsx: TopicStudy concepts-by-kind grids + Connected-topics grid → Stagger/StaggerItem with h-full inner cards (clay clay-hover preserved); no overlay/stack/ProgressMark changes.
+- hub/hub-view.tsx: DotMatrix as first child of the podium hero (content → relative z-10); "More topics" + "Suggested topics" grids → Stagger/StaggerItem (h-full w-full buttons).
+- hub/topic-hub.tsx: Overview start-here row, LearnSection concept grids, ConnectedSection grid, ResourceGrid → Stagger/StaggerItem; StartCard/connected cards get h-full. Sticky hub bar, section rail, watch scenes untouched.
+- questions/quiz-view.tsx: ERROR_TYPES tag grid → Stagger/StaggerItem; results "By difficulty" bars → SpringBar value={pct} (width computation untouched); SESSION COMPLETE icon tile → Pop; "Missed questions & teaching" section → ScrollReveal. Run-phase radiogroup options left instant (keyboard-driven, subtlety law); segmented palette bar + PairDebrief tone-bars left alone (not trivially replaceable).
+- questions/mock-test-view.tsx: Quick-starts grid → Stagger/StaggerItem; Mock-report header icon → Pop; subject-breakdown + review-list sections → ScrollReveal (list itself unstaggered — can be 100 items). Exam runner palette/labels untouched.
+- exam/exam-home.tsx: PulseTrace height={90} className="opacity-70" in the relative hero (content → relative z-10); the 9-mode grid converted from per-card index Reveal → Stagger + StaggerItem.
+- exam/exam-analysis.tsx: score-hero ScoreRing → Pop (completion moment); mistake-profile tile grid → Stagger/StaggerItem. BarRow/exam-shared untouched (already spring-animated, tone-parametric).
+- adaptive/adaptive-home.tsx: BlobField opacity-40 hero wash (content → relative z-10); 8 mode cards → Stagger/StaggerItem (motion.button keeps whileTap); Recent runs + Saved questions → ScrollReveal.
+- adaptive/adaptive-report.tsx: RUN REPORT icon → Pop; difficulty-split bars → SpringBar value={pct}.
+- revision/smart-revision-view.tsx: BlobField opacity-40 in hero Reveal (content → relative z-10 wrapper); Revision-intelligence strip + Revision-modes grid → Stagger/StaggerItem; SummaryView ProgressRing → Pop (session-complete moment). revision-run Progress bar kept (aria-label preservation — SpringBar can't carry aria).
+- revise/revise-view.tsx: deck-clear success state icon → Pop; due-concept rows get clay-hover (tactility). Grade buttons/tabs/keyboard flip flow untouched.
+- Skipped deliberately: mock/PairDebrief semantic tone bars (SpringBar would erase sev tones), exam-runner (exam-condition minimalism is the design), lesson-sections.tsx + revision-ai/adaptive-ai (content renderers, nothing to stagger), mistake-book + exam-builder/history/review/view (already Reveal-elevated, no gaps).
+- Red lines held: zero handler/store/API/route/aria/logic edits — diff scan shows only className strings, presentational wrappers (Stagger/StaggerItem/ScrollReveal/Pop/SpringBar/scenery) and h-full equalization on wrapped cards.
+
+Stage Summary:
+- Files changed (12): learn/{learn-view,learn-study}.tsx, hub/{hub-view,topic-hub}.tsx, questions/{quiz-view,mock-test-view}.tsx, exam/{exam-home,exam-analysis}.tsx, adaptive/{adaptive-home,adaptive-report}.tsx, revision/smart-revision-view.tsx, revise/revise-view.tsx (+325/−273 lines, all presentational).
+- Scenery placed: learn → ContourAtlas opacity-50 (hero), hub → DotMatrix (podium), exam → PulseTrace 90/opacity-70 (Exam Lab hero), adaptive + revision → BlobField opacity-40 (faint hero washes). One piece per view, first child of a relative zone, content z-10, never behind question/answer content.
+- Motion: 14 grids/rows → Stagger+StaggerItem; 8 below-fold sections → ScrollReveal; 5 completion moments → Pop (quiz SESSION COMPLETE, mock report, exam ScoreRing, adaptive RUN REPORT, revision summary ring + revise deck-clear); 2 trivial bars → SpringBar (teal→mint fill, width math preserved); clay-hover added to revise due rows.
+- Verify: `bunx tsc --noEmit | grep -E '^src/components/(learn|hub|questions|exam|adaptive|revision|revise)/'` → EMPTY (0 errors); `bunx eslint` on the 7 folders → exit 0; full-repo tsc errors exist only in understand/understand-view.tsx (parallel wave's file, outside this task's scope).
+
+---
+Task ID: D1
+Agent: frontend-styling-expert
+Task: Atelier elevation — clinical depth (cases, sim, lab, understand, concept, graph)
+
+Work Log:
+- Read worklog tail + DESIGN_LANGUAGE.md §7 (Atelier Elevation v2) + primitives/motion.tsx + scenery.tsx + kit.tsx; inventoried all 24 scope files before touching anything.
+- cases/cases-view.tsx: case-card grid → Stagger + StaggerItem (motion.article → StaggerItem wrapping a semantic <article>, flex-1 keeps card heights); verdict reveal (correct/missed chip + teaching) → Pop; PulseTrace height={80} added as a bottom-anchored 48/56px band inside a new relative header wrapper (PageHeader gets relative z-10) — first scenery rule respected, nothing behind clinical content; logbook "New entry form" section → ScrollReveal. Zero handler/state/aria changes.
+- sim/sim-home.tsx: CaseCard grid → Stagger/StaggerItem (motion.button → plain button, all aria/focus classes preserved); below-fold sections (weak areas, repeated errors, recommended, recent runs, footnote) Reveal → ScrollReveal; resume banner + recent-run cards get clay-hover. sim-player: guided/AI mode-choice cards → Stagger/StaggerItem. sim-debrief: TimelineItem Reveal → ScrollReveal; timeline/learning/concepts/related/hand-offs/mistake-report/actions → ScrollReveal (header+reveal+scores keep mount Reveal).
+- lab/lab-home.tsx: DotMatrix added as first child of the hero podium (content already relative above it); ImageCard grid → Stagger/StaggerItem; below-fold Reveal → ScrollReveal (weak modalities, missed patterns, recommended, recent, footnote); resume banner + recent-run cards clay-hover. lab-player: sticky step-progress bar → SpringBar with the identical width computation (Math.min(100, stepIndex/max(1,steps.length)*100)) — the bar was role="presentation" so no aria lost. lab-study: mode launchers (5 cards) → Stagger/StaggerItem; guided explanation / AI tutor / concepts → ScrollReveal; resume banner clay-hover. lab-debrief: StepItem Reveal → ScrollReveal; all below-fold sections → ScrollReveal; similar-image cards clay-hover. lab-view/lab-viewer/lab-shared untouched (gesture + shared primitives frozen).
+- understand/understand-view.tsx: MoleculeDrift opacity-40 as first child of the header clay card (card made relative overflow-hidden, both content rows relative z-10); topic rail → Stagger/StaggerItem (reveals cascade, incl. inside the inner scroll container); plain-words/weak-points+traps/footer-actions → ScrollReveal (traps grid now IS the ScrollReveal, stray </div> fixed); 🔓/🔒 → lucide LockOpen/Lock and ✓ → lucide Check inside the trap rows (aria-hidden spans kept); understood-progress bar KEPT as-is (it carries role=progressbar + aria-valuenow — SpringBar would strip them). Scene SVG internals untouched.
+- concept/concept-explorer.tsx: ContourAtlas opacity={0.4} as first child of a new relative header wrapper (header gets relative z-10) — the Atlas signature under the concept title; 3D visual / connections / flashcards / question bank / mnemonic sections → ScrollReveal. concept-3d.tsx untouched (interactive data-art stage).
+- graph/graph-view.tsx (chrome only — KIND_COLORS/GROUP_COLORS/Minimap untouched): home below-fold (your connections, recommended today, top hubs, browse, recent) → ScrollReveal; top-hub tiles → Stagger/StaggerItem + clay-hover + w-full; hub related-knowledge/minimap/path-CTA/resources/AI → ScrollReveal; "Follow the path" CTA + resource tiles + Topic Hub tile clay-hover; path stage chain → outer ScrollReveal with per-stage ScrollReveal (delay-capped cascade) preserving the rail line + absolute stage icons; narrative + AI → ScrollReveal.
+- Consistency sweep: 0 raw palette classes, 0 dark:, 0 hardcoded emoji left in scope (greps verified); sanctioned graph/logbook hex palettes untouched as data art.
+- Verified: bunx tsc --noEmit | grep scoped folders → EMPTY; eslint on all six folders → clean. (One transient tsc error in src/components/explore/ belongs to a parallel agent's file, outside this task's scope.)
+
+Stage Summary:
+- Files changed (11): cases/cases-view.tsx, sim/{sim-home,sim-player,sim-debrief}.tsx, lab/{lab-home,lab-player,lab-study,lab-debrief}.tsx, understand/understand-view.tsx, concept/concept-explorer.tsx, graph/graph-view.tsx.
+- What added: motion — Stagger/StaggerItem on 7 card grids (cases, sim cases + mode choice, lab images + launchers, understand rail, graph hubs), ScrollReveal on ~30 below-fold sections across debriefs/homes/explorer, Pop on the case verdict reveal, SpringBar on the lab step progress (computation byte-identical); scenery — PulseTrace (cases header), DotMatrix (lab hero), MoleculeDrift faint (understand header), ContourAtlas 0.4 (concept header), one per view, header zones only, content above z-10; tactility — clay-hover on 9 previously-flat clickable cards/banners; lucide swaps for 🔓/🔒/✓ chrome glyphs.
+- Preserved: all text, aria-*/roles (progressbar/timer/radiogroup/tab semantics intact), handlers, data flow, API/store usage, scene + graph data-art internals. Presentation-only diff.
+- Verification: scoped tsc → 0 errors; scoped eslint → 0 errors.
+
+---
+Task ID: C
+Agent: frontend-styling-expert
+Task: Atelier elevation — intelligence & growth (brain, faculty, community, gamify, performance, progress, profile)
+
+Work Log:
+- Read worklog tail, DESIGN_LANGUAGE.md §7 (Atelier Elevation v2), primitives/motion.tsx + scenery.tsx; scanned all 7 scope folders first: 0 raw palette classes, 0 dark:, 0 emoji-as-icon, 0 stray hex (progress ring hexes are the sanctioned #16788c/#5cb491) — the Porcelain base was already clean, so Wave C is purely the elevation layer.
+- gamify/ (6 files touched): OrbitRings (opacity-60, rounded) as first child of the overview hero `warm-card` with content lifted to relative z-10; hero XP numbers (xpToNext, weekXp) + StreakChip days → SpringNumber; StreakChip intact-state static dot → LiveDot tone="bg-primary" (visual only, other states keep static dot); MotivationCards + TotalsStrip chips → Stagger/StaggerItem (h-full parity); GamifyStreaks/RecentLedger/XpTableCard → ScrollReveal; achievements grids per group → Stagger with Pop on the first two unlocked badge icons only (1-2 per view rule) + h-full buttons; challenges active/completed/catalog grids → Stagger; journey + rewards Reveal(index) → viewport-aware ScrollReveal; rewards accent-theme grid → Stagger.
+- brain/ (5 files): brain-shared SectionCard gained an optional `scenery?: ReactNode` prop (rendered first, section+header+children get relative/z-10 ONLY when scenery present — every other card byte-identical); ProfileStrip hero carries ContourAtlas opacity={0.4} (rounded to card radius so nothing clips); measured-numbers chip row + Insights grid → Stagger; Answers/Forgetting/HowItWorks → ScrollReveal; strategy weaknesses grid → Stagger, strong-areas/time-test/mistakes/revision-gaps/playbook → ScrollReveal; memory hand-off card → ScrollReveal; path/knowledge left alone (already motioned; concept rows are data rendering).
+- community/ (4 files): DotMatrix as first child of the home hero header (content wrapped relative z-10); hero StatChips → Stagger; For You / My groups / SpacesByKind grids → Stagger; guidelines CTA, accountability strip, featured, contribution, spaces → ScrollReveal (replaced local Reveal import); contribution score (3xl) → SpringNumber; StreakFlame current-days → SpringNumber; groups browse/mine GroupCard grids → Stagger.
+- faculty/ (2 files): faculty-shared SectionCard gained the same optional scenery prop; PipelineCard (overview hero) carries BlobField opacity-70 rounded; inventory chip row → Stagger; recommendations grid → Stagger with h-full cards; 7 below-fold cards → ScrollReveal. Pipeline <ol> stages intentionally left as plain li (StaggerItem renders div — would be invalid inside ol; semantics preserved).
+- performance-view: Key-indicators tile grid → Stagger + per-tile StaggerItem (h-full buttons); strengths grid → Stagger; existing Reveal/AnimatedNumber/chart internals untouched.
+- progress-view: top 4-tile stat row → Stagger + StaggerItem (h-full sections); subject dashboards left on their own whileInView cards (avoids double animation); heatmap/ring internals untouched.
+- profile-view: the three digest stat grids (Readiness/Progress/Roadmap, 4 StatBlocks each) → Stagger + StaggerItem; forms/handlers untouched.
+- Preserved throughout: all handlers, aria-*/roles, keyboard handling, data flow, API calls, store wiring; StaggerItem/Stagger only ever receive className (their reduced-motion path drops rest props, so no roles passed through them); li/ol semantics never restructured into divs; charts/heatmaps/rings untouched.
+
+Stage Summary:
+- 18 files changed, ~330 insertions / 221 deletions, all under the 7 owned folders (no primitives/app-shell/globals/layout or foreign folder touched).
+- Elevation applied: scenery — gamify OrbitRings, brain ContourAtlas 0.4, community DotMatrix, faculty BlobField (one per view, hero zones only, content above z-10); motion — 20+ Stagger grids/rows, ScrollReveal below-fold sections, SpringNumber on XP/streak/contribution numbers, Pop on 2 achievement icons, LiveDot on intact streak chips; tactility — h-full clay cards kept equal-height in staggered grids.
+- Verify: `bunx tsc --noEmit` → 0 errors in scope folders (and 0 across all of src); `bunx eslint` on the 7 folders → 0 problems. Presentation-only diff: no logic, handler, route, API, store or a11y changes.
+
+---
+Task ID: D2
+Agent: frontend-styling-expert
+Task: Atelier elevation — long tail (search, shortcuts, ask, research, explore, library, roadmap, planner, mistakes, tutor, voice, audit)
+
+Work Log:
+- Read worklog tail + DESIGN_LANGUAGE.md §7 (Atelier Elevation v2) + primitives/motion.tsx + scenery.tsx; baseline scan: 0 raw-palette classes, 0 dark:, 0 hex, 1 emoji (research ⚠️) across the 24 scope files — the Porcelain base was already clean, so this wave is pure motion/scenery/tactility.
+- search/ (2): search-overlay quick-start chips → Stagger+StaggerItem (quiet utility motion, palette only); doubt-search ResultRow + both "dig deeper" rows → clay-hover + transition-all (tactile lift, everything else untouched).
+- shortcuts/ (1): audited — glass-strong overlay with own spring motion already at spec; deliberately left untouched (utility surface, "stagger at most").
+- ask/ (3): ask-shared Reveal re-anchored on canonical ScrollReveal (same index/delay API, now viewport-aware → answer sections arrive as you scroll); ask-view home hero → BlobField opacity-60 as first child of a relative hero zone with content in relative z-10 (thread view untouched); ask-quiz final score {n} → SpringNumber.
+- research/ (1): header → BlobField opacity-50 behind PageHeader (relative/z-10); Discover results + Saved list → Stagger/StaggerItem; ⚠️ in EXPLAIN_DISCLAIMER string → lucide TriangleAlert (text words preserved verbatim).
+- explore/ (1): hero+search zone → OrbitRings opacity-25 (first child / z-10); pre-search legend grid → Stagger/StaggerItem; result rows kept (motion.section mount + clay-hover already present).
+- library/ (7): library-shared CardGrid upgraded to Stagger + StaggerItem via Children.map → every card grid (home forYou/featured, browser feed/list, saved, detail related) cascades automatically; shared Reveal → ScrollReveal wrapper (same API); library-home hero → ContourAtlas opacity={0.4} in a relative z-10 header zone; library-browser ListResults per-card Reveal removed in favor of the CardGrid stagger; library-ai AI badge → one-shot Pop when the result arrives.
+- roadmap/ (1): NEET-PG clock hero med-grid backdrop → DotMatrix scenery (first child, content z-10); phases timeline ol wrapped in Stagger with PhaseNode entrance moved into StaggerItem (ol/li semantics preserved — div-in-li only, no div-in-ul); hand-rolled AnimatedNumber deleted, countdown days/weeks/months → SpringNumber; DayCard/weekly-split/CTA motion untouched.
+- planner/ (2): planner-parts Reveal → ScrollReveal wrapper (all sections now viewport-aware below the fold); planner-view slot task lists → Stagger+StaggerItem rows.
+- mistakes/ (2): genome stat strip → Stagger/StaggerItem on clay-in Stat wells; review rows → Stagger (ul/li valid nesting: Stagger outside ul, StaggerItem inside li); PatternCardShell → clay; "Do next" card → clay-hover; dead framer-motion import + local EASE removed.
+- tutor/ (1): empty-state suggestion grid → Stagger/StaggerItem; drill-complete gold Flag tile → subtle Pop (delay 0.15, one-shot — the only badge-pop in the view).
+- voice/ (2): home stat tiles → SpringNumber for the three plain numeric stats (accuracy stays a formatted string); suggestions grid + six-modes grid → Stagger/StaggerItem (mode cards get h-full so clay rows stay level); debrief per-concept verdict rows → Stagger/StaggerItem.
+- audit/ (1): audited — glass-strong overlay + staggered result rows already at spec; left untouched.
+- Consistency sweep: scope re-scanned after edits — raw palette 0, dark: 0, hex 0, emoji-as-icon 0 (⚠️ converted). No handler/prop/API/store/aria changes anywhere; ul/ol semantics explicitly preserved in every Stagger conversion.
+
+Stage Summary:
+- 21 files elevated across 12 folders (shortcuts-overlay + audit-view verified and intentionally unchanged): scenery placed per the D2 mapping — library ContourAtlas opacity-40, roadmap DotMatrix, explore OrbitRings opacity-25, ask/research BlobField — always first child of a relative zone with content at z-10, never behind dense lists; motion added via canonical primitives only (Stagger/StaggerItem on 10 grids/lists, ScrollReveal behind ask/library/planner Reveal wrappers, SpringNumber on 5 count moments, Pop ×2 on AI/achievement badges, clay-hover on search rows/do-next card).
+- Files touched (21): search/{search-overlay,doubt-search-view}.tsx, ask/{ask-shared,ask-view,ask-quiz}.tsx, research/research-view.tsx, explore/explore-view.tsx, library/{library-shared,library-home,library-browser,library-ai}.tsx, roadmap/roadmap-view.tsx, planner/{planner-parts,planner-view}.tsx, mistakes/mistake-intelligence-view.tsx, tutor/tutor-view.tsx, voice/{voice-view,voice-debrief}.tsx.
+- Verify: `bunx tsc --noEmit` → 0 errors under src/ (only pre-existing examples/ + skills/ errors outside the project scope); scoped eslint over the 12 folders → clean; runtime smoke via agent-browser (signed in with demo account): roadmap / library / explore / research / ask / mistakes / planner / voice / tutor all render with 0 page errors, 0 console errors, scenery counts exactly 1 per view where assigned and 0 on utility surfaces, countdown SpringNumbers settle on real values (250/36/8).
+
+---
+Task ID: E
+Agent: orchestrator (Z.ai Code)
+Task: SUPREME REDESIGN — full-tree verification, E2E release gate, commit + push
+
+Work Log:
+- Read worklog tail; confirmed waves A/B/C/D1/D2 left 75 modified files + 3 new primitives (motion.tsx, scenery.tsx, ambient-hour.tsx) uncommitted on top of commit 740b661 (Porcelain Atlas).
+- Quality gates on the full tree: bunx tsc --noEmit → 0 errors under src/ (only pre-existing examples/+skills/ errors outside project scope); bun run lint → 0 errors (3 pre-existing script warnings); palette regression scan (sky/indigo/violet/purple/blue raw classes outside ui/) → 0 hits.
+- Browser E2E desktop 1440×900 (agent-browser, demo session): all 30 views (os, home, map, hub, learn, questions, adaptive, exam, mistakes, revision, planner, graph, performance, revise, understand, cases, lab, voice, research, explore, library, ask, community, gamify, brain, faculty, tutor, profile, progress, roadmap) render real measured content — 0 horizontal overflow, 0 page errors, 0 console errors.
+- Mobile 390×844: OS boot, More sheet (all 28 nav entries), Today/Learn/Questions/Adaptive/Community/Motivation/Knowledge Graph verified — 0 overflow. Hash deep-link resume (progress/roadmap) verified via reload+resume flow.
+- Interaction spot checks: Cmd+K command palette opens with suggestion listbox + Escape closes; sidebar clay active pill tracks the active view; profile hub sheet with Progress/Roadmap anchors renders.
+- Screenshots reviewed (OS, Today, Learn, Brain, Community, Faculty, Cases, Graph): warm ivory canvas, serif editorial hero voice, OrbitRings/ContourAtlas/DotMatrix scenery present exactly once per hero zone, clay stat chips with measured numbers, identity-tinted subject cards — premium and consistent; no overlap, no contrast failures.
+- API regression: dashboard, performance/home, adaptive/home, revision, mistakes, gamify/home, community/home, os/home, brain/home, faculty/home, learn/curriculum, profile, progress → all 200 (api/progress/overview was a wrong guess; the real route api/progress is 200). Zero behavior change.
+- Committed all waves as one release commit (author/committer Arpit Nayan) and pushed to main.
+
+Stage Summary:
+- The Atelier Elevation v2 waves are now released: 78 files (+1,617/−1,106) of presentation-only motion/scenery/tactility across every view folder, on top of the Porcelain Atlas design system.
+- Verification standard met: tsc 0 / lint 0 / 30 views × desktop + 9 × mobile clean / 13 API families 200 / zero feature, handler, route, API, store or a11y changes.

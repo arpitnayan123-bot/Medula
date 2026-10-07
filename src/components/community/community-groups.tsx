@@ -19,6 +19,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
+import { Stagger, StaggerItem } from '@/components/primitives/motion'
 import { cn } from '@/lib/utils'
 import { EmptyState, GroupCard, MicroLabel, Reveal, SectionSkeleton } from './community-shared'
 
@@ -188,18 +189,19 @@ export function CommunityGroupsScreen({
             action={<Button className="min-h-11" onClick={() => setCreateOpen(true)}>Create a study group</Button>}
           />
         ) : (
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          <Stagger className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {groups.map((g) => (
-              <GroupCard
-                key={g.id}
-                group={g}
-                onOpen={onOpenGroup}
-                onJoinLeave={joinLeave}
-                busy={busyId === g.id}
-                mine={g.youMember}
-              />
+              <StaggerItem key={g.id}>
+                <GroupCard
+                  group={g}
+                  onOpen={onOpenGroup}
+                  onJoinLeave={joinLeave}
+                  busy={busyId === g.id}
+                  mine={g.youMember}
+                />
+              </StaggerItem>
             ))}
-          </div>
+          </Stagger>
         )
       ) : mine.length === 0 ? (
         <EmptyState
@@ -209,18 +211,19 @@ export function CommunityGroupsScreen({
           action={<Button className="min-h-11" onClick={() => setTab('browse')}>Browse groups</Button>}
         />
       ) : (
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        <Stagger className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {mine.map((g) => (
-            <GroupCard
-              key={g.id}
-              group={g}
-              onOpen={onOpenGroup}
-              onJoinLeave={joinLeave}
-              busy={busyId === g.id}
-              mine
-            />
+            <StaggerItem key={g.id}>
+              <GroupCard
+                group={g}
+                onOpen={onOpenGroup}
+                onJoinLeave={joinLeave}
+                busy={busyId === g.id}
+                mine
+              />
+            </StaggerItem>
           ))}
-        </div>
+        </Stagger>
       )}
 
       {/* ── create-group dialog ── */}

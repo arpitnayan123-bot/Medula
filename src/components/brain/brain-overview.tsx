@@ -16,6 +16,8 @@ import type { BrainAnswer, BrainConceptStatus, BrainHomePayload } from '@/lib/ty
 import { Button } from '@/components/ui/button'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
+import { ScrollReveal, Stagger, StaggerItem } from '@/components/primitives/motion'
+import { ContourAtlas } from '@/components/primitives/scenery'
 import { cn } from '@/lib/utils'
 import {
   ActionButton, EmptyNote, FootNote, MicroLabel, RecallBar, SectionCard, StateDistribution,
@@ -33,10 +35,10 @@ export function BrainOverview({ home, stale, reload, onGoto, onJumpKnowledge }: 
   return (
     <div className="space-y-4">
       <ProfileStrip home={home} stale={stale} reload={reload} onJumpKnowledge={onJumpKnowledge} />
-      <AnswersCard answers={home.answers} />
+      <ScrollReveal><AnswersCard answers={home.answers} /></ScrollReveal>
       <InsightsCard home={home} />
-      <ForgettingStrip home={home} onGoto={onGoto} />
-      <HowItWorksCard home={home} />
+      <ScrollReveal><ForgettingStrip home={home} onGoto={onGoto} /></ScrollReveal>
+      <ScrollReveal><HowItWorksCard home={home} /></ScrollReveal>
     </div>
   )
 }
@@ -56,6 +58,7 @@ function ProfileStrip({ home, stale, reload, onJumpKnowledge }: {
       title="Your learning profile"
       icon={Brain}
       subtitle="Measured from your real study activity — questions, flashcards, revisions, sessions and mocks."
+      scenery={<ContourAtlas className="rounded-2xl" opacity={0.4} />}
       action={(
         <Button variant="ghost" size="sm" className="min-h-9 shrink-0 rounded-full px-3 text-xs text-ink-soft" onClick={reload}>
           {stale ? 'Re-reading…' : 'Re-read'}
@@ -80,17 +83,17 @@ function ProfileStrip({ home, stale, reload, onJumpKnowledge }: {
       </div>
 
       {/* measured numbers */}
-      <div className="flex flex-wrap gap-1.5 border-t border-line pt-3.5">
-        <Stat value={p.questionAccuracy == null ? '—' : `${Math.round(p.questionAccuracy)}%`} label="question accuracy" />
-        <Stat value={p.accuracy30d == null ? '—' : `${Math.round(p.accuracy30d)}%`} label="last 30 days" />
-        <Stat value={p.medianTimeSec == null ? '—' : `${Math.round(p.medianTimeSec)}s`} label="median per question" />
-        <Stat value={String(p.revisionSessions)} label="revision sessions" />
-        <Stat value={p.mock.attempts === 0 ? '—' : `${p.mock.meanScore == null ? '—' : Math.round(p.mock.meanScore)}`} label="mock mean" />
-        <Stat value={p.mock.lastScore == null ? '—' : String(Math.round(p.mock.lastScore))} label="mock last" />
-        <Stat value={p.mock.bestScore == null ? '—' : String(Math.round(p.mock.bestScore))} label="mock best" />
-        <Stat value={`${p.consistency.streakDays}d`} label="streak" />
-        <Stat value={String(p.consistency.activeDays30)} label="active days / 30" />
-      </div>
+      <Stagger className="flex flex-wrap gap-1.5 border-t border-line pt-3.5">
+        <StaggerItem><Stat value={p.questionAccuracy == null ? '—' : `${Math.round(p.questionAccuracy)}%`} label="question accuracy" /></StaggerItem>
+        <StaggerItem><Stat value={p.accuracy30d == null ? '—' : `${Math.round(p.accuracy30d)}%`} label="last 30 days" /></StaggerItem>
+        <StaggerItem><Stat value={p.medianTimeSec == null ? '—' : `${Math.round(p.medianTimeSec)}s`} label="median per question" /></StaggerItem>
+        <StaggerItem><Stat value={String(p.revisionSessions)} label="revision sessions" /></StaggerItem>
+        <StaggerItem><Stat value={p.mock.attempts === 0 ? '—' : `${p.mock.meanScore == null ? '—' : Math.round(p.mock.meanScore)}`} label="mock mean" /></StaggerItem>
+        <StaggerItem><Stat value={p.mock.lastScore == null ? '—' : String(Math.round(p.mock.lastScore))} label="mock last" /></StaggerItem>
+        <StaggerItem><Stat value={p.mock.bestScore == null ? '—' : String(Math.round(p.mock.bestScore))} label="mock best" /></StaggerItem>
+        <StaggerItem><Stat value={`${p.consistency.streakDays}d`} label="streak" /></StaggerItem>
+        <StaggerItem><Stat value={String(p.consistency.activeDays30)} label="active days / 30" /></StaggerItem>
+      </Stagger>
 
       {/* preferences the brain personalizes within */}
       <div className="flex flex-wrap gap-1.5">
@@ -186,18 +189,20 @@ function InsightsCard({ home }: { home: BrainHomePayload }) {
       icon={Sparkles}
       subtitle="A few things worth knowing now — each with its evidence and one action. Never more than four."
     >
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+      <Stagger className="grid grid-cols-1 gap-3 sm:grid-cols-2">
         {home.insights.map((ins, i) => (
-          <section key={i} className="flex flex-col gap-2.5 rounded-2xl border border-line bg-surface-2/40 p-3.5">
-            <div className="min-w-0">
-              <h4 className="text-sm font-semibold leading-snug tracking-tight">{ins.title}</h4>
-              <p className="mt-1 text-xs leading-relaxed text-ink-soft">{ins.line}</p>
-            </div>
-            <WhyLine text={ins.evidence} />
-            {ins.action && <ActionButton action={ins.action} className="mt-auto w-full justify-center" />}
-          </section>
+          <StaggerItem key={i} className="h-full">
+            <section className="flex h-full flex-col gap-2.5 rounded-2xl border border-line bg-surface-2/40 p-3.5">
+              <div className="min-w-0">
+                <h4 className="text-sm font-semibold leading-snug tracking-tight">{ins.title}</h4>
+                <p className="mt-1 text-xs leading-relaxed text-ink-soft">{ins.line}</p>
+              </div>
+              <WhyLine text={ins.evidence} />
+              {ins.action && <ActionButton action={ins.action} className="mt-auto w-full justify-center" />}
+            </section>
+          </StaggerItem>
         ))}
-      </div>
+      </Stagger>
     </SectionCard>
   )
 }

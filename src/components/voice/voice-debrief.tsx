@@ -2,6 +2,7 @@
 
 import { Check, CheckCircle2, CircleDot, Mic, RotateCcw, Sparkles, XCircle } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { Stagger, StaggerItem } from '@/components/primitives/motion'
 import { cn } from '@/lib/utils'
 import type { VoiceDebrief, VoiceMode } from '@/lib/types'
 
@@ -61,12 +62,10 @@ export function VoiceDebriefCard({
           <h2 className="text-sm font-semibold uppercase tracking-wide text-ink-soft">
             What your voice answered
           </h2>
-          <div className="mt-2 space-y-2">
+          <Stagger className="mt-2 space-y-2">
             {debrief.concepts.map((c, i) => (
-              <div
-                key={`${c.name}-${i}`}
-                className="clay flex items-start gap-3 rounded-2xl p-3.5"
-              >
+              <StaggerItem key={`${c.name}-${i}`}>
+                <div className="clay flex items-start gap-3 rounded-2xl p-3.5">
                 {c.verdict === 'correct' ? (
                   <CheckCircle2 className="mt-0.5 size-5 shrink-0 text-sev-ok" aria-label="correct" />
                 ) : c.verdict === 'partial' ? (
@@ -85,12 +84,13 @@ export function VoiceDebriefCard({
                     c.verdict === 'partial' && 'bg-sev-warn/10 text-sev-warn',
                     c.verdict === 'missed' && 'bg-sev-crit/10 text-sev-crit',
                   )}
-                >
+                  >
                   {c.verdict}
                 </span>
-              </div>
+                </div>
+              </StaggerItem>
             ))}
-          </div>
+          </Stagger>
         </section>
       )}
 

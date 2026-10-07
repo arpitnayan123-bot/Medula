@@ -16,6 +16,7 @@ import { useAppStore } from '@/lib/store'
 import { ADAPTIVE_MODES, ERROR_TYPE_LABELS } from '@/lib/types'
 import type { AdaptiveConfig, AdaptiveReport, AdaptiveTopicInsight } from '@/lib/types'
 import { Button } from '@/components/ui/button'
+import { Pop, SpringBar } from '@/components/primitives/motion'
 import { cn } from '@/lib/utils'
 
 const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1]
@@ -125,9 +126,11 @@ export function AdaptiveReportView({ report, markedIds, onStart, onHome }: Adapt
     <div className="mx-auto max-w-3xl space-y-6 p-4 md:p-6">
       <header className="space-y-2">
         <div className="flex items-center gap-2.5">
-          <span className="grid size-10 place-items-center rounded-xl bg-primary/10">
-            <Target className="size-5 text-primary" />
-          </span>
+          <Pop>
+            <span className="grid size-10 place-items-center rounded-xl bg-primary/10">
+              <Target className="size-5 text-primary" />
+            </span>
+          </Pop>
           <h1 className="text-3xl font-semibold tracking-tight md:text-4xl">RUN REPORT</h1>
         </div>
         <p className="text-sm text-ink-soft md:text-base">
@@ -182,14 +185,7 @@ export function AdaptiveReportView({ report, markedIds, onStart, onHome }: Adapt
                 <div key={row.d} className="flex items-center gap-3">
                   <span className="w-20 shrink-0 text-xs font-medium">{DIFF_LABELS[row.d] ?? `Level ${row.d}`}</span>
                   <span className="text-[11px] tabular-nums text-ink-soft">{'●'.repeat(Math.max(1, Math.min(4, row.d)))}</span>
-                  <div className="h-1.5 min-w-0 flex-1 overflow-hidden rounded-full bg-surface-2">
-                    <motion.div
-                      className="h-full rounded-full bg-gradient-to-r from-primary to-[oklch(0.62_0.105_158)]"
-                      initial={{ width: 0 }}
-                      animate={{ width: `${pct}%` }}
-                      transition={{ duration: 0.9, ease: EASE }}
-                    />
-                  </div>
+                  <SpringBar value={pct} className="min-w-0 flex-1" />
                   <span className="w-10 shrink-0 text-right text-xs tabular-nums text-ink-soft">
                     {row.correct}/{row.total}
                   </span>

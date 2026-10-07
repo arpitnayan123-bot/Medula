@@ -25,6 +25,7 @@ import type { ProgressPayload, SubjectSummary } from '@/lib/types'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { EmptyState, PageHeader } from '@/components/primitives/kit'
+import { Stagger, StaggerItem } from '@/components/primitives/motion'
 import { cn } from '@/lib/utils'
 
 const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1]
@@ -340,7 +341,7 @@ function SubjectCard({ s, maxWeight, index }: { s: ProgressPayload['subjects'][n
   const status = STATUS_META[s.status]
   return (
     <motion.article
-      className="clay rounded-2xl p-4 md:p-5"
+      className="clay h-full rounded-2xl p-4 md:p-5"
       initial={{ opacity: 0, y: 14 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: '-40px' }}
@@ -460,14 +461,15 @@ export function ProgressView() {
 
       {/* 1 · Top stat row */}
       <Reveal index={1}>
-        <div
+        <Stagger
           className={cn(
             'grid grid-cols-1 gap-3 sm:grid-cols-2',
             clinical !== null ? 'md:grid-cols-4' : 'md:grid-cols-3',
           )}
         >
           {/* Mastery ring */}
-          <section className="clay flex flex-col items-center rounded-2xl p-5">
+          <StaggerItem className="h-full">
+            <section className="clay flex h-full flex-col items-center rounded-2xl p-5">
             <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-ink-soft">Mastery</p>
             <div className="my-3">
               <ProgressRing value={overall.mastery} size={132} stroke={11} gradientId="ring-progress-mastery">
@@ -478,9 +480,11 @@ export function ProgressView() {
             </div>
             <p className="text-center text-[11px] italic text-muted-foreground">learning analytics indicator</p>
           </section>
+          </StaggerItem>
 
           {/* Accuracy + trend */}
-          <section className="clay flex flex-col rounded-2xl p-5">
+          <StaggerItem className="h-full">
+          <section className="clay flex h-full flex-col rounded-2xl p-5">
             <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-ink-soft">Accuracy</p>
             <p className="mt-3 text-5xl font-semibold leading-none tabular-nums tracking-tight">
               <AnimatedNumber value={overall.accuracy} />%
@@ -496,20 +500,24 @@ export function ProgressView() {
               {overall.trend}% vs last week
             </span>
           </section>
+          </StaggerItem>
 
           {/* Clinical questions — optional */}
           {clinical !== null && (
-            <section className="clay flex flex-col rounded-2xl p-5">
+            <StaggerItem className="h-full">
+              <section className="clay flex h-full flex-col rounded-2xl p-5">
               <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-ink-soft">Clinical questions</p>
               <p className="mt-3 text-5xl font-semibold leading-none tabular-nums tracking-tight">
                 <AnimatedNumber value={clinical} />%
               </p>
               <p className="mt-auto text-xs text-ink-soft">accuracy on vignette-style questions</p>
             </section>
+            </StaggerItem>
           )}
 
           {/* Consistency */}
-          <section className="clay flex flex-col rounded-2xl p-5">
+          <StaggerItem className="h-full">
+          <section className="clay flex h-full flex-col rounded-2xl p-5">
             <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-ink-soft">Consistency</p>
             <p className="mt-3 text-5xl font-semibold leading-none tabular-nums tracking-tight">
               <AnimatedNumber value={weeklyReport.consistency} />%
@@ -529,7 +537,8 @@ export function ProgressView() {
               <p className="mt-1.5 text-xs text-ink-soft">{activeDays} of 7 active days this week</p>
             </div>
           </section>
-        </div>
+          </StaggerItem>
+        </Stagger>
       </Reveal>
 
       {/* 2 · Study heatmap */}

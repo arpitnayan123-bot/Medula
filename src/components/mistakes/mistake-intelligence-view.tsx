@@ -7,7 +7,6 @@
 // attempt feed, knowledge states and error tags — nothing estimated.
 
 import { useCallback, useEffect, useState } from 'react'
-import { motion } from 'framer-motion'
 import {
   AlertTriangle, Bandage, BookOpen, ChevronLeft, ChevronRight, Compass,
   FlaskConical, Gauge, HeartCrack, Layers, RefreshCcw, Repeat2,
@@ -25,10 +24,9 @@ import { Button } from '@/components/ui/button'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Badge } from '@/components/ui/badge'
+import { Stagger, StaggerItem } from '@/components/primitives/motion'
 import { cn } from '@/lib/utils'
 import { MistakeDetail } from './mistake-detail'
-
-const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1]
 
 type Phase = 'home' | 'review' | 'detail'
 type LoadState = 'loading' | 'ready' | 'error'
@@ -268,19 +266,17 @@ function MistakeHome(props: {
       {status === 'ready' && genome && (
         <>
           {/* Genome strip */}
-          <motion.section
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4, ease: EASE }}
-            className="grid grid-cols-2 gap-2 sm:grid-cols-5"
+          <section
             aria-label="Mistake genome totals"
           >
-            <Stat value={genome.totals.open} label="open mistakes" tone="crit" />
-            <Stat value={genome.totals.repeated} label="missed 2×+" tone="warn" />
-            <Stat value={genome.totals.todayCount} label="made today" tone="warn" />
-            <Stat value={genome.totals.resolvedThisWeek} label="fixed this week" tone="ok" />
-            <Stat value={`${genome.totals.mistakeRate}%`} label="wrong-answer rate" tone="plain" />
-          </motion.section>
+            <Stagger className="grid grid-cols-2 gap-2 sm:grid-cols-5">
+              <StaggerItem><Stat value={genome.totals.open} label="open mistakes" tone="crit" /></StaggerItem>
+              <StaggerItem><Stat value={genome.totals.repeated} label="missed 2×+" tone="warn" /></StaggerItem>
+              <StaggerItem><Stat value={genome.totals.todayCount} label="made today" tone="warn" /></StaggerItem>
+              <StaggerItem><Stat value={genome.totals.resolvedThisWeek} label="fixed this week" tone="ok" /></StaggerItem>
+              <StaggerItem><Stat value={`${genome.totals.mistakeRate}%`} label="wrong-answer rate" tone="plain" /></StaggerItem>
+            </Stagger>
+          </section>
 
           {genome.insufficientData && (
             <p className="rounded-xl border border-line bg-surface-2/60 px-4 py-3 text-sm text-ink-soft" role="status">
@@ -295,7 +291,7 @@ function MistakeHome(props: {
               <button
                 type="button"
                 onClick={() => onOpenDetail(genome.doNext!.recordId)}
-                className="w-full rounded-2xl border border-sev-crit/30 bg-sev-crit/5 p-4 text-left transition-colors hover:border-sev-crit/60 md:p-5"
+                className="clay-hover w-full rounded-2xl border border-sev-crit/30 bg-sev-crit/5 p-4 text-left transition-all hover:border-sev-crit/60 md:p-5"
               >
                 <div className="mb-2 flex flex-wrap items-center gap-2">
                   <Badge className="border-sev-crit/40 bg-sev-crit/10 text-sev-crit">{genome.doNext.priority} priority</Badge>
@@ -371,7 +367,7 @@ function Stat({ value, label, tone }: { value: number | string; label: string; t
   const color =
     tone === 'crit' ? 'text-sev-crit' : tone === 'warn' ? 'text-sev-warn' : tone === 'ok' ? 'text-sev-ok' : 'text-foreground'
   return (
-    <div className="rounded-xl border border-line bg-surface-2/40 px-3 py-2.5">
+    <div className="clay-in rounded-xl px-3 py-2.5">
       <p className={cn('text-xl font-bold leading-none md:text-2xl', color)}>{value}</p>
       <p className="mt-1 text-[11px] leading-tight text-ink-soft">{label}</p>
     </div>
@@ -394,7 +390,7 @@ function PatternCardShell({ pattern: p, onAction, onOpenReview }: {
 }) {
   const Icon = PATTERN_ICONS[p.kind]
   return (
-    <div className="rounded-2xl border border-line bg-surface-2/30 p-4">
+    <div className="clay rounded-2xl p-4">
       <div className="flex items-start gap-3">
         <span className="grid size-9 shrink-0 place-items-center rounded-lg bg-primary/10">
           <Icon className="size-4 text-primary" />
@@ -548,15 +544,17 @@ function MistakeReview(props: {
       {status === 'ready' && list && list.rows.length > 0 && (
         <>
           <p className="text-xs text-ink-soft" role="status">{list.total} mistake{list.total === 1 ? '' : 's'} · sorted by {mode === 'repeated' ? 'repetitions' : mode === 'today' ? 'recency' : 'priority'}</p>
-          <ul className="space-y-2.5">
-            {list.rows.map((r, i) => (
-              <li key={r.recordId}>
-                <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3, delay: Math.min(i * 0.03, 0.3), ease: EASE }}>
-                  <MistakeRowCard row={r} onOpen={() => onOpenDetail(r.recordId)} />
-                </motion.div>
-              </li>
-            ))}
-          </ul>
+          <Stagger>
+            <ul className="space-y-2.5">
+              {list.rows.map((r) => (
+                <li key={r.recordId}>
+                  <StaggerItem>
+                    <MistakeRowCard row={r} onOpen={() => onOpenDetail(r.recordId)} />
+                  </StaggerItem>
+                </li>
+              ))}
+            </ul>
+          </Stagger>
         </>
       )}
     </div>

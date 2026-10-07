@@ -14,6 +14,7 @@ import { api } from '@/lib/api'
 import { toast } from '@/hooks/use-toast'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
+import { Pop, Stagger, StaggerItem } from '@/components/primitives/motion'
 import { cn } from '@/lib/utils'
 import {
   Bar, ErrorState, FootNote, GAMIFY_ICON_MAP, useAccent, useGamifyPayload,
@@ -98,6 +99,8 @@ export function GamifyAchievements() {
 
   const unlockedCount = list.filter((a) => a.unlocked).length
   const currentFeatured = featured ?? data.featured
+  // quiet celebration: the first two unlocked badges pop in (rest stay calm)
+  const popIds = new Set(list.filter((a) => a.unlocked).slice(0, 2).map((a) => a.id))
 
   return (
     <div className="space-y-4">
@@ -118,11 +121,13 @@ export function GamifyAchievements() {
       {grouped.map((g) => (
         <section key={g.group} aria-label={GROUP_LABEL[g.group]}>
           <p className="mb-2 px-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-ink-soft">{GROUP_LABEL[g.group]}</p>
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+          <Stagger className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
             {g.items.map((a) => (
-              <AchievementCard key={a.id} a={a} pending={pendingId === a.id} onToggle={() => toggleFeature(a)} />
+              <StaggerItem key={a.id} className="h-full">
+                <AchievementCard a={a} pending={pendingId === a.id} pop={popIds.has(a.id)} onToggle={() => toggleFeature(a)} />
+              </StaggerItem>
             ))}
-          </div>
+          </Stagger>
         </section>
       ))}
 
@@ -134,14 +139,26 @@ export function GamifyAchievements() {
   )
 }
 
-function AchievementCard({ a, pending, onToggle }: {
+function AchievementCard({ a, pending, pop, onToggle }: {
   a: GamifyAchievementView & { featured: boolean }
   pending: boolean
+  pop: boolean
   onToggle: () => void
 }) {
   const accent = useAccent()
   const Icon = GAMIFY_ICON_MAP[a.icon] ?? Award
   const unlocked = a.unlocked
+  const iconTile = (
+    <span
+      className={cn(
+        'grid size-10 shrink-0 place-items-center rounded-xl',
+        unlocked ? accent.chipBg : 'bg-surface-2',
+      )}
+      aria-hidden
+    >
+      <Icon className={cn('size-5', unlocked ? accent.chipText : 'text-ink-soft/60')} />
+    </span>
+  )
 
   return (
     <button
@@ -151,7 +168,7 @@ function AchievementCard({ a, pending, onToggle }: {
       aria-pressed={a.featured}
       title={unlocked ? `Unlocked${a.earnedAt ? ` · ${new Date(a.earnedAt).toLocaleDateString('en-IN')}` : ''} — tap to ${a.featured ? 'un-feature' : 'feature'}` : `${a.progressNote ?? 'In progress'} — tap to ${a.featured ? 'un-feature' : 'feature'}`}
       className={cn(
-        'group relative flex min-h-44 flex-col items-start gap-2 rounded-2xl border p-3.5 text-left outline-none ring-primary/50 transition-all focus-visible:ring-2 disabled:opacity-70',
+        'group relative flex h-full min-h-44 flex-col items-start gap-2 rounded-2xl border p-3.5 text-left outline-none ring-primary/50 transition-all focus-visible:ring-2 disabled:opacity-70',
         unlocked
           ? cn('clay', a.featured && accent.chipBorder)
           : 'border-dashed border-line bg-surface-2/30 hover:border-line',
@@ -168,15 +185,7 @@ function AchievementCard({ a, pending, onToggle }: {
         <Star className={cn('size-3.5', a.featured && 'fill-gold')} />
       </span>
 
-      <span
-        className={cn(
-          'grid size-10 shrink-0 place-items-center rounded-xl',
-          unlocked ? accent.chipBg : 'bg-surface-2',
-        )}
-        aria-hidden
-      >
-        <Icon className={cn('size-5', unlocked ? accent.chipText : 'text-ink-soft/60')} />
-      </span>
+      {pop ? <Pop className="shrink-0" delay={0.35}>{iconTile}</Pop> : iconTile}
 
       <span className={cn('text-xs font-semibold leading-snug', !unlocked && 'text-ink-soft')}>
         {a.title}

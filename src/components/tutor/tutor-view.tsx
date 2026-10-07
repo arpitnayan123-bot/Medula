@@ -41,6 +41,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sh
 import { Textarea } from '@/components/ui/textarea'
 import { useToast } from '@/hooks/use-toast'
 import type { AttemptResult, QuestionClient, TutorContextPayload, TutorDepth, TutorMode } from '@/lib/types'
+import { Pop, Stagger, StaggerItem } from '@/components/primitives/motion'
 import { cn } from '@/lib/utils'
 
 const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1]
@@ -1372,19 +1373,20 @@ export function TutorView() {
                   : 'Pick a mode above, or start from your measured weak spots:'}
               </p>
             </div>
-            <div className="grid w-full max-w-lg grid-cols-1 gap-2 sm:grid-cols-2">
+            <Stagger className="grid w-full max-w-lg grid-cols-1 gap-2 sm:grid-cols-2">
               {suggestions.slice(0, 6).map((s) => (
-                <button
-                  key={s.label}
-                  type="button"
-                  onClick={s.run}
-                  className="flex min-h-11 items-center gap-2.5 rounded-xl border border-line bg-surface-2 px-3.5 py-2.5 text-left text-xs font-medium text-ink-soft transition-all hover:border-primary/45 hover:text-foreground"
-                >
-                  <s.icon className="size-4 shrink-0 text-primary" aria-hidden />
-                  <span className="min-w-0 truncate">{s.label}</span>
-                </button>
+                <StaggerItem key={s.label}>
+                  <button
+                    type="button"
+                    onClick={s.run}
+                    className="flex min-h-11 items-center gap-2.5 rounded-xl border border-line bg-surface-2 px-3.5 py-2.5 text-left text-xs font-medium text-ink-soft transition-all hover:border-primary/45 hover:text-foreground"
+                  >
+                    <s.icon className="size-4 shrink-0 text-primary" aria-hidden />
+                    <span className="min-w-0 truncate">{s.label}</span>
+                  </button>
+                </StaggerItem>
               ))}
-            </div>
+            </Stagger>
           </div>
         )}
 
@@ -1436,9 +1438,11 @@ export function TutorView() {
                   {m.content.includes('**Drill complete') ? (
                     <div className="clay-in rounded-2xl border-gold/50! px-4 py-3">
                       <div className="flex items-start gap-2.5">
-                        <span className="grid size-7 shrink-0 place-items-center rounded-lg bg-gold/25 text-gold" aria-hidden>
-                          <Flag className="size-4" />
-                        </span>
+                        <Pop className="mt-0.5" delay={0.15}>
+                          <span className="grid size-7 shrink-0 place-items-center rounded-lg bg-gold/25 text-gold" aria-hidden>
+                            <Flag className="size-4" />
+                          </span>
+                        </Pop>
                         <div className="min-w-0 text-sm leading-relaxed [&_strong]:font-semibold">
                           <Markdown components={MD_COMPONENTS}>{m.content.replace(/^\u{1F3C1}\s*/u, '')}</Markdown>
                         </div>

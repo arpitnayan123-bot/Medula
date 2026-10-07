@@ -15,6 +15,8 @@ import { api } from '@/lib/api'
 import { useAppStore } from '@/lib/store'
 import { Button } from '@/components/ui/button'
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
+import { ScrollReveal, SpringNumber, Stagger, StaggerItem } from '@/components/primitives/motion'
+import { OrbitRings } from '@/components/primitives/scenery'
 import { cn } from '@/lib/utils'
 import {
   DeltaIcon, EmptyState, FootNote, MicroLabel, MOTIVATION_KIND_ICON, SectionCard, SkeletonRow,
@@ -37,10 +39,10 @@ export function GamifyOverview({ home, stale, reload }: {
   return (
     <div className="space-y-4">
       <GamifyHero home={home} />
-      <GamifyStreaks home={home} />
+      <ScrollReveal><GamifyStreaks home={home} /></ScrollReveal>
       <MotivationCards motivation={home.motivation} />
-      <RecentLedger recent={home.recent} />
-      <XpTableCard recoveryRule={home.streaks.recoveryRule} />
+      <ScrollReveal><RecentLedger recent={home.recent} /></ScrollReveal>
+      <ScrollReveal><XpTableCard recoveryRule={home.streaks.recoveryRule} /></ScrollReveal>
       <TotalsStrip home={home} />
 
       {/* measured basis + refresh — quiet trust line */}
@@ -64,8 +66,9 @@ function GamifyHero({ home }: { home: GamifyHomePayload }) {
   const delta = friendlyDelta(home.weekXp, home.lastWeekXp)
   const t = home.today
   return (
-    <section className="warm-card rounded-2xl p-5 md:p-6">
-      <div className="flex flex-col items-center gap-6 sm:flex-row sm:items-center sm:gap-7">
+    <section className="warm-card relative rounded-2xl p-5 md:p-6">
+      <OrbitRings className="rounded-2xl opacity-60" />
+      <div className="relative z-10 flex flex-col items-center gap-6 sm:flex-row sm:items-center sm:gap-7">
         <div className="flex flex-col items-center">
           <XpRing
             level={home.level.level}
@@ -83,11 +86,13 @@ function GamifyHero({ home }: { home: GamifyHomePayload }) {
             {home.level.tier} · Level {home.level.level}
           </h1>
           <p className="text-sm text-ink-soft">
-            <span className={cn('font-semibold tabular-nums', accent.text)}>{home.level.xpToNext} XP</span> to next level
+            <span className={cn('font-semibold tabular-nums', accent.text)}>
+              <SpringNumber value={home.level.xpToNext} /> XP
+            </span>{' '}to next level
           </p>
           <div className="flex flex-wrap items-center justify-center gap-2 sm:justify-start">
             <span className="inline-flex items-center gap-1.5 rounded-full border border-line bg-surface-2/60 px-3 py-1.5 text-[11px]">
-              <span className="font-semibold tabular-nums">{home.weekXp} XP</span>
+              <span className="font-semibold tabular-nums"><SpringNumber value={home.weekXp} /> XP</span>
               <span className="text-ink-soft">this week</span>
             </span>
             {delta && (
@@ -101,7 +106,7 @@ function GamifyHero({ home }: { home: GamifyHomePayload }) {
       </div>
 
       {/* today — measured chips; an open day is an invitation, never a nudge */}
-      <div className="mt-5 border-t border-line pt-4">
+      <div className="relative z-10 mt-5 border-t border-line pt-4">
         {t.active ? (
           <div className="flex flex-wrap items-center justify-center gap-2 sm:justify-start">
             <TodayChip icon={CircleHelp} value={t.mcqs} label={t.mcqs === 1 ? 'MCQ' : 'MCQs'} />
@@ -216,18 +221,20 @@ function MotivationCards({ motivation }: { motivation: GamifyMotivationCard[] })
   }
 
   return (
-    <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+    <Stagger className="grid grid-cols-1 gap-3 sm:grid-cols-2">
       {motivation.map((card) => (
-        <MotivationCard key={card.id} card={card} onAction={() => handOff(card)} />
+        <StaggerItem key={card.id} className="h-full">
+          <MotivationCard card={card} onAction={() => handOff(card)} />
+        </StaggerItem>
       ))}
-    </div>
+    </Stagger>
   )
 }
 
 function MotivationCard({ card, onAction }: { card: GamifyMotivationCard; onAction: () => void }) {
   const Icon = MOTIVATION_KIND_ICON[card.kind] ?? Sparkles
   return (
-    <section className="clay flex flex-col gap-2.5 rounded-2xl p-4">
+    <section className="clay flex h-full flex-col gap-2.5 rounded-2xl p-4">
       <header className="flex items-start gap-2.5">
         <span className="grid size-8 shrink-0 place-items-center rounded-xl bg-surface-2" aria-hidden>
           <Icon className={cn('size-4', MOTIVATION_TONE[card.kind])} />
@@ -356,13 +363,13 @@ function TotalsStrip({ home }: { home: GamifyHomePayload }) {
       icon={TrendingUp}
       description="Lifetime totals from your real activity — quiet numbers, no vanity counters."
     >
-      <div className="flex flex-wrap gap-2">
-        <StatChip value={t.mcqsSolved.toLocaleString('en-IN')} label="MCQs solved" />
-        <StatChip value={t.mocksSubmitted.toLocaleString('en-IN')} label="mocks submitted" />
-        <StatChip value={t.revisionSessions.toLocaleString('en-IN')} label="revision sessions" />
-        <StatChip value={t.topicsMastered.toLocaleString('en-IN')} label="topics mastered" />
-        <StatChip value={t.mistakesResolved.toLocaleString('en-IN')} label="mistakes fixed" />
-      </div>
+      <Stagger className="flex flex-wrap gap-2">
+        <StaggerItem><StatChip value={t.mcqsSolved.toLocaleString('en-IN')} label="MCQs solved" /></StaggerItem>
+        <StaggerItem><StatChip value={t.mocksSubmitted.toLocaleString('en-IN')} label="mocks submitted" /></StaggerItem>
+        <StaggerItem><StatChip value={t.revisionSessions.toLocaleString('en-IN')} label="revision sessions" /></StaggerItem>
+        <StaggerItem><StatChip value={t.topicsMastered.toLocaleString('en-IN')} label="topics mastered" /></StaggerItem>
+        <StaggerItem><StatChip value={t.mistakesResolved.toLocaleString('en-IN')} label="mistakes fixed" /></StaggerItem>
+      </Stagger>
     </SectionCard>
   )
 }

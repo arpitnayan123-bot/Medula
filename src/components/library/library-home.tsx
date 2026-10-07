@@ -13,6 +13,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { cn } from '@/lib/utils'
 import { PageHeader } from '@/components/primitives/kit'
+import { ContourAtlas } from '@/components/primitives/scenery'
 import {
   CardGrid, DisclaimerFootnote, KindIcon, LibraryCard, MicroLabel, Reveal,
   StatChip, kindLabel,
@@ -37,8 +38,11 @@ export function LibraryHomeScreen({
 
   return (
     <div className="space-y-9">
-      {/* ── hero ── */}
+      {/* ── hero (scenery: the Atlas contour signature, faint behind the header) ── */}
       <Reveal index={0}>
+        <div className="relative">
+          <ContourAtlas opacity={0.4} />
+          <div className="relative z-10">
         <PageHeader
           eyebrow={
             <>
@@ -83,6 +87,8 @@ export function LibraryHomeScreen({
           <StatChip label="external curated" value={stats.external} icon={ExternalLink} />
           <StatChip label="verified sources" value={stats.verifiedExternal} icon={Sparkles} />
           <StatChip label="saved" value={stats.saved} icon={BookMarked} />
+        </div>
+          </div>
         </div>
       </Reveal>
 

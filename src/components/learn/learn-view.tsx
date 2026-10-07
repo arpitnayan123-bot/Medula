@@ -29,6 +29,8 @@ import { Progress } from '@/components/ui/progress'
 import {
   AnimatedNumber, EmptyState, MicroLabel, Reveal, SectionTitle, SubjectGlyph,
 } from '@/components/primitives/kit'
+import { ScrollReveal, Stagger, StaggerItem } from '@/components/primitives/motion'
+import { ContourAtlas } from '@/components/primitives/scenery'
 import { cn } from '@/lib/utils'
 
 // ── presentation-only helpers ────────────────────────────────────────────────
@@ -198,6 +200,7 @@ export function LearnView() {
     <div className="mx-auto max-w-6xl space-y-12 p-4 md:space-y-16 md:p-6">
       {/* ── 1 · HERO ─────────────────────────────────────────────────────── */}
       <section aria-labelledby="learn-hero-title" className="relative">
+        <ContourAtlas className="opacity-50" />
         {!reduceMotion && (
           <div aria-hidden className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
             <motion.div
@@ -216,7 +219,7 @@ export function LearnView() {
         {homeError && !home ? (
           <InlineError message="Could not load the knowledge engine overview." onRetry={loadHome} />
         ) : !home ? (
-          <div className="space-y-4">
+          <div className="relative z-10 space-y-4">
             <Skeleton className="h-3.5 w-40" />
             <Skeleton className="h-14 w-56 md:h-16" />
             <Skeleton className="h-4 w-full max-w-md" />
@@ -225,7 +228,7 @@ export function LearnView() {
             </div>
           </div>
         ) : (
-          <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }}>
+          <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} className="relative z-10">
             <MicroLabel>Knowledge engine</MicroLabel>
             <h1 id="learn-hero-title" className="mt-2 font-display text-5xl font-semibold tracking-tight md:text-6xl">
               <span className="ink-gradient">LEARN</span>
@@ -491,16 +494,13 @@ export function LearnView() {
                   <div className="h-px flex-1 bg-line" aria-hidden />
                 </div>
 
-                <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                  {subjects.map((s, i) => {
+                <Stagger className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                  {subjects.map((s) => {
                     const dimmed = activeSystem !== null && !s.systems.includes(activeSystem)
                     return (
-                      <motion.button
-                        key={s.id}
+                      <StaggerItem key={s.id}>
+                      <button
                         type="button"
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: Math.min(i * 0.03, 0.2) }}
                         onClick={() => openLearn('subject', s.id)}
                         aria-label={`Open ${s.name} study page`}
                         className={cn(
@@ -523,10 +523,11 @@ export function LearnView() {
                           {s.neetWeight > 0 && <span className="rounded-full border border-line px-1.5 py-0.5">{s.neetWeight}% NEET-PG</span>}
                         </div>
                         <div className="mt-3"><MasteryBar value={s.mastery} /></div>
-                      </motion.button>
+                      </button>
+                      </StaggerItem>
                     )
                   })}
-                </div>
+                </Stagger>
               </Reveal>
             )
           })
@@ -623,6 +624,7 @@ export function LearnView() {
 
       {/* ── 7 · AI IN MEDICINE + RESEARCH ───────────────────────────────── */}
       <section aria-label="AI in medicine" ref={aiBandRef}>
+        <ScrollReveal>
         <div className="podium rounded-3xl p-5 md:p-7">
             <p className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.3em] text-ink-soft">
               <Sparkles className="size-3.5 text-gold" aria-hidden /> Frontier
@@ -679,11 +681,13 @@ export function LearnView() {
               )}
             </div>
         </div>
+        </ScrollReveal>
       </section>
 
       {/* ── 8 · GLOBAL PERSPECTIVE ───────────────────────────────────────── */}
       <section aria-label="Explore the world">
         <SectionHeader icon={Globe2} title="Explore the world" />
+        <ScrollReveal>
         <Card className="clay mt-4 rounded-2xl">
           <CardContent className="p-5 md:p-6">
             <p className="max-w-2xl text-sm leading-relaxed text-ink-soft md:text-[15px]">
@@ -710,6 +714,7 @@ export function LearnView() {
             </Button>
           </CardContent>
         </Card>
+        </ScrollReveal>
       </section>
 
       {/* ── 9 · RECENTLY STUDIED ─────────────────────────────────────────── */}

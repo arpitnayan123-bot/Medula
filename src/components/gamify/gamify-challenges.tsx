@@ -16,6 +16,7 @@ import {
   Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle,
 } from '@/components/ui/dialog'
 import { Skeleton } from '@/components/ui/skeleton'
+import { Stagger, StaggerItem } from '@/components/primitives/motion'
 import { cn } from '@/lib/utils'
 import {
   Bar, EmptyState, ErrorState, FootNote, GAMIFY_ICON_MAP, useAccent, useGamifyPayload,
@@ -96,7 +97,13 @@ export function GamifyChallenges() {
       {active.length > 0 && (
         <section aria-label="Active challenges" className="space-y-3">
           <p className="px-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-ink-soft">Active — {active.length}</p>
-          {active.map((c) => <ActiveChallengeCard key={c.id} c={c} busy={busyId === c.id} onAbandon={() => setAbandonTarget(c)} />)}
+          <Stagger className="space-y-3">
+            {active.map((c) => (
+              <StaggerItem key={c.id}>
+                <ActiveChallengeCard c={c} busy={busyId === c.id} onAbandon={() => setAbandonTarget(c)} />
+              </StaggerItem>
+            ))}
+          </Stagger>
         </section>
       )}
 
@@ -104,9 +111,13 @@ export function GamifyChallenges() {
       {completed.length > 0 && (
         <section aria-label="Completed challenges" className="space-y-3">
           <p className="px-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-ink-soft">Completed — {completed.length}</p>
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-            {completed.map((c) => <CompletedBadgeCard key={c.id} c={c} />)}
-          </div>
+          <Stagger className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+            {completed.map((c) => (
+              <StaggerItem key={c.id} className="h-full">
+                <CompletedBadgeCard c={c} />
+              </StaggerItem>
+            ))}
+          </Stagger>
         </section>
       )}
 
@@ -120,11 +131,13 @@ export function GamifyChallenges() {
             hint="New suggestions appear as your measured activity changes — nothing is pushed before it's useful."
           />
         ) : (
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+          <Stagger className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             {catalog.map((c) => (
-              <CatalogCard key={c.id} c={c} busy={busyId === c.id} onEnroll={() => act(c.id, 'enroll')} />
+              <StaggerItem key={c.id} className="h-full">
+                <CatalogCard c={c} busy={busyId === c.id} onEnroll={() => act(c.id, 'enroll')} />
+              </StaggerItem>
             ))}
-          </div>
+          </Stagger>
         )}
       </section>
 
@@ -184,7 +197,7 @@ function CompletedBadgeCard({ c }: { c: GamifyChallengeView }) {
   const accent = useAccent()
   const Icon = GAMIFY_ICON_MAP[c.icon] ?? Award
   return (
-    <div className="clay flex items-center gap-3 rounded-2xl p-4">
+    <div className="clay flex h-full items-center gap-3 rounded-2xl p-4">
       <span className={cn('grid size-10 shrink-0 place-items-center rounded-xl', accent.chipBg)} aria-hidden>
         <Icon className={cn('size-5', accent.chipText)} />
       </span>
@@ -253,7 +266,7 @@ function CatalogCard({ c, busy, onEnroll }: { c: GamifyChallengeView; busy: bool
   const accent = useAccent()
   const Icon = GAMIFY_ICON_MAP[c.icon] ?? Award
   return (
-    <article className="clay flex flex-col gap-2.5 rounded-2xl p-4">
+    <article className="clay flex h-full flex-col gap-2.5 rounded-2xl p-4">
       <div className="flex items-start gap-3">
         <span className={cn('grid size-10 shrink-0 place-items-center rounded-xl', accent.chipBg)} aria-hidden>
           <Icon className={cn('size-5', accent.chipText)} />

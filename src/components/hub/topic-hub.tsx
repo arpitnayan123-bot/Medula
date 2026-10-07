@@ -26,6 +26,7 @@ import { LEARN_STATE_COLOR, ProgressMark } from '@/components/learn/learn-study'
 import { useAppStore } from '@/lib/store'
 import type { HubTopicPayload, LearnStatus } from '@/lib/types'
 import { cn } from '@/lib/utils'
+import { Stagger, StaggerItem } from '@/components/primitives/motion'
 import { LIVE_SCENES, type SceneId } from '@/components/understand/live-scenes'
 import { ALL_UNDERSTAND } from '@/lib/understand-registry'
 
@@ -329,20 +330,26 @@ function OverviewSection({ data, onGo, onMark, onOpenConcept }: {
       )}
 
       {/* start-here row */}
-      <div className="grid gap-2 sm:grid-cols-3">
-        <StartCard
-          icon={BookOpen} label="Understand it" sub={firstLesson ? 'Open the first lesson' : 'Explore the concepts'}
-          enabled onClick={() => (firstLesson ? onOpenConcept(firstLesson.id) : onGo('learn'))}
-        />
-        <StartCard
-          icon={GraduationCap} label="Practice it" sub={data.practice.questions > 0 ? `${data.practice.questions} questions ready` : 'questions coming soon'}
-          enabled={data.practice.questions > 0} onClick={() => onGo('practice')}
-        />
-        <StartCard
-          icon={RotateCcw} label="Revise it" sub={data.atGlance.dueCards > 0 ? `${data.atGlance.dueCards} cards due now` : `${data.revise.flashcards} flashcards`}
-          enabled={data.revise.flashcards > 0} onClick={() => onGo('revise')}
-        />
-      </div>
+      <Stagger className="grid gap-2 sm:grid-cols-3">
+        <StaggerItem>
+          <StartCard
+            icon={BookOpen} label="Understand it" sub={firstLesson ? 'Open the first lesson' : 'Explore the concepts'}
+            enabled onClick={() => (firstLesson ? onOpenConcept(firstLesson.id) : onGo('learn'))}
+          />
+        </StaggerItem>
+        <StaggerItem>
+          <StartCard
+            icon={GraduationCap} label="Practice it" sub={data.practice.questions > 0 ? `${data.practice.questions} questions ready` : 'questions coming soon'}
+            enabled={data.practice.questions > 0} onClick={() => onGo('practice')}
+          />
+        </StaggerItem>
+        <StaggerItem>
+          <StartCard
+            icon={RotateCcw} label="Revise it" sub={data.atGlance.dueCards > 0 ? `${data.atGlance.dueCards} cards due now` : `${data.revise.flashcards} flashcards`}
+            enabled={data.revise.flashcards > 0} onClick={() => onGo('revise')}
+          />
+        </StaggerItem>
+      </Stagger>
 
       {/* high-yield teaser */}
       <HighYieldTeaser data={data} onGo={onGo} />
@@ -359,7 +366,7 @@ function StartCard({ icon: Icon, label, sub, enabled, onClick }: {
       disabled={!enabled}
       onClick={onClick}
       className={cn(
-        'flex min-w-0 items-center gap-3 rounded-2xl clay p-3.5 text-left transition-all',
+        'flex h-full min-w-0 w-full items-center gap-3 rounded-2xl clay p-3.5 text-left transition-all',
         enabled ? 'hover:border-primary/45 hover:shadow-md hover:shadow-primary/5' : 'opacity-55',
       )}
     >
@@ -418,21 +425,22 @@ function LearnSection({ data, onOpenConcept }: {
             {g.label}
             <span className="rounded-full bg-surface-2 px-2 py-0.5 text-[10px] font-medium tabular-nums text-ink-soft">{g.concepts.length}</span>
           </h3>
-          <div className="grid gap-2 sm:grid-cols-2">
+          <Stagger className="grid gap-2 sm:grid-cols-2">
             {g.concepts.map((cid) => {
               const c = conceptById.get(cid)
               if (!c) return null
               const isFocus = data.focusConcept?.id === c.id
               return (
-                <ConceptHubCard
-                  key={c.id}
-                  concept={c}
-                  isFocus={isFocus}
-                  onOpen={() => onOpenConcept(c.id)}
-                />
+                <StaggerItem key={c.id} className="min-w-0">
+                  <ConceptHubCard
+                    concept={c}
+                    isFocus={isFocus}
+                    onOpen={() => onOpenConcept(c.id)}
+                  />
+                </StaggerItem>
               )
             })}
-          </div>
+          </Stagger>
         </div>
       ))}
     </div>
@@ -1063,25 +1071,26 @@ function ConnectedSection({ data, onOpenHub }: {
     <div className="space-y-5">
       <SectionIntro title="Connected knowledge" sub="How this topic hooks into the rest of medicine — open any as its own hub." />
       {data.connected.length > 0 ? (
-        <div className="grid gap-2 sm:grid-cols-2">
+        <Stagger className="grid gap-2 sm:grid-cols-2">
           {data.connected.map((ct) => (
-            <button
-              key={ct.id}
-              type="button"
-              onClick={() => onOpenHub(ct.id)}
-              className="group min-w-0 rounded-xl clay p-3.5 text-left transition-all clay-hover"
-            >
-              <span className="flex items-center gap-2">
-                <span className="size-2 shrink-0 rounded-full" style={{ backgroundColor: ct.subjectColor }} aria-hidden />
-                <span className="truncate text-sm font-medium group-hover:text-primary">{ct.name}</span>
-                <ArrowRight className="ml-auto size-3.5 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5" />
-              </span>
-              <span className="mt-1 block truncate text-[11px] text-ink-soft">
-                {ct.subjectName} — {ct.reason}
-              </span>
-            </button>
+            <StaggerItem key={ct.id}>
+              <button
+                type="button"
+                onClick={() => onOpenHub(ct.id)}
+                className="group h-full min-w-0 rounded-xl clay p-3.5 text-left transition-all clay-hover"
+              >
+                <span className="flex items-center gap-2">
+                  <span className="size-2 shrink-0 rounded-full" style={{ backgroundColor: ct.subjectColor }} aria-hidden />
+                  <span className="truncate text-sm font-medium group-hover:text-primary">{ct.name}</span>
+                  <ArrowRight className="ml-auto size-3.5 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5" />
+                </span>
+                <span className="mt-1 block truncate text-[11px] text-ink-soft">
+                  {ct.subjectName} — {ct.reason}
+                </span>
+              </button>
+            </StaggerItem>
           ))}
-        </div>
+        </Stagger>
       ) : (
         <p className="rounded-xl clay-in p-4 text-xs text-ink-soft">
           Cross-links appear here as this topic's concept edges grow.
@@ -1104,28 +1113,29 @@ function SectionIntro({ title, sub }: { title: string; sub: string }) {
 function ResourceGrid({ resources }: { resources: HubTopicPayload['watch']['external'] }) {
   if (resources.length === 0) return null
   return (
-    <div className="grid gap-2 sm:grid-cols-2">
+    <Stagger className="grid gap-2 sm:grid-cols-2">
       {resources.map((r) => (
-        <a
-          key={r.url}
-          href={r.url}
-          target="_blank"
-          rel="noreferrer noopener"
-          className="group min-w-0 rounded-xl clay p-3.5 transition-all hover:border-primary/45"
-        >
-          <span className="flex items-center gap-2">
-            <span className="grid size-8 shrink-0 place-items-center rounded-lg bg-surface-2">
-              {r.kind === 'video' ? <MonitorPlay className="size-4 text-primary" /> : r.kind === 'imaging' ? <Boxes className="size-4 text-primary" /> : <BookOpen className="size-4 text-primary" />}
+        <StaggerItem key={r.url}>
+          <a
+            href={r.url}
+            target="_blank"
+            rel="noreferrer noopener"
+            className="group flex h-full min-w-0 rounded-xl clay p-3.5 transition-all hover:border-primary/45"
+          >
+            <span className="flex items-center gap-2">
+              <span className="grid size-8 shrink-0 place-items-center rounded-lg bg-surface-2">
+                {r.kind === 'video' ? <MonitorPlay className="size-4 text-primary" /> : r.kind === 'imaging' ? <Boxes className="size-4 text-primary" /> : <BookOpen className="size-4 text-primary" />}
+              </span>
+              <span className="min-w-0 flex-1">
+                <span className="block truncate text-sm font-medium group-hover:text-primary">{r.provider}</span>
+                <span className="block truncate text-[11px] text-ink-soft">{r.note}</span>
+              </span>
+              <ArrowRight className="size-3.5 shrink-0 text-muted-foreground" />
             </span>
-            <span className="min-w-0 flex-1">
-              <span className="block truncate text-sm font-medium group-hover:text-primary">{r.provider}</span>
-              <span className="block truncate text-[11px] text-ink-soft">{r.note}</span>
-            </span>
-            <ArrowRight className="size-3.5 shrink-0 text-muted-foreground" />
-          </span>
-        </a>
+          </a>
+        </StaggerItem>
       ))}
-    </div>
+    </Stagger>
   )
 }
 

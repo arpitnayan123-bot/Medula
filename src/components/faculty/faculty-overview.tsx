@@ -16,6 +16,8 @@ import {
 import type { FacultyHomePayload, FacultyRecommendItem, FacultyRecommendResource } from '@/lib/types'
 import { Button } from '@/components/ui/button'
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
+import { ScrollReveal, Stagger, StaggerItem } from '@/components/primitives/motion'
+import { BlobField } from '@/components/primitives/scenery'
 import { cn } from '@/lib/utils'
 import {
   AiAssistedBadge, EmptyNote, ExamWeightStars, FacultyStatusPill, GateNote, HandoffButton,
@@ -32,14 +34,14 @@ export function FacultyOverview({ home, stale, reload, onGoto }: {
   return (
     <div className="space-y-4">
       <PipelineCard home={home} stale={stale} reload={reload} />
-      <InventoryCard home={home} />
-      <GapsPreview home={home} onGoto={onGoto} />
-      <QualityPreview home={home} onGoto={onGoto} />
-      <DraftsPreview home={home} onGoto={onGoto} />
-      <VersionsPreview home={home} onGoto={onGoto} />
+      <ScrollReveal><InventoryCard home={home} /></ScrollReveal>
+      <ScrollReveal><GapsPreview home={home} onGoto={onGoto} /></ScrollReveal>
+      <ScrollReveal><QualityPreview home={home} onGoto={onGoto} /></ScrollReveal>
+      <ScrollReveal><DraftsPreview home={home} onGoto={onGoto} /></ScrollReveal>
+      <ScrollReveal><VersionsPreview home={home} onGoto={onGoto} /></ScrollReveal>
       <RecommendationsCard items={home.recommendations} />
-      <HowItWorksCard home={home} />
-      <WorkspaceFootnotes home={home} />
+      <ScrollReveal><HowItWorksCard home={home} /></ScrollReveal>
+      <ScrollReveal><WorkspaceFootnotes home={home} /></ScrollReveal>
     </div>
   )
 }
@@ -76,6 +78,7 @@ function PipelineCard({ home, stale, reload }: { home: FacultyHomePayload; stale
       title="The content pipeline"
       icon={GraduationCap}
       subtitle="How the platform's medical content is collected, organized, understood, validated and personalized — every stage measured live."
+      scenery={<BlobField className="rounded-2xl opacity-70" />}
       action={(
         <Button variant="ghost" size="sm" className="min-h-9 shrink-0 rounded-full px-3 text-xs text-ink-soft" onClick={reload}>
           {stale ? 'Re-reading…' : 'Re-read'}
@@ -127,9 +130,9 @@ function InventoryCard({ home }: { home: FacultyHomePayload }) {
       icon={LayoutGrid}
       subtitle="Everything the workspace currently manages — counted live from the content tables, nothing estimated."
     >
-      <div className="flex flex-wrap gap-1.5" aria-label="Content inventory counts">
-        {chips.map((c) => <StatChip key={c.label} value={c.value.toLocaleString('en-IN')} label={c.label} />)}
-      </div>
+      <Stagger className="flex flex-wrap gap-1.5" aria-label="Content inventory counts">
+        {chips.map((c) => <StaggerItem key={c.label}><StatChip value={c.value.toLocaleString('en-IN')} label={c.label} /></StaggerItem>)}
+      </Stagger>
     </SectionCard>
   )
 }
@@ -339,9 +342,13 @@ function RecommendationsCard({ items }: { items: FacultyRecommendItem[] }) {
           lessons against the content library.
         </EmptyNote>
       ) : (
-        <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
-          {items.slice(0, 2).map((item) => <RecommendCard key={item.conceptId} item={item} />)}
-        </div>
+        <Stagger className="grid grid-cols-1 gap-3 md:grid-cols-2">
+          {items.slice(0, 2).map((item) => (
+            <StaggerItem key={item.conceptId} className="h-full">
+              <RecommendCard item={item} />
+            </StaggerItem>
+          ))}
+        </Stagger>
       )}
     </SectionCard>
   )
@@ -349,7 +356,7 @@ function RecommendationsCard({ items }: { items: FacultyRecommendItem[] }) {
 
 function RecommendCard({ item }: { item: FacultyRecommendItem }) {
   return (
-    <section className="clay flex flex-col gap-2.5 rounded-2xl p-3.5" aria-label={`Recommended focus: ${item.conceptName}`}>
+    <section className="clay flex h-full flex-col gap-2.5 rounded-2xl p-3.5" aria-label={`Recommended focus: ${item.conceptName}`}>
       <div className="flex flex-wrap items-start justify-between gap-2">
         <div className="min-w-0">
           <h4 className="text-sm font-semibold leading-snug tracking-tight">{item.conceptName}</h4>

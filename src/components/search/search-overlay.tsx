@@ -17,6 +17,7 @@ import {
 import type { LucideIcon } from 'lucide-react'
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/components/ui/dialog'
 import { Command, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command'
+import { Stagger, StaggerItem } from '@/components/primitives/motion'
 import { api } from '@/lib/api'
 import { useAppStore } from '@/lib/store'
 import type { SearchResults } from '@/lib/types'
@@ -178,18 +179,19 @@ export function SearchOverlay() {
                 className="px-2.5 py-4"
               >
                 <p className="text-xs font-medium uppercase tracking-[0.14em] text-ink-soft">Try</p>
-                <div className="mt-2.5 flex flex-wrap gap-2">
+                <Stagger className="mt-2.5 flex flex-wrap gap-2">
                   {QUICK_TERMS.map((term) => (
-                    <button
-                      key={term}
-                      type="button"
-                      onClick={() => setQ(term)}
-                      className="min-h-11 rounded-full border border-line bg-surface-2 px-4 text-sm font-medium text-ink-soft transition-all hover:border-primary/40 hover:text-foreground"
-                    >
-                      {term}
-                    </button>
+                    <StaggerItem key={term}>
+                      <button
+                        type="button"
+                        onClick={() => setQ(term)}
+                        className="min-h-11 rounded-full border border-line bg-surface-2 px-4 text-sm font-medium text-ink-soft transition-all hover:border-primary/40 hover:text-foreground"
+                      >
+                        {term}
+                      </button>
+                    </StaggerItem>
                   ))}
-                </div>
+                </Stagger>
                 <p className="mt-4 text-xs leading-relaxed text-ink-soft">
                   Concepts, subjects, questions, flashcards and cases — or ask a full question and the tutor takes over.
                 </p>

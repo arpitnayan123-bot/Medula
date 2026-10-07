@@ -11,9 +11,10 @@ import { api } from '@/lib/api'
 import { useAppStore } from '@/lib/store'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
+import { ScrollReveal, Stagger, StaggerItem } from '@/components/primitives/motion'
 import { cn } from '@/lib/utils'
 import {
-  ACCENTS, ErrorState, FootNote, MicroLabel, Reveal, SectionCard, useGamifyPayload,
+  ACCENTS, ErrorState, FootNote, MicroLabel, SectionCard, useGamifyPayload,
 } from './gamify-shared'
 import type { GamifyAccentClasses, GamifyAccentId } from './gamify-shared'
 
@@ -38,25 +39,25 @@ export function GamifyRewards({ accentId, onAccentChange }: {
   return (
     <div className="space-y-4">
       {/* ── accent themes (section-scoped by design) ── */}
-      <Reveal index={0}>
+      <ScrollReveal>
         <SectionCard
           title="Accent themes"
           icon={Gem}
           description="Unlocked by your measured level — the active one tints this Motivation section only."
         >
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+          <Stagger className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             {data.accents.map((a) => {
               const isCurrent = a.id === accentId
               const classes = (ACCENTS as Record<string, GamifyAccentClasses | undefined>)[a.id]
               const canApply = Boolean(classes)
               return (
-                <article
-                  key={a.id}
-                  className={cn(
-                    'clay rounded-2xl p-4 transition-colors',
-                    isCurrent && 'border-primary/40',
-                  )}
-                >
+                <StaggerItem key={a.id} className="h-full">
+                  <article
+                    className={cn(
+                      'clay h-full rounded-2xl p-4 transition-colors',
+                      isCurrent && 'border-primary/40',
+                    )}
+                  >
                   <div className="flex items-center gap-3">
                     <span
                       className={cn('size-9 shrink-0 rounded-xl', classes ? classes.swatch : 'bg-surface-2')}
@@ -95,14 +96,15 @@ export function GamifyRewards({ accentId, onAccentChange }: {
                   </div>
                   <p className="mt-2 text-[9px] uppercase tracking-[0.14em] text-ink-soft/70">Applies to this section</p>
                 </article>
+                </StaggerItem>
               )
             })}
-          </div>
+          </Stagger>
         </SectionCard>
-      </Reveal>
+      </ScrollReveal>
 
       {/* ── featured badges summary ── */}
-      <Reveal index={1}>
+      <ScrollReveal>
         <SectionCard
           title="Featured badges"
           icon={Trophy}
@@ -131,10 +133,10 @@ export function GamifyRewards({ accentId, onAccentChange }: {
             </ul>
           )}
         </SectionCard>
-      </Reveal>
+      </ScrollReveal>
 
       {/* ── group recognition ── */}
-      <Reveal index={2}>
+      <ScrollReveal>
         <SectionCard
           title="Group recognition"
           icon={Users}
@@ -159,7 +161,7 @@ export function GamifyRewards({ accentId, onAccentChange }: {
             </ul>
           )}
         </SectionCard>
-      </Reveal>
+      </ScrollReveal>
 
       <FootNote>
         {data.note} Rewards here are educational and non-monetary — mastery, consistency and contribution, not coins.

@@ -3,6 +3,7 @@ import { Geist, Geist_Mono, Source_Serif_4 } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
 import { ThemeProvider } from "@/components/theme-provider";
+import { AmbientHour } from "@/components/primitives/ambient-hour";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -62,6 +63,7 @@ export default function RootLayout({
             the look on every device, so no stale localStorage theme or OS dark
             preference can ever flip phones to a dark skin. */}
         <ThemeProvider attribute="class" defaultTheme="light" forcedTheme="light" enableSystem={false} disableTransitionOnChange>
+          <AmbientHour />
           {children}
           <Toaster />
         </ThemeProvider>

@@ -11,6 +11,7 @@ import type { BrainMemoryPayload, BrainMemoryRow } from '@/lib/types'
 import { api } from '@/lib/api'
 import { useAppStore } from '@/lib/store'
 import { Button } from '@/components/ui/button'
+import { ScrollReveal } from '@/components/primitives/motion'
 import { cn } from '@/lib/utils'
 import {
   BrainErrorState, EmptyNote, RecallBar, RiskPill, SectionCard, SkeletonRow, recallPct,
@@ -83,7 +84,8 @@ export function BrainMemory() {
 
       {/* hand-off — the revision queue is the action surface for these risks */}
       {data && data.rows.length > 0 && (
-        <section className="clay rounded-2xl p-4 md:p-6">
+        <ScrollReveal>
+          <section className="clay rounded-2xl p-4 md:p-6">
           <h3 className="text-sm font-semibold tracking-tight">This feeds your Smart Revision queue</h3>
           <p className="mt-1 text-xs leading-relaxed text-ink-soft">
             The same measured recall risks above are what your revision queue orders itself by. Open Smart Revision to
@@ -100,7 +102,8 @@ export function BrainMemory() {
           <p className="mt-2 text-[11px] leading-relaxed text-ink-soft">
             The revision view handles queueing itself — nothing is moved until you run a block there.
           </p>
-        </section>
+          </section>
+        </ScrollReveal>
       )}
     </div>
   )

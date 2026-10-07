@@ -29,6 +29,7 @@ import {
 import { api } from '@/lib/api'
 import { useAppStore } from '@/lib/store'
 import type { LearnStatus, SubjectStudyPayload, TopicStudyPayload } from '@/lib/types'
+import { Stagger, StaggerItem } from '@/components/primitives/motion'
 import { cn } from '@/lib/utils'
 
 // ── shared presentation helpers ─────────────────────────────────────────────
@@ -437,14 +438,14 @@ function TopicStudy({ topicId, onBack, onOpenSubject, onOpenTopic }: {
                 {g.label}
                 <span className="rounded-full bg-surface-2 px-2 py-0.5 text-[10px] font-medium tabular-nums text-ink-soft">{g.concepts.length}</span>
               </h3>
-              <div className="grid gap-2 sm:grid-cols-2">
+              <Stagger className="grid gap-2 sm:grid-cols-2">
                 {g.concepts.map((cid) => {
                   const c = conceptById.get(cid)
                   if (!c) return null
                   return (
+                    <StaggerItem key={c.id} className="min-w-0">
                     <div
-                      key={c.id}
-                      className="group min-w-0 rounded-xl clay p-3.5 text-left transition-all clay-hover"
+                      className="group h-full min-w-0 rounded-xl clay p-3.5 text-left transition-all clay-hover"
                     >
                       <button
                         type="button"
@@ -484,9 +485,10 @@ function TopicStudy({ topicId, onBack, onOpenSubject, onOpenTopic }: {
                         />
                       </div>
                     </div>
+                    </StaggerItem>
                   )
                 })}
-              </div>
+              </Stagger>
             </div>
           ))}
         </section>
@@ -568,11 +570,13 @@ function TopicStudy({ topicId, onBack, onOpenSubject, onOpenTopic }: {
         {data.connectedTopics.length > 0 && (
           <section aria-label="Connected topics" className="space-y-2">
             <h2 className="text-xs font-semibold uppercase tracking-[0.18em] text-ink-soft">Connected topics</h2>
-            <div className="grid gap-2 sm:grid-cols-2">
+            <Stagger className="grid gap-2 sm:grid-cols-2">
               {data.connectedTopics.map((ct) => (
-                <TopicLinkCard key={ct.id} topic={ct} onOpen={() => onOpenTopic(ct.id)} />
+                <StaggerItem key={ct.id}>
+                  <TopicLinkCard topic={ct} onOpen={() => onOpenTopic(ct.id)} />
+                </StaggerItem>
               ))}
-            </div>
+            </Stagger>
           </section>
         )}
 
@@ -610,7 +614,7 @@ function TopicLinkCard({ topic, onOpen }: {
     <button
       type="button"
       onClick={onOpen}
-      className="group flex items-start gap-3 rounded-xl clay p-3.5 text-left transition-all clay-hover"
+      className="group flex h-full items-start gap-3 rounded-xl clay p-3.5 text-left transition-all clay-hover"
     >
       <span className="mt-0.5 size-2.5 shrink-0 rounded-full" style={{ backgroundColor: topic.subjectColor }} />
       <span className="min-w-0 flex-1">

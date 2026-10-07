@@ -30,6 +30,8 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Skeleton } from '@/components/ui/skeleton'
+import { Pop, Stagger, StaggerItem } from '@/components/primitives/motion'
+import { BlobField } from '@/components/primitives/scenery'
 import { cn } from '@/lib/utils'
 import { RevisionRun } from './revision-run'
 import {
@@ -368,7 +370,9 @@ function SummaryView({
 
       <Reveal index={1}>
         <section className="clay flex flex-col items-center gap-6 rounded-2xl p-6 sm:flex-row sm:justify-between">
-          <ProgressRing pct={pct} label={`${summary.done}/${summary.total}`} sub="blocks done" />
+          <Pop>
+            <ProgressRing pct={pct} label={`${summary.done}/${summary.total}`} sub="blocks done" />
+          </Pop>
           <div className="space-y-2 text-center sm:text-right">
             <p className="text-3xl font-semibold tabular-nums leading-none">
               <AnimatedNumber value={summary.minutes} />
@@ -644,7 +648,9 @@ export function SmartRevisionView() {
       {homeStatus === 'ready' && home && (
         <div className="mx-auto max-w-5xl space-y-6 p-4 md:p-6">
           {/* Hero */}
-          <Reveal index={0} className="flex flex-wrap items-start justify-between gap-4">
+          <Reveal index={0} className="relative">
+            <BlobField className="opacity-40" />
+            <div className="relative z-10 flex flex-wrap items-start justify-between gap-4">
             <div className="min-w-0 space-y-2">
               <MicroLabel>Smart Revision</MicroLabel>
               <h1 className="text-3xl font-semibold tracking-tight md:text-4xl">Your Revision for Today</h1>
@@ -668,6 +674,7 @@ export function SmartRevisionView() {
                 </p>
               </div>
             )}
+            </div>
           </Reveal>
 
           {home.insufficientData ? (
@@ -780,66 +787,68 @@ export function SmartRevisionView() {
               {/* Intelligence strip */}
               <Reveal index={5} className="space-y-3">
                 <MicroLabel>Revision intelligence</MicroLabel>
-                <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+                <Stagger className="grid grid-cols-2 gap-2 sm:grid-cols-3">
                   {INTEL_CARDS.map((c) => {
                     const count = home.intelligence.counts[c.key]
                     return (
-                      <button
-                        key={c.key}
-                        type="button"
-                        onClick={() => setIntelOpen(c.key)}
-                        aria-haspopup="dialog"
-                        className="clay flex items-center gap-3 rounded-xl p-3.5 text-left transition-colors hover:border-primary/40"
-                      >
-                        <span className={cn('grid size-9 shrink-0 place-items-center rounded-lg', c.tone)}>
-                          <c.icon className="size-4" aria-hidden />
-                        </span>
-                        <span className="min-w-0">
-                          <span className="block text-lg font-semibold leading-none tabular-nums">{count}</span>
-                          <span className="block truncate text-[11px] text-ink-soft">{c.label}</span>
-                        </span>
-                      </button>
+                      <StaggerItem key={c.key}>
+                        <button
+                          type="button"
+                          onClick={() => setIntelOpen(c.key)}
+                          aria-haspopup="dialog"
+                          className="clay flex h-full min-w-0 w-full items-center gap-3 rounded-xl p-3.5 text-left transition-colors hover:border-primary/40"
+                        >
+                          <span className={cn('grid size-9 shrink-0 place-items-center rounded-lg', c.tone)}>
+                            <c.icon className="size-4" aria-hidden />
+                          </span>
+                          <span className="min-w-0">
+                            <span className="block text-lg font-semibold leading-none tabular-nums">{count}</span>
+                            <span className="block truncate text-[11px] text-ink-soft">{c.label}</span>
+                          </span>
+                        </button>
+                      </StaggerItem>
                     )
                   })}
-                </div>
+                </Stagger>
               </Reveal>
 
               {/* Mode cards */}
               <Reveal index={6}>
                 <section ref={modesRef} className="space-y-3 scroll-mt-20">
                   <MicroLabel>Revision modes</MicroLabel>
-                  <div className="grid grid-cols-2 gap-2 md:grid-cols-4">
+                  <Stagger className="grid grid-cols-2 gap-2 md:grid-cols-4">
                     {home.modes.map((m) => {
                       const disabled = (m.count === 0 && m.id !== 'custom') || starting
                       return (
-                        <button
-                          key={m.id}
-                          type="button"
-                          disabled={disabled}
-                          onClick={() => (m.id === 'custom' ? openCustom() : void startSession(m.id))}
-                          className="clay flex flex-col rounded-xl p-4 text-left transition-colors hover:border-primary/40 disabled:cursor-not-allowed disabled:opacity-55"
-                        >
-                          <span className="flex items-start justify-between gap-2">
-                            <h3 className="text-sm font-semibold leading-tight">{m.label}</h3>
-                            <span
-                              className={cn(
-                                'shrink-0 rounded-full px-2 py-0.5 text-[10px] font-bold tabular-nums',
-                                m.count > 0 ? 'bg-primary/10 text-primary' : 'bg-surface-2 text-ink-soft',
-                              )}
-                            >
-                              {m.count} {m.count === 1 ? 'block' : 'blocks'}
+                        <StaggerItem key={m.id}>
+                          <button
+                            type="button"
+                            disabled={disabled}
+                            onClick={() => (m.id === 'custom' ? openCustom() : void startSession(m.id))}
+                            className="clay flex h-full min-w-0 w-full flex-col rounded-xl p-4 text-left transition-colors hover:border-primary/40 disabled:cursor-not-allowed disabled:opacity-55"
+                          >
+                            <span className="flex items-start justify-between gap-2">
+                              <h3 className="text-sm font-semibold leading-tight">{m.label}</h3>
+                              <span
+                                className={cn(
+                                  'shrink-0 rounded-full px-2 py-0.5 text-[10px] font-bold tabular-nums',
+                                  m.count > 0 ? 'bg-primary/10 text-primary' : 'bg-surface-2 text-ink-soft',
+                                )}
+                              >
+                                {m.count} {m.count === 1 ? 'block' : 'blocks'}
+                              </span>
                             </span>
-                          </span>
-                          <span className="mt-1.5 flex-1 text-xs leading-relaxed text-ink-soft">{m.blurb}</span>
-                          {m.count === 0 && m.id !== 'custom' && (
-                            <span className="mt-2 text-[10px] font-semibold uppercase tracking-wider text-ink-soft">
-                              Nothing due right now
-                            </span>
-                          )}
-                        </button>
+                            <span className="mt-1.5 flex-1 text-xs leading-relaxed text-ink-soft">{m.blurb}</span>
+                            {m.count === 0 && m.id !== 'custom' && (
+                              <span className="mt-2 text-[10px] font-semibold uppercase tracking-wider text-ink-soft">
+                                Nothing due right now
+                              </span>
+                            )}
+                          </button>
+                        </StaggerItem>
                       )
                     })}
-                  </div>
+                  </Stagger>
                 </section>
               </Reveal>
 

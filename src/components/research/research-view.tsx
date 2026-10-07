@@ -21,6 +21,7 @@ import {
   Search,
   ShieldCheck,
   Sparkles,
+  TriangleAlert,
 } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -37,6 +38,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { useToast } from '@/hooks/use-toast'
 import { FEATURES } from '@/lib/feature-flags'
 import { PageHeader } from '@/components/primitives/kit'
+import { Stagger, StaggerItem } from '@/components/primitives/motion'
+import { BlobField } from '@/components/primitives/scenery'
 import { cn } from '@/lib/utils'
 
 // ─── types (mirrors of the API responses) ───────────────────────────────────
@@ -127,7 +130,7 @@ const PROVENANCE =
   'Metadata & abstracts via Europe PMC (EBI). We link to the original source and never reproduce full papers.'
 
 const EXPLAIN_DISCLAIMER =
-  '⚠️ AI interpretation of the abstract only — verify against the full paper at the original source.'
+  'AI interpretation of the abstract only — verify against the full paper at the original source.'
 
 // ─── markdown styling (same convention as the tutor view) ───────────────────
 
@@ -593,18 +596,21 @@ function ResearchViewInner({ initialQuery }: { initialQuery?: string }) {
 
   return (
     <div className="mx-auto max-w-3xl px-4 pb-8 pt-4 md:px-6 md:pt-6">
-      {/* header */}
-      <header>
-        <PageHeader
-          eyebrow={
-            <>
-              <FlaskConical className="mr-1 inline size-3" />
-              Source-first paper hub
-            </>
-          }
-          title="Research"
-          intro="Real papers. Real metadata. Always linked to the original source."
-        />
+      {/* header (scenery: one soft BlobField wash behind the title) */}
+      <header className="relative">
+        <BlobField className="opacity-50" />
+        <div className="relative z-10">
+          <PageHeader
+            eyebrow={
+              <>
+                <FlaskConical className="mr-1 inline size-3" />
+                Source-first paper hub
+              </>
+            }
+            title="Research"
+            intro="Real papers. Real metadata. Always linked to the original source."
+          />
+        </div>
       </header>
 
       <Tabs value={tab} onValueChange={setTab} className="mt-4">
@@ -759,20 +765,22 @@ function ResearchViewInner({ initialQuery }: { initialQuery?: string }) {
 
           {/* results */}
           {!loading && !error && result && result.papers.length > 0 && (
-            <div className="space-y-3">
+            <Stagger className="space-y-3">
               {result.papers.map((paper) => (
-                <PaperCard
-                  key={paper.pmid}
-                  paper={paper}
-                  saved={savedIds.has(paper.pmid)}
-                  onToggleSave={(p) => void toggleSave(p)}
-                  onExplain={openExplain}
-                  explainEnabled={explainEnabled}
-                />
+                <StaggerItem key={paper.pmid}>
+                  <PaperCard
+                    paper={paper}
+                    saved={savedIds.has(paper.pmid)}
+                    onToggleSave={(p) => void toggleSave(p)}
+                    onExplain={openExplain}
+                    explainEnabled={explainEnabled}
+                  />
+                </StaggerItem>
               ))}
 
               {/* pagination */}
               {maxPage > 1 && (
+                <StaggerItem>
                 <nav className="flex items-center justify-between gap-3 pt-1" aria-label="Search result pages">
                   <Button
                     variant="outline"
@@ -794,8 +802,9 @@ function ResearchViewInner({ initialQuery }: { initialQuery?: string }) {
                     Next →
                   </Button>
                 </nav>
+                </StaggerItem>
               )}
-            </div>
+            </Stagger>
           )}
         </TabsContent>
 
@@ -880,9 +889,13 @@ function ResearchViewInner({ initialQuery }: { initialQuery?: string }) {
               <p className="mt-2 text-sm font-medium">Nothing saved yet — save papers as you discover them.</p>
             </div>
           ) : (
-            savedPapers.map((paper) => (
-              <SavedCard key={paper.id} paper={paper} onToggleSave={(p) => void toggleSave(p)} />
-            ))
+            <Stagger className="space-y-3">
+              {savedPapers.map((paper) => (
+                <StaggerItem key={paper.id}>
+                  <SavedCard paper={paper} onToggleSave={(p) => void toggleSave(p)} />
+                </StaggerItem>
+              ))}
+            </Stagger>
           )}
         </TabsContent>
       </Tabs>
@@ -938,6 +951,7 @@ function ResearchViewInner({ initialQuery }: { initialQuery?: string }) {
               </Button>
 
               <p className="text-[11px] leading-relaxed text-ink-soft">
+                <TriangleAlert className="mr-1 inline size-3 text-sev-warn" aria-hidden />
                 {EXPLAIN_DISCLAIMER}
                 {generatedAt ? ` Generated ${formatIst(generatedAt)} IST.` : ''}
               </p>

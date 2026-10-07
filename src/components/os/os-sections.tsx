@@ -8,6 +8,7 @@
 
 import { motion } from 'framer-motion'
 import { cn } from '@/lib/utils'
+import { Stagger, StaggerItem } from '@/components/primitives/motion'
 import type { OsActivityItem, OsCommandCenter, OsWeakItem } from '@/lib/types'
 import {
   OsCard, OsGoButton, EmptyNote, FootNote, MiniBar,
@@ -70,13 +71,15 @@ function TodayStrip({ data }: { data: OsCommandCenter }) {
     },
   ]
   return (
-    <div className="grid grid-cols-2 gap-2 lg:grid-cols-4">
+    <Stagger className="grid grid-cols-2 gap-2 lg:grid-cols-4">
       {cards.map((c) => (
-        <OsCard key={c.label} onClick={() => go(c.view)} ariaLabel={`${c.label}: ${c.value}. Opens the feature.`} className="group">
-          <TodayCardInner card={c} />
-        </OsCard>
+        <StaggerItem key={c.label} className="h-full">
+          <OsCard onClick={() => go(c.view)} ariaLabel={`${c.label}: ${c.value}. Opens the feature.`} className="group h-full w-full">
+            <TodayCardInner card={c} />
+          </OsCard>
+        </StaggerItem>
       ))}
-    </div>
+    </Stagger>
   )
 }
 

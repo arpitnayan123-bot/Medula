@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input'
 import { cn } from '@/lib/utils'
 import { api } from '@/lib/api'
 import { useAppStore } from '@/lib/store'
+import { SpringNumber, Stagger, StaggerItem } from '@/components/primitives/motion'
 import type {
   VoiceDebrief,
   VoiceHome,
@@ -213,9 +214,9 @@ export function VoiceView() {
           </div>
         ) : (
           <>
-            <Stat label="Voice sessions" value={String(home.stats.sessions)} />
-            <Stat label="Minutes spoken" value={String(home.stats.minutes)} />
-            <Stat label="Answers graded" value={String(home.stats.questions)} />
+            <Stat label="Voice sessions" value={home.stats.sessions} />
+            <Stat label="Minutes spoken" value={home.stats.minutes} />
+            <Stat label="Answers graded" value={home.stats.questions} />
             <Stat
               label="Spoken accuracy"
               value={home.stats.accuracy === null ? '—' : `${home.stats.accuracy}%`}
@@ -250,28 +251,29 @@ export function VoiceView() {
       {home && home.suggestions.length > 0 && (
         <section className="mt-6" aria-label="Suggested for you">
           <h2 className="text-sm font-semibold uppercase tracking-wide text-ink-soft">Why this now</h2>
-          <div className="mt-2 grid gap-2 sm:grid-cols-2">
+          <Stagger className="mt-2 grid gap-2 sm:grid-cols-2">
             {home.suggestions.map((s, i) => {
               const meta = MODE_META[s.mode]
               const Icon = meta.icon
               return (
-                <button
-                  key={`${s.mode}-${i}`}
-                  onClick={() => startSession(s.mode, s.topicId ?? undefined)}
-                  disabled={starting !== null}
-                  className="clay clay-hover group flex items-start gap-3 rounded-2xl p-4 text-left disabled:opacity-60"
-                >
-                  <span className={cn('mt-0.5 flex size-9 shrink-0 items-center justify-center rounded-xl', meta.accent)}>
-                    <Icon className="size-4.5" aria-hidden />
-                  </span>
-                  <span>
-                    <span className="block text-sm font-semibold text-ink">{MODE_LABELS[s.mode]}</span>
-                    <span className="mt-0.5 block text-xs text-ink-soft">{s.line}</span>
-                  </span>
-                </button>
+                <StaggerItem key={`${s.mode}-${i}`}>
+                  <button
+                    onClick={() => startSession(s.mode, s.topicId ?? undefined)}
+                    disabled={starting !== null}
+                    className="clay clay-hover group flex items-start gap-3 rounded-2xl p-4 text-left disabled:opacity-60"
+                  >
+                    <span className={cn('mt-0.5 flex size-9 shrink-0 items-center justify-center rounded-xl', meta.accent)}>
+                      <Icon className="size-4.5" aria-hidden />
+                    </span>
+                    <span>
+                      <span className="block text-sm font-semibold text-ink">{MODE_LABELS[s.mode]}</span>
+                      <span className="mt-0.5 block text-xs text-ink-soft">{s.line}</span>
+                    </span>
+                  </button>
+                </StaggerItem>
               )
             })}
-          </div>
+          </Stagger>
         </section>
       )}
 
@@ -281,41 +283,42 @@ export function VoiceView() {
         {homeError || !home ? (
           <p className="mt-2 text-sm text-ink-soft">Modes load with your stats.</p>
         ) : (
-          <div className="mt-2 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          <Stagger className="mt-2 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {home.modes.map((m: VoiceModeInfo) => {
               const meta = MODE_META[m.id]
               const Icon = meta.icon
               return (
-                <div
-                  key={m.id}
-                  className="clay clay-hover flex flex-col rounded-2xl p-4"
-                >
-                  <div className="flex items-center gap-2.5">
-                    <span className={cn('flex size-9 items-center justify-center rounded-xl', meta.accent)}>
-                      <Icon className="size-4.5" aria-hidden />
-                    </span>
-                    <span className="text-sm font-bold text-ink">{m.name}</span>
-                    {m.expectsAnswer && (
-                      <span className="ml-auto rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-semibold text-primary">
-                        answers graded
-                      </span>
-                    )}
-                  </div>
-                  <p className="mt-2 flex-1 text-xs text-ink-soft">{m.tagline}</p>
-                  <p className="mt-2 text-xs italic text-primary">{m.speak}</p>
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    className="mt-3 w-full rounded-xl"
-                    onClick={() => startSession(m.id)}
-                    disabled={starting !== null}
+                <StaggerItem key={m.id}>
+                  <div
+                    className="clay clay-hover flex h-full flex-col rounded-2xl p-4"
                   >
-                    {starting === m.id ? 'Starting…' : `Start ${m.name.toLowerCase()}`}
-                  </Button>
-                </div>
+                    <div className="flex items-center gap-2.5">
+                      <span className={cn('flex size-9 items-center justify-center rounded-xl', meta.accent)}>
+                        <Icon className="size-4.5" aria-hidden />
+                      </span>
+                      <span className="text-sm font-bold text-ink">{m.name}</span>
+                      {m.expectsAnswer && (
+                        <span className="ml-auto rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-semibold text-primary">
+                          answers graded
+                        </span>
+                      )}
+                    </div>
+                    <p className="mt-2 flex-1 text-xs text-ink-soft">{m.tagline}</p>
+                    <p className="mt-2 text-xs italic text-primary">{m.speak}</p>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="mt-3 w-full rounded-xl"
+                      onClick={() => startSession(m.id)}
+                      disabled={starting !== null}
+                    >
+                      {starting === m.id ? 'Starting…' : `Start ${m.name.toLowerCase()}`}
+                    </Button>
+                  </div>
+                </StaggerItem>
               )
             })}
-          </div>
+          </Stagger>
         )}
       </section>
 
@@ -355,10 +358,12 @@ export function VoiceView() {
   )
 }
 
-function Stat({ label, value }: { label: string; value: string }) {
+function Stat({ label, value }: { label: string; value: number | string }) {
   return (
     <div className="clay rounded-2xl p-4">
-      <p className="text-xl font-bold text-ink">{value}</p>
+      <p className="text-xl font-bold text-ink">
+        {typeof value === 'number' ? <SpringNumber value={value} /> : value}
+      </p>
       <p className="mt-0.5 text-xs text-ink-soft">{label}</p>
     </div>
   )

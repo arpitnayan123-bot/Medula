@@ -34,6 +34,8 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { SubjectIndex } from '@/components/dashboard/subject-index'
 import { InternshipPanel } from '@/components/dashboard/internship-panel'
 import { HeroAnatomy } from '@/components/brand/hero-anatomy'
+import { Magnetic, ScrollReveal, Stagger, StaggerItem } from '@/components/primitives/motion'
+import { BlobField } from '@/components/primitives/scenery'
 import { cn } from '@/lib/utils'
 
 const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1]
@@ -60,20 +62,6 @@ function AnimatedNumber({ value, className }: { value: number; className?: strin
   return <span className={className}>{reduce ? value : display}</span>
 }
 
-function Reveal({ index = 0, className, children }: { index?: number; className?: string; children: ReactNode }) {
-  const reduce = useReducedMotion()
-  return (
-    <motion.div
-      className={className}
-      initial={reduce ? false : { opacity: 0, y: 14 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.45, delay: reduce ? 0 : 0.05 * index, ease: EASE }}
-    >
-      {children}
-    </motion.div>
-  )
-}
-
 function ProgressRing({
   value,
   size,
@@ -97,8 +85,8 @@ function ProgressRing({
       <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} className="-rotate-90">
         <defs>
           <linearGradient id={gradientId} x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0%" stopColor="#38bdf8" />
-            <stop offset="100%" stopColor="#0284c7" />
+            <stop offset="0%" stopColor="#16788c" />
+            <stop offset="100%" stopColor="#5cb491" />
           </linearGradient>
         </defs>
         <circle cx={size / 2} cy={size / 2} r={r} fill="none" strokeWidth={stroke} className="stroke-surface-2" />
@@ -307,11 +295,12 @@ export function DashboardView() {
     <div className="mx-auto max-w-5xl space-y-6 overflow-x-clip p-4 md:p-6">
       {/* 1+2 · THE PORCH — greeting + today's mission on one porcelain podium,
           watched over by the anatomical hero */}
-      <Reveal index={0}>
+      <ScrollReveal>
         <section
           className="podium relative overflow-hidden rounded-3xl p-5 md:p-7"
           aria-label="Today's mission"
         >
+          <BlobField className="opacity-60" />
           <div className="pointer-events-none absolute -right-10 -top-14 size-48 rounded-full bg-[#f3d5a4]/40 blur-3xl scene-float" aria-hidden />
           <div className="pointer-events-none absolute -left-12 -bottom-4 size-44 rounded-full bg-[#c9e8d4]/35 blur-3xl scene-float" aria-hidden />
           <div className="relative flex flex-col gap-6 md:flex-row md:items-center">
@@ -361,9 +350,11 @@ export function DashboardView() {
                 )}
 
                 <div className="mt-4 flex flex-col gap-2 sm:flex-row">
-                  <Button size="lg" className="clay-btn min-h-11 flex-1 sm:flex-none sm:px-8" onClick={startMission}>
-                    <Play className="size-4" /> Start today&apos;s mission
-                  </Button>
+                  <Magnetic>
+                    <Button size="lg" className="clay-btn min-h-11 flex-1 sm:flex-none sm:px-8" onClick={startMission}>
+                      <Play className="size-4" /> Start today&apos;s mission
+                    </Button>
+                  </Magnetic>
                   <Button size="lg" variant="outline" className="clay-btn-soft min-h-11 border-0 bg-transparent" onClick={() => setView('revise')}>
                     Open in Revise
                   </Button>
@@ -377,22 +368,30 @@ export function DashboardView() {
             </div>
           </div>
         </section>
-      </Reveal>
+      </ScrollReveal>
 
       {/* 3 · Four quick numbers — the whole day at a glance */}
-      <Reveal index={2} className="space-y-3">
-        <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-          <StatTile
-            icon={Brain}
-            value={readiness?.overall ?? brainScore}
-            suffix="%"
-            label="NEET-PG readiness"
-            tone="sky"
-          />
-          <StatTile icon={BookOpen} value={stats.dueQuestions} label="questions due" tone="sky" />
-          <StatTile icon={Layers} value={stats.dueFlashcards} label="flashcards due" tone="warn" />
-          <StatTile icon={History} value={revisionDebt.count} label="topics need revision" tone={revisionDebt.count > 0 ? 'crit' : 'ok'} />
-        </div>
+      <ScrollReveal className="space-y-3">
+        <Stagger className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+          <StaggerItem className="h-full">
+            <StatTile
+              icon={Brain}
+              value={readiness?.overall ?? brainScore}
+              suffix="%"
+              label="NEET-PG readiness"
+              tone="sky"
+            />
+          </StaggerItem>
+          <StaggerItem className="h-full">
+            <StatTile icon={BookOpen} value={stats.dueQuestions} label="questions due" tone="sky" />
+          </StaggerItem>
+          <StaggerItem className="h-full">
+            <StatTile icon={Layers} value={stats.dueFlashcards} label="flashcards due" tone="warn" />
+          </StaggerItem>
+          <StaggerItem className="h-full">
+            <StatTile icon={History} value={revisionDebt.count} label="topics need revision" tone={revisionDebt.count > 0 ? 'crit' : 'ok'} />
+          </StaggerItem>
+        </Stagger>
         {revisionDebt.count > 0 && (
           <p className="px-1 text-xs text-ink-soft">
             Revision debt ≈ {revisionDebt.minutes} min ·{' '}
@@ -407,11 +406,11 @@ export function DashboardView() {
             open Performance Intelligence
           </button>
         </p>
-      </Reveal>
+      </ScrollReveal>
 
       {/* 3b · First-run audit banner — only when nothing is mapped yet */}
       {needsAudit && (
-        <Reveal index={3}>
+        <ScrollReveal>
           <section className="flex flex-col gap-3 rounded-2xl border border-primary/25 bg-primary/5 p-4 sm:flex-row sm:items-center md:p-5">
             <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-primary/10">
               <ScanSearch className="size-5 text-primary" />
@@ -426,14 +425,14 @@ export function DashboardView() {
               Start audit
             </Button>
           </section>
-        </Reveal>
+        </ScrollReveal>
       )}
 
       {/* 4 · One system pointer — the OS command center owns "what next" and
           the weak-topic ranking; this page owns the plan, subjects, internship.
           No second arbiter, no duplicated weak-spots list. */}
       {!needsAudit && (
-        <Reveal index={4}>
+        <ScrollReveal>
           <button
             type="button"
             onClick={() => setView('os')}
@@ -447,13 +446,13 @@ export function DashboardView() {
             </span>
             <ArrowRight className="size-3.5 shrink-0 text-ink-soft" aria-hidden />
           </button>
-        </Reveal>
+        </ScrollReveal>
       )}
 
       {/* 5 · All subjects — crisp grid; tap → Doubt Search scoped to the subject */}
-      <Reveal index={5}>
+      <ScrollReveal>
         <SubjectIndex insights={insights} />
-      </Reveal>
+      </ScrollReveal>
 
       {/* 6 · Internship mode — rotation-based plan (renders only for year ≥ 5) */}
       <InternshipPanel />

@@ -20,6 +20,7 @@ import { LAB_MODE_META, LAB_PROVENANCE_META } from '@/lib/types'
 import type { LabAiResponse, LabImageDetail, LabMode } from '@/lib/types'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import { Stagger, StaggerItem, ScrollReveal } from '@/components/primitives/motion'
 import { cn } from '@/lib/utils'
 import {
   DifficultyDots, MicroLabel, ProvenanceChip, RelevanceChip, Reveal, SCROLL_SLIM, difficultyLabel,
@@ -48,12 +49,12 @@ const MODE_CARDS: { mode: GradedMode; icon: LucideIcon; meta: (d: LabImageDetail
 
 function ModeLaunchers({ detail, onLaunchMode, onRapid }: Pick<Props, 'detail' | 'onLaunchMode' | 'onRapid'>) {
   return (
-    <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+    <Stagger className="grid grid-cols-1 gap-3 sm:grid-cols-2">
       {MODE_CARDS.map(({ mode, icon: Icon, meta }) => {
         const m = LAB_MODE_META[mode]
         return (
+          <StaggerItem key={mode}>
           <button
-            key={mode}
             type="button"
             onClick={() => onLaunchMode(mode)}
             className="clay clay-hover flex min-h-24 flex-col items-start gap-1.5 rounded-2xl p-4 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
@@ -71,9 +72,11 @@ function ModeLaunchers({ detail, onLaunchMode, onRapid }: Pick<Props, 'detail' |
             <span className="text-xs leading-relaxed text-ink-soft">{m.blurb}</span>
             <span className="text-[10px] font-semibold uppercase tracking-wider text-ink-soft/70">{meta(detail)}</span>
           </button>
+          </StaggerItem>
         )
       })}
 
+      <StaggerItem>
       <button
         type="button"
         onClick={onRapid}
@@ -94,7 +97,8 @@ function ModeLaunchers({ detail, onLaunchMode, onRapid }: Pick<Props, 'detail' |
           Sets a {detail.summary.modality} scope on the library
         </span>
       </button>
-    </div>
+      </StaggerItem>
+    </Stagger>
   )
 }
 
@@ -406,7 +410,7 @@ export function LabStudyScreen({ detail, onBack, onLaunchMode, onRapid, onResume
           <button
             type="button"
             onClick={onResume}
-            className="warm-card flex w-full min-w-0 items-center gap-3 rounded-2xl p-4 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            className="warm-card clay-hover flex w-full min-w-0 items-center gap-3 rounded-2xl p-4 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             aria-label={`Resume your ${resume.mode} attempt`}
           >
             <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-sev-warn/15 text-sev-warn">
@@ -503,18 +507,18 @@ export function LabStudyScreen({ detail, onBack, onLaunchMode, onRapid, onResume
       </Reveal>
 
       {/* ── Guided explanation ── */}
-      <Reveal index={5}>
+      <ScrollReveal>
         <GuidedReveal detail={detail} onRevealChange={setAnnotations} />
-      </Reveal>
+      </ScrollReveal>
 
       {/* ── AI panel ── */}
-      <Reveal index={6}>
+      <ScrollReveal>
         <AiPanel imageId={summary.id} />
-      </Reveal>
+      </ScrollReveal>
 
       {/* ── Concepts ── */}
       {detail.concepts.length > 0 && (
-        <Reveal index={7} className="space-y-2.5">
+        <ScrollReveal className="space-y-2.5">
           <MicroLabel>Concepts this image tests</MicroLabel>
           <p className="text-xs leading-relaxed text-ink-soft">
             Open them from the debrief after a graded run — mastery is measured there.
@@ -526,7 +530,7 @@ export function LabStudyScreen({ detail, onBack, onLaunchMode, onRapid, onResume
               </span>
             ))}
           </div>
-        </Reveal>
+        </ScrollReveal>
       )}
     </div>
   )

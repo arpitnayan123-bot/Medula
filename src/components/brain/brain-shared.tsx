@@ -334,18 +334,21 @@ export function ActionButton({ action, onOpen, variant = 'outline', size = 'sm',
 
 // ── SectionCard — the one porcelain card every tab builds on ────────────────;
 
-export function SectionCard({ title, subtitle, icon: Icon, action, className, children }: {
+export function SectionCard({ title, subtitle, icon: Icon, action, className, children, scenery }: {
   title?: string
   subtitle?: string
   icon?: LucideIcon
   action?: React.ReactNode
   className?: string
   children: React.ReactNode
+  /** Optional decorative backdrop (scenery primitive) — hero zones only, always the first child. */
+  scenery?: React.ReactNode
 }) {
   return (
-    <section className={cn('clay rounded-2xl p-4 md:p-6', className)}>
+    <section className={cn('clay rounded-2xl p-4 md:p-6', scenery != null && 'relative', className)}>
+      {scenery}
       {(title || action) && (
-        <header className="mb-4 flex items-start justify-between gap-3">
+        <header className={cn('mb-4 flex items-start justify-between gap-3', scenery != null && 'relative z-10')}>
           <div className="min-w-0">
             {title && (
               <h3 className="flex items-center gap-2 text-sm font-semibold tracking-tight">
@@ -358,7 +361,7 @@ export function SectionCard({ title, subtitle, icon: Icon, action, className, ch
           {action}
         </header>
       )}
-      {children}
+      {scenery != null ? <div className="relative z-10">{children}</div> : children}
     </section>
   )
 }

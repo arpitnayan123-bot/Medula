@@ -33,6 +33,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Slider } from '@/components/ui/slider'
 import { PREP_STAGE_LABELS, YEAR_LABELS } from '@/lib/types'
 import type { Profile } from '@/lib/types'
+import { Magnetic } from '@/components/primitives/motion'
+import { ContourAtlas } from '@/components/primitives/scenery'
 import { cn } from '@/lib/utils'
 
 const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1]
@@ -345,6 +347,7 @@ export function OnboardingWizard() {
   return (
     <div className="relative min-h-svh overflow-hidden bg-background text-foreground">
       <div className="med-grid absolute inset-0" aria-hidden />
+      <ContourAtlas className="opacity-40" />
       <div
         className="absolute left-1/2 top-[-15%] h-[420px] w-[680px] -translate-x-1/2 rounded-full bg-gold/[0.10] blur-3xl"
         aria-hidden
@@ -717,23 +720,25 @@ export function OnboardingWizard() {
               Back
             </Button>
             {isReview ? (
-              <Button
-                className="h-11 min-w-44 rounded-xl text-sm font-semibold tracking-wide"
-                onClick={enterMedula}
-                disabled={saving || !stepValid}
-              >
-                {saving ? (
-                  <>
-                    <Loader2 className="size-4 animate-spin" aria-hidden />
-                    Entering…
-                  </>
-                ) : (
-                  <>
-                    ENTER MEDULA
-                    <ChevronRight className="size-4" aria-hidden />
-                  </>
-                )}
-              </Button>
+              <Magnetic>
+                <Button
+                  className="h-11 min-w-44 rounded-xl text-sm font-semibold tracking-wide"
+                  onClick={enterMedula}
+                  disabled={saving || !stepValid}
+                >
+                  {saving ? (
+                    <>
+                      <Loader2 className="size-4 animate-spin" aria-hidden />
+                      Entering…
+                    </>
+                  ) : (
+                    <>
+                      ENTER MEDULA
+                      <ChevronRight className="size-4" aria-hidden />
+                    </>
+                  )}
+                </Button>
+              </Magnetic>
             ) : (
               <Button
                 className="h-11 min-w-28 rounded-xl text-sm font-semibold"

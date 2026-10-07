@@ -14,6 +14,8 @@ import { ArrowLeft, ArrowRight, Clock, Eye, EyeOff, History, Loader2, LockKeyhol
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { Magnetic } from '@/components/primitives/motion'
+import { DotMatrix } from '@/components/primitives/scenery'
 import { api } from '@/lib/api'
 import { useAppStore, readStoredSession, readStoredView, viewFromHash, viewToLabel, writeStoredSession, clearStoredSession, type StoredSession } from '@/lib/store'
 import { LogoMark } from '@/components/brand/logo'
@@ -143,6 +145,7 @@ export function SignInView({ initialHash }: { initialHash?: string }) {
         <div className="scene-float absolute -left-16 top-1/3 size-72 rounded-full bg-mint/[0.18] blur-3xl" />
         <div className="scene-float absolute -right-20 bottom-10 size-80 rounded-full bg-gold/[0.12] blur-3xl" style={{ animationDelay: '3s' }} />
         <div className="scene-float absolute -left-24 bottom-1/4 size-64 rounded-full bg-mint/[0.12] blur-3xl" style={{ animationDelay: '6s' }} />
+        <DotMatrix className="opacity-70" />
       </div>
 
       {/* top bar */}
@@ -201,16 +204,18 @@ export function SignInView({ initialHash }: { initialHash?: string }) {
               </p>
             )}
 
-            <Button
-              type="button"
-              size="lg"
-              className="mt-5 min-h-11 w-full gap-2 text-sm font-semibold"
-              onClick={() => void continueSession()}
-              disabled={phase === 'working'}
-            >
-              {phase === 'working' ? <Loader2 className="size-4 animate-spin" /> : <ArrowRight className="size-4" />}
-              {resume.account === 'demo' ? 'Continue as Demo Doctor' : 'Continue to your dashboard'}
-            </Button>
+            <Magnetic className="w-full">
+              <Button
+                type="button"
+                size="lg"
+                className="mt-5 min-h-11 w-full gap-2 text-sm font-semibold"
+                onClick={() => void continueSession()}
+                disabled={phase === 'working'}
+              >
+                {phase === 'working' ? <Loader2 className="size-4 animate-spin" /> : <ArrowRight className="size-4" />}
+                {resume.account === 'demo' ? 'Continue as Demo Doctor' : 'Continue to your dashboard'}
+              </Button>
+            </Magnetic>
             <Button
               type="button"
               variant="ghost"
@@ -300,10 +305,12 @@ export function SignInView({ initialHash }: { initialHash?: string }) {
               </p>
             )}
 
-            <Button type="submit" size="lg" className="min-h-11 w-full gap-2 text-sm font-semibold" disabled={phase === 'working'}>
-              {phase === 'working' ? <Loader2 className="size-4 animate-spin" /> : <LogIn className="size-4" />}
-              Sign in
-            </Button>
+            <Magnetic className="w-full">
+              <Button type="submit" size="lg" className="min-h-11 w-full gap-2 text-sm font-semibold" disabled={phase === 'working'}>
+                {phase === 'working' ? <Loader2 className="size-4 animate-spin" /> : <LogIn className="size-4" />}
+                Sign in
+              </Button>
+            </Magnetic>
           </form>
 
           {/* demo shortcut */}

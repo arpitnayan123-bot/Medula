@@ -40,6 +40,7 @@ import { Button } from '@/components/ui/button'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Slider } from '@/components/ui/slider'
+import { ScrollReveal, SpringBar, Stagger, StaggerItem, Pop } from '@/components/primitives/motion'
 import { cn } from '@/lib/utils'
 
 // ─── Local types ─────────────────────────────────────────────────────────────
@@ -1096,27 +1097,28 @@ export function QuizView() {
                           Tagging the error builds your mistake profile — the engine uses it to schedule revision and
                           detect confusion pairs. Skip if you prefer.
                         </p>
-                        <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+                        <Stagger className="mt-3 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
                           {ERROR_TYPES.map((t) => (
-                            <button
-                              key={t.id}
-                              type="button"
-                              onClick={() => pickErrorType(t.id)}
-                              className={cn(
-                                'min-h-11 rounded-xl border px-3 py-2.5 text-left transition-colors',
-                                errorType === t.id
-                                  ? 'border-primary bg-primary/10'
-                                  : 'border-line bg-surface-2/40 hover:border-primary/50',
-                              )}
-                            >
-                              <span className="flex items-center gap-1.5 text-xs font-semibold">
-                                {errorType === t.id && <Check className="size-3 text-primary" />}
-                                {t.label}
-                              </span>
-                              <span className="mt-0.5 block text-[11px] leading-snug text-ink-soft">{t.hint}</span>
-                            </button>
+                            <StaggerItem key={t.id}>
+                              <button
+                                type="button"
+                                onClick={() => pickErrorType(t.id)}
+                                className={cn(
+                                  'h-full min-h-11 w-full rounded-xl border px-3 py-2.5 text-left transition-colors',
+                                  errorType === t.id
+                                    ? 'border-primary bg-primary/10'
+                                    : 'border-line bg-surface-2/40 hover:border-primary/50',
+                                )}
+                              >
+                                <span className="flex items-center gap-1.5 text-xs font-semibold">
+                                  {errorType === t.id && <Check className="size-3 text-primary" />}
+                                  {t.label}
+                                </span>
+                                <span className="mt-0.5 block text-[11px] leading-snug text-ink-soft">{t.hint}</span>
+                              </button>
+                            </StaggerItem>
                           ))}
-                        </div>
+                        </Stagger>
                       </div>
                     )}
 
@@ -1138,9 +1140,11 @@ export function QuizView() {
     <div className="mx-auto max-w-3xl space-y-6 p-4 md:p-6">
       <header className="space-y-2">
         <div className="flex items-center gap-2.5">
-          <span className="grid size-10 place-items-center rounded-xl bg-primary/10">
-            <FlaskConical className="size-5 text-primary" />
-          </span>
+          <Pop>
+            <span className="grid size-10 place-items-center rounded-xl bg-primary/10">
+              <FlaskConical className="size-5 text-primary" />
+            </span>
+          </Pop>
           <h1 className="text-3xl font-semibold tracking-tight md:text-4xl">SESSION COMPLETE</h1>
         </div>
         <p className="text-sm text-ink-soft md:text-base">
@@ -1188,14 +1192,7 @@ export function QuizView() {
               <div key={row.d} className="flex items-center gap-3">
                 <DifficultyDots n={row.d} />
                 <span className="w-20 shrink-0 text-xs font-medium">{row.label}</span>
-                <div className="h-1.5 min-w-0 flex-1 overflow-hidden rounded-full bg-surface-2">
-                  <motion.div
-                    className="h-full rounded-full bg-primary"
-                    initial={{ width: 0 }}
-                    animate={{ width: `${pct}%` }}
-                    transition={{ duration: 0.9, ease: EASE }}
-                  />
-                </div>
+                <SpringBar value={pct} className="min-w-0 flex-1" />
                 <span className="w-10 shrink-0 text-right text-xs tabular-nums text-ink-soft">
                   {row.correct}/{row.total}
                 </span>
@@ -1249,6 +1246,7 @@ export function QuizView() {
         ) : null)}
 
       {/* Missed questions + teaching */}
+      <ScrollReveal>
       <section className="clay space-y-4 rounded-2xl p-5 md:p-7">
         <h2 className="text-sm font-semibold uppercase tracking-[0.14em] text-ink-soft">
           Missed questions &amp; teaching
@@ -1282,6 +1280,7 @@ export function QuizView() {
           </ul>
         )}
       </section>
+      </ScrollReveal>
 
       <div className="flex flex-col gap-2 sm:flex-row">
         <Button size="lg" className="min-h-11 flex-1 font-semibold" onClick={backToConfig}>

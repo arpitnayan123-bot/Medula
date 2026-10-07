@@ -12,6 +12,7 @@ import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { PageHeader } from '@/components/primitives/kit'
+import { Pop } from '@/components/primitives/motion'
 import { cn } from '@/lib/utils'
 
 const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1]
@@ -607,7 +608,9 @@ export function ReviseView() {
                 className="flex flex-col items-center gap-3 rounded-2xl border border-line/60 bg-surface-2/30 px-4 py-10 text-center"
                 role="status"
               >
-                <CheckCircle2 className="size-8 text-sev-ok" aria-hidden />
+                <Pop>
+                  <CheckCircle2 className="size-8 text-sev-ok" aria-hidden />
+                </Pop>
                 <p className="text-sm font-semibold">All {activeSub} cards graded this session.</p>
                 <Button size="sm" variant="outline" className="min-h-9" onClick={() => setActiveSub(null)}>
                   Show the {fullDeck.length} remaining card{fullDeck.length === 1 ? '' : 's'}
@@ -662,7 +665,7 @@ export function ReviseView() {
                       initial={false}
                       exit={{ opacity: 0, x: 40, transition: { duration: 0.28, ease: EASE } }}
                     >
-                      <div className="flex flex-col gap-2 rounded-xl border border-line/60 bg-surface-2/40 p-3 sm:flex-row sm:items-center sm:gap-3">
+                      <div className="flex flex-col gap-2 rounded-xl border border-line/60 bg-surface-2/40 p-3 transition-all clay-hover sm:flex-row sm:items-center sm:gap-3">
                         <span
                           title={c.priority >= 3 ? 'High priority' : c.priority === 2 ? 'Medium priority' : 'Low priority'}
                           className={cn(

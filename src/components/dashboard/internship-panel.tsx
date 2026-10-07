@@ -7,7 +7,7 @@
 
 import { useEffect, useState } from 'react'
 import { motion, useReducedMotion } from 'framer-motion'
-import { BookOpenCheck, ClipboardList, GraduationCap, Play, Sunrise, Target } from 'lucide-react'
+import { BookOpenCheck, ClipboardList, GraduationCap, Medal, Play, Sunrise, Target } from 'lucide-react'
 
 import { api } from '@/lib/api'
 import { useAppStore } from '@/lib/store'
@@ -231,8 +231,9 @@ export function InternshipPanel() {
           </motion.div>
         )}
 
-        <p className="relative mt-3 text-[10px] leading-relaxed text-muted-foreground">
-          🏅 {data.sourceNote}
+        <p className="relative mt-3 flex flex-wrap items-center gap-x-1.5 gap-y-0.5 text-[10px] leading-relaxed text-muted-foreground">
+          <Medal className="size-3.5 shrink-0 text-gold" aria-hidden />
+          <span>{data.sourceNote}</span>
         </p>
       </div>
     </motion.section>

@@ -32,6 +32,8 @@ import { api } from '@/lib/api'
 import { useAppStore } from '@/lib/store'
 import { Concept3D } from '@/components/concept/concept-3d'
 import { PageHeader } from '@/components/primitives/kit'
+import { Pop, ScrollReveal, Stagger, StaggerItem } from '@/components/primitives/motion'
+import { PulseTrace } from '@/components/primitives/scenery'
 import type { ConceptDetail } from '@/lib/types'
 import { SYSTEMS } from '@/lib/types'
 import type { LogbookEntryClient } from '@/lib/types'
@@ -453,13 +455,19 @@ export function CasesView() {
   // ─── RENDER: LIST ──────────────────────────────────────────────────────────
   if (!detail) {
     return (
-      <div className="mx-auto max-w-5xl space-y-6 p-4 md:p-6">
-        {/* ── Header — porcelain editorial ── */}
-        <PageHeader
-          eyebrow={<><Stethoscope className="mr-1 inline size-3" />Clinical case simulator</>}
-          title="Clinical Case Simulator"
-          intro="Progressive-reveal cases. Make the call at every step — the platform explains your reasoning after."
-        />
+      <div className="relative mx-auto max-w-5xl space-y-6 p-4 md:p-6">
+        {/* ── Header — porcelain editorial, faint ECG pulse in the header zone ── */}
+        <div className="relative pb-12 md:pb-14">
+          <div className="pointer-events-none absolute inset-x-0 bottom-0 h-12 md:h-14" aria-hidden>
+            <PulseTrace height={80} />
+          </div>
+          <PageHeader
+            className="relative z-10"
+            eyebrow={<><Stethoscope className="mr-1 inline size-3" />Clinical case simulator</>}
+            title="Clinical Case Simulator"
+            intro="Progressive-reveal cases. Make the call at every step — the platform explains your reasoning after."
+          />
+        </div>
 
         {/* Tab switcher — case simulator / clinical logbook */}
         <div className="clay-tray inline-flex rounded-xl p-1" role="tablist" aria-label="Cases sections">
@@ -494,17 +502,12 @@ export function CasesView() {
             )}
 
             {listStatus === 'ready' && (
-          <div className="grid gap-4 md:grid-cols-2">
-            {cases.map((c, i) => {
+          <Stagger className="grid gap-4 md:grid-cols-2">
+            {cases.map((c) => {
               const dm = diffMeta(c.difficulty)
               return (
-                <motion.article
-                  key={c.id}
-                  initial={reduce ? false : { opacity: 0, y: 14 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.4, delay: reduce ? 0 : Math.min(i * 0.06, 0.3), ease: EASE }}
-                  className="clay clay-hover flex flex-col rounded-2xl p-5 md:p-6"
-                >
+                <StaggerItem key={c.id} className="flex flex-col">
+                  <article className="clay clay-hover flex flex-1 flex-col rounded-2xl p-5 md:p-6">
                   <div className="flex flex-wrap items-center justify-between gap-2">
                     <span
                       className={cn(
@@ -546,10 +549,11 @@ export function CasesView() {
                       <Play className="size-4" /> START CASE
                     </Button>
                   </div>
-                </motion.article>
+                  </article>
+                </StaggerItem>
               )
             })}
-          </div>
+          </Stagger>
         )}
           </>
         )}
@@ -804,12 +808,7 @@ export function CasesView() {
                     )}
 
                     {verdict && (
-                      <motion.div
-                        initial={{ opacity: 0, y: 8 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.3, ease: EASE }}
-                        className="space-y-3"
-                      >
+                      <Pop className="space-y-3">
                         <div
                           className={cn(
                             'flex items-center gap-2 rounded-lg px-3.5 py-2.5 text-sm font-semibold',
@@ -831,7 +830,7 @@ export function CasesView() {
                             </p>
                           </div>
                         )}
-                      </motion.div>
+                      </Pop>
                     )}
                   </div>
                 )}
@@ -1080,6 +1079,7 @@ function LogbookPanel({ reduce }: { reduce: boolean | null }) {
       </div>
 
       {/* New entry form */}
+      <ScrollReveal>
       <section className="clay rounded-2xl p-4 md:p-5">
         <div className="flex items-center gap-2">
           <Plus className="size-4 text-primary" />
@@ -1163,6 +1163,7 @@ function LogbookPanel({ reduce }: { reduce: boolean | null }) {
           </Button>
         </div>
       </section>
+      </ScrollReveal>
 
       {/* Entries timeline */}
       {status === 'loading' && (

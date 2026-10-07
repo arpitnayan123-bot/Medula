@@ -1,7 +1,7 @@
 'use client'
 
 import { useCallback, useEffect, useState } from 'react'
-import { AnimatePresence, animate, motion, useReducedMotion } from 'framer-motion'
+import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
 import {
   Activity,
   ArrowRight,
@@ -31,6 +31,8 @@ import type { RoadmapPayload, RoadmapPhase, WeekDayPlan } from '@/lib/types'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { PageHeader } from '@/components/primitives/kit'
+import { SpringNumber, Stagger, StaggerItem } from '@/components/primitives/motion'
+import { DotMatrix } from '@/components/primitives/scenery'
 import { cn } from '@/lib/utils'
 
 const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1]
@@ -246,23 +248,6 @@ function DayDetailPanel({
 
 // ─── Primitives ──────────────────────────────────────────────────────────────
 
-function AnimatedNumber({ value, className }: { value: number; className?: string }) {
-  const reduce = useReducedMotion()
-  const [display, setDisplay] = useState(0)
-
-  useEffect(() => {
-    if (reduce) return
-    const controls = animate(0, value, {
-      duration: 1.1,
-      ease: EASE,
-      onUpdate: (v) => setDisplay(Math.round(v)),
-    })
-    return () => controls.stop()
-  }, [value, reduce])
-
-  return <span className={className}>{reduce ? value : display}</span>
-}
-
 function MetricChip({ icon: Icon, label, value, tone }: { icon: LucideIcon; label: string; value: string; tone: string }) {
   return (
     <span className="inline-flex min-h-11 items-center gap-2 rounded-full border border-line bg-surface-2/70 px-3.5 py-2 text-xs">
@@ -291,15 +276,9 @@ function IntensityDots({ level }: { level: number }) {
 
 // ─── Phase timeline node ─────────────────────────────────────────────────────
 
-function PhaseNode({ phase, index, reduce }: { phase: RoadmapPhase; index: number; reduce: boolean }) {
+function PhaseNode({ phase, index }: { phase: RoadmapPhase; index: number }) {
   return (
-    <motion.li
-      className="relative"
-      initial={reduce ? false : { opacity: 0, y: 24 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: '-60px' }}
-      transition={{ duration: 0.5, delay: reduce ? 0 : index * 0.08, ease: EASE }}
-    >
+    <li className="relative">
       {/* node dot */}
       <span className="absolute -left-[31px] top-7 flex size-3 items-center justify-center">
         {index === 0 && (
@@ -308,12 +287,13 @@ function PhaseNode({ phase, index, reduce }: { phase: RoadmapPhase; index: numbe
         <span className={cn('relative size-3 rounded-full', index === 0 ? 'bg-primary' : 'bg-muted-foreground/50')} />
       </span>
 
-      <article
-        className={cn(
-          'clay rounded-2xl p-4 md:p-5',
-          index === 0 && 'border-primary/40 shadow-lg shadow-primary/20',
-        )}
-      >
+      <StaggerItem>
+        <article
+          className={cn(
+            'clay rounded-2xl p-4 md:p-5',
+            index === 0 && 'border-primary/40 shadow-lg shadow-primary/20',
+          )}
+        >
         <div className="flex flex-wrap items-center gap-2">
           <h3 className="text-base font-semibold tracking-tight md:text-lg">{phase.phase}</h3>
           <span className="rounded-md border border-line bg-surface-2 px-2 py-0.5 text-[11px] font-medium text-ink-soft">
@@ -360,8 +340,9 @@ function PhaseNode({ phase, index, reduce }: { phase: RoadmapPhase; index: numbe
             {phase.milestone}
           </p>
         </div>
-      </article>
-    </motion.li>
+        </article>
+      </StaggerItem>
+    </li>
   )
 }
 
@@ -505,8 +486,8 @@ export function RoadmapView() {
         transition={{ duration: 0.5, delay: reduce ? 0 : 0.08, ease: EASE }}
         className="clay relative overflow-hidden rounded-3xl p-5 md:p-8"
       >
-        <div className="med-grid pointer-events-none absolute inset-0 opacity-60" aria-hidden="true" />
-        <div className="relative">
+        <DotMatrix />
+        <div className="relative z-10">
           <div className="flex flex-wrap items-center gap-2">
             <p className="inline-flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-ink-soft">
               <Timer className="size-4 text-primary" />
@@ -527,7 +508,7 @@ export function RoadmapView() {
             ].map((b) => (
               <div key={b.label} className="rounded-2xl border border-line bg-surface-2/50 p-3 text-center md:p-4">
                 <p className="text-4xl font-semibold leading-none tabular-nums tracking-tight md:text-5xl">
-                  <AnimatedNumber value={b.v} />
+                  <SpringNumber value={b.v} />
                 </p>
                 <p className="mt-1.5 text-[11px] font-medium uppercase tracking-[0.14em] text-ink-soft">{b.label}</p>
               </div>
@@ -677,11 +658,13 @@ export function RoadmapView() {
             {currentStageLabel}
           </span>
         </div>
-        <ol className="relative ml-2 space-y-4 border-l border-line pl-6 md:ml-4 md:pl-8">
-          {phases.map((p, i) => (
-            <PhaseNode key={p.phase} phase={p} index={i} reduce={reduce ?? false} />
-          ))}
-        </ol>
+        <Stagger>
+          <ol className="relative ml-2 space-y-4 border-l border-line pl-6 md:ml-4 md:pl-8">
+            {phases.map((p, i) => (
+              <PhaseNode key={p.phase} phase={p} index={i} />
+            ))}
+          </ol>
+        </Stagger>
       </section>
 
       {/* 4 · CTA band */}

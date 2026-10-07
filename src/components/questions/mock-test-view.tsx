@@ -52,6 +52,7 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
 import { cn } from '@/lib/utils'
+import { ScrollReveal, Stagger, StaggerItem, Pop } from '@/components/primitives/motion'
 
 const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1]
 
@@ -341,25 +342,26 @@ export function MockTestView() {
             <label className="text-xs font-semibold uppercase tracking-[0.14em] text-ink-soft">
               Start straight away
             </label>
-            <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
+            <Stagger className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
               {QUICK_STARTS.map((qk) => (
-                <button
-                  key={qk.label}
-                  type="button"
-                  disabled={loadState === 'loading'}
-                  onClick={() => startTest({ size: qk.size, mix: qk.mix })}
-                  className="clay-btn min-h-11 border border-line bg-surface-2/40 p-3 text-left transition-colors hover:border-primary/40 disabled:pointer-events-none disabled:opacity-50"
-                >
-                  <span className="flex items-center gap-2 text-sm font-semibold">
-                    <span className="grid size-6 shrink-0 place-items-center rounded-lg bg-surface-2 text-primary shadow-well">
-                      <qk.icon className="size-3.5" aria-hidden />
+                <StaggerItem key={qk.label}>
+                  <button
+                    type="button"
+                    disabled={loadState === 'loading'}
+                    onClick={() => startTest({ size: qk.size, mix: qk.mix })}
+                    className="clay-btn h-full min-h-11 w-full border border-line bg-surface-2/40 p-3 text-left transition-colors hover:border-primary/40 disabled:pointer-events-none disabled:opacity-50"
+                  >
+                    <span className="flex items-center gap-2 text-sm font-semibold">
+                      <span className="grid size-6 shrink-0 place-items-center rounded-lg bg-surface-2 text-primary shadow-well">
+                        <qk.icon className="size-3.5" aria-hidden />
+                      </span>
+                      <span className="whitespace-nowrap">{qk.label}</span>
                     </span>
-                    <span className="whitespace-nowrap">{qk.label}</span>
-                  </span>
-                  <span className="mt-1 block text-[11px] leading-snug text-ink-soft">{qk.desc}</span>
-                </button>
+                    <span className="mt-1 block text-[11px] leading-snug text-ink-soft">{qk.desc}</span>
+                  </button>
+                </StaggerItem>
               ))}
-            </div>
+            </Stagger>
           </div>
 
           <div className="space-y-3">
@@ -734,9 +736,11 @@ export function MockTestView() {
       <div className="mx-auto max-w-3xl space-y-5 p-4 md:p-6">
         <header className="flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-2.5">
-            <span className="grid size-10 place-items-center rounded-xl bg-sev-warn/10">
-              <GraduationCap className="size-5 text-sev-warn" />
-            </span>
+            <Pop>
+              <span className="grid size-10 place-items-center rounded-xl bg-sev-warn/10">
+                <GraduationCap className="size-5 text-sev-warn" />
+              </span>
+            </Pop>
             <div>
               <h1 className="text-2xl font-semibold tracking-tight md:text-3xl">Mock report</h1>
               <p className="text-xs text-ink-soft">{questions.length} questions · {fmtTime(questions.length * SEC_PER_Q - secondsLeft)} used</p>
@@ -798,6 +802,7 @@ export function MockTestView() {
 
         {/* Per-subject breakdown */}
         {bySubject.length > 0 && (
+          <ScrollReveal>
           <section className="clay rounded-2xl p-5 md:p-6">
             <h2 className="text-sm font-semibold uppercase tracking-[0.14em] text-ink-soft">Subject breakdown</h2>
             <ul className="mt-3 space-y-2.5">
@@ -819,9 +824,11 @@ export function MockTestView() {
               ))}
             </ul>
           </section>
+          </ScrollReveal>
         )}
 
         {/* Review list */}
+        <ScrollReveal>
         <section className="clay rounded-2xl p-4 md:p-6">
           <h2 className="text-sm font-semibold uppercase tracking-[0.14em] text-ink-soft">Review every question</h2>
           <div className="mt-3 space-y-2">
@@ -870,6 +877,7 @@ export function MockTestView() {
             })}
           </div>
         </section>
+        </ScrollReveal>
 
         <p className="text-center text-[11px] text-muted-foreground">
           Every attempt — even skipped-to-submit — feeds your spaced repetition schedule on the Revise tab.

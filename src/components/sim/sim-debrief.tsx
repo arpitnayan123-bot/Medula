@@ -21,6 +21,7 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
 import { Progress } from '@/components/ui/progress'
+import { ScrollReveal } from '@/components/primitives/motion'
 import { cn } from '@/lib/utils'
 import {
   AnimatedNumber, DIFF_TONE, EASE, MicroLabel, Reveal, VERDICT_META, asPct, fmtClock, statusTone,
@@ -74,14 +75,14 @@ function ScoreRing({ pct }: { pct: number }) {
 
 // ─── Timeline item ───────────────────────────────────────────────────────────
 
-function TimelineItem({ item, index }: { item: SimDebriefTimelineItem; index: number }) {
+function TimelineItem({ item }: { item: SimDebriefTimelineItem; index: number }) {
   const [open, setOpen] = useState(false)
   const verdictTone = item.correct ? 'text-sev-ok' : 'text-sev-crit'
   const ResultIcon = item.correct ? CheckCircle2 : XCircle
   const hasDetail = item.verdicts.length > 0 || item.missed.length > 0
 
   return (
-    <Reveal index={Math.min(index, 6)}>
+    <ScrollReveal>
       <li className="clay min-w-0 space-y-2.5 rounded-2xl p-4">
         <div className="flex min-w-0 items-start gap-2.5">
           <ResultIcon className={cn('mt-0.5 size-4 shrink-0', verdictTone)} aria-hidden />
@@ -160,7 +161,7 @@ function TimelineItem({ item, index }: { item: SimDebriefTimelineItem; index: nu
           </Collapsible>
         )}
       </li>
-    </Reveal>
+    </ScrollReveal>
   )
 }
 
@@ -292,19 +293,19 @@ export function SimDebriefView({
 
       {/* ── Decision timeline ── */}
       {debrief.timeline.length > 0 && (
-        <Reveal index={3} className="space-y-3">
+        <ScrollReveal className="space-y-3">
           <MicroLabel>Decision timeline</MicroLabel>
           <ol className="space-y-3">
             {debrief.timeline.map((item, i) => (
               <TimelineItem key={`${item.interactionId}-${i}`} item={item} index={i} />
             ))}
           </ol>
-        </Reveal>
+        </ScrollReveal>
       )}
 
       {/* ── Learning points ── */}
       {debrief.learning.length > 0 && (
-        <Reveal index={4} className="space-y-3">
+        <ScrollReveal className="space-y-3">
           <MicroLabel className="text-primary">Learning points</MicroLabel>
           <ul className="clay space-y-3 rounded-2xl p-4 md:p-5">
             {debrief.learning.map((l, i) => (
@@ -314,12 +315,12 @@ export function SimDebriefView({
               </li>
             ))}
           </ul>
-        </Reveal>
+        </ScrollReveal>
       )}
 
       {/* ── Concepts (Knowledge Graph) ── */}
       {debrief.concepts.length > 0 && (
-        <Reveal index={5} className="space-y-3">
+        <ScrollReveal className="space-y-3">
           <MicroLabel>Concepts this case tested</MicroLabel>
           <div className="flex flex-wrap gap-2">
             {debrief.concepts.map((c) => {
@@ -354,12 +355,12 @@ export function SimDebriefView({
               )
             })}
           </div>
-        </Reveal>
+        </ScrollReveal>
       )}
 
       {/* ── Related Knowledge (graph neighbourhood) ── */}
       {debrief.related && debrief.related.length > 0 && (
-        <Reveal index={6} className="space-y-3">
+        <ScrollReveal className="space-y-3">
           <MicroLabel>Related Knowledge — from the graph</MicroLabel>
           <div className="grid gap-3 sm:grid-cols-2">
             {debrief.related.map((g) => (
@@ -385,11 +386,11 @@ export function SimDebriefView({
               </div>
             ))}
           </div>
-        </Reveal>
+        </ScrollReveal>
       )}
 
       {/* ── Hand-offs ── */}
-      <Reveal index={7} className="space-y-3">
+      <ScrollReveal className="space-y-3">
         <MicroLabel>Hand-offs</MicroLabel>
         <div className="grid gap-3 sm:grid-cols-2">
           <button
@@ -421,11 +422,11 @@ export function SimDebriefView({
             </span>
           </button>
         </div>
-      </Reveal>
+      </ScrollReveal>
 
       {/* ── Mistake Intelligence honesty report ── */}
       {debrief.mistakeFed && (
-        <Reveal index={8}>
+        <ScrollReveal>
           <p
             role="status"
             className={cn(
@@ -443,18 +444,18 @@ export function SimDebriefView({
               <span className="text-ink-soft">{debrief.mistakeFed.reason}</span>
             </span>
           </p>
-        </Reveal>
+        </ScrollReveal>
       )}
 
       {/* ── Actions ── */}
-      <Reveal index={9} className="flex flex-col gap-2 sm:flex-row">
+      <ScrollReveal className="flex flex-col gap-2 sm:flex-row">
         <Button className="clay-btn min-h-12 flex-1" onClick={onRunAgain}>
           <RotateCcw className="size-4" aria-hidden /> Run the case again
         </Button>
         <Button variant="outline" className="min-h-12 flex-1" onClick={onBackToLibrary}>
           <Play className="size-4" aria-hidden /> Back to library
         </Button>
-      </Reveal>
+      </ScrollReveal>
     </div>
   )
 }

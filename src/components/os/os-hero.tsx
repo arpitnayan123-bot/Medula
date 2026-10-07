@@ -9,6 +9,8 @@ import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
+import { Magnetic, SpringNumber, Stagger, StaggerItem } from '@/components/primitives/motion'
+import { OrbitRings } from '@/components/primitives/scenery'
 import type { OsAction, OsCommandCenter, OsReadiness, OsStats } from '@/lib/types'
 import {
   OS_KIND_ICON, MicroLabel, OsGoButton, useOsNavigate,
@@ -71,14 +73,16 @@ function AlternateRow({ action }: { action: OsAction }) {
 function StatChip({ icon: Icon, label, value, hint }: {
   icon: typeof Flame
   label: string
-  value: string
+  value: number
   hint?: string
 }) {
   return (
     <div className="clay clay-hover flex items-center gap-2 rounded-xl px-2.5 py-2" title={hint}>
       <Icon className="size-3.5 shrink-0 text-gold" aria-hidden />
       <div className="min-w-0">
-        <div className="text-[13px] font-semibold leading-tight tabular-nums">{value}</div>
+        <div className="text-[13px] font-semibold leading-tight tabular-nums">
+          <SpringNumber value={value} />
+        </div>
         <div className="truncate text-[10px] text-ink-soft">{label}</div>
       </div>
     </div>
@@ -117,6 +121,7 @@ export function OsHero({ data }: { data: OsCommandCenter }) {
         transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
         className="podium relative overflow-hidden rounded-3xl p-4 md:p-6"
       >
+        <OrbitRings className="opacity-60" />
         <div className="pointer-events-none absolute -right-12 -top-16 size-52 rounded-full bg-[#f3d5a4]/35 blur-3xl" aria-hidden />
         <div className="pointer-events-none absolute -left-14 -bottom-8 size-48 rounded-full bg-[#c9e8d4]/30 blur-3xl" aria-hidden />
         <div className="relative flex flex-col gap-4 sm:flex-row sm:items-start">
@@ -133,10 +138,12 @@ export function OsHero({ data }: { data: OsCommandCenter }) {
             <h2 className="font-display mt-3 text-xl font-semibold leading-snug md:text-2xl">{primary.title}</h2>
             <p className="mt-1.5 text-[13px] leading-relaxed text-ink-soft">{primary.reason}</p>
             <div className="mt-4 flex flex-wrap items-center gap-2">
-              <Button size="sm" className="clay-btn rounded-xl text-xs" onClick={() => go(primary.view, primary.conceptId, primary.topicId)}>
-                {primary.cta}
-                <ChevronRight className="size-4" aria-hidden />
-              </Button>
+              <Magnetic>
+                <Button size="sm" className="clay-btn rounded-xl text-xs" onClick={() => go(primary.view, primary.conceptId, primary.topicId)}>
+                  {primary.cta}
+                  <ChevronRight className="size-4" aria-hidden />
+                </Button>
+              </Magnetic>
               <OsGoButton view="tutor" variant="ghost" size="sm" className="text-xs text-ink-soft">
                 <Sparkles className="size-3.5" aria-hidden />
                 Ask the AI tutor
@@ -154,7 +161,7 @@ export function OsHero({ data }: { data: OsCommandCenter }) {
         </div>
 
         {ruleOpen && (
-          <div className="clay-in mt-4 rounded-xl p-3.5">
+          <div className="clay-in relative mt-4 rounded-xl p-3.5">
             <MicroLabel>Published priority rule — applied top to bottom</MicroLabel>
             <ol className="mt-1.5 space-y-1">
               {now.rule.map((line, i) => (
@@ -179,13 +186,23 @@ export function OsHero({ data }: { data: OsCommandCenter }) {
       )}
 
       {/* today's measured stats */}
-      <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-5">
-        <StatChip icon={Flame} label="day streak" value={`${stats.streakDays}`} hint="Consecutive active IST days, measured from your activity" />
-        <StatChip icon={CalendarDays} label="active days / 30" value={`${stats.activeDays30}`} hint="Days with any measured study activity in the last 30" />
-        <StatChip icon={Timer} label="min logged today" value={`${stats.minutesToday}`} hint="Study sessions logged today" />
-        <StatChip icon={CircleHelp} label="MCQs today" value={`${stats.questionsToday}`} hint="Questions answered today" />
-        <StatChip icon={Zap} label="XP today" value={`${stats.xpToday}`} hint="Experience points earned today (measured, not for opening the app)" />
-      </div>
+      <Stagger className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-5">
+        <StaggerItem className="h-full">
+          <StatChip icon={Flame} label="day streak" value={stats.streakDays} hint="Consecutive active IST days, measured from your activity" />
+        </StaggerItem>
+        <StaggerItem className="h-full">
+          <StatChip icon={CalendarDays} label="active days / 30" value={stats.activeDays30} hint="Days with any measured study activity in the last 30" />
+        </StaggerItem>
+        <StaggerItem className="h-full">
+          <StatChip icon={Timer} label="min logged today" value={stats.minutesToday} hint="Study sessions logged today" />
+        </StaggerItem>
+        <StaggerItem className="h-full">
+          <StatChip icon={CircleHelp} label="MCQs today" value={stats.questionsToday} hint="Questions answered today" />
+        </StaggerItem>
+        <StaggerItem className="h-full">
+          <StatChip icon={Zap} label="XP today" value={stats.xpToday} hint="Experience points earned today (measured, not for opening the app)" />
+        </StaggerItem>
+      </Stagger>
     </section>
   )
 }
