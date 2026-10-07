@@ -127,7 +127,7 @@ export function CommunityGroupsScreen({
 
   if (state === 'error') {
     return (
-      <div className="glass flex flex-col items-center gap-3 rounded-2xl p-8 text-center" role="alert">
+      <div className="clay flex flex-col items-center gap-3 rounded-2xl p-8 text-center" role="alert">
         <ShieldAlert className="size-6 text-ink-soft" aria-hidden />
         <h1 className="text-lg font-semibold tracking-tight">Study groups didn&apos;t load</h1>
         <p className="max-w-sm text-sm leading-relaxed text-ink-soft">

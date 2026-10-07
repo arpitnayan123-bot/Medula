@@ -135,7 +135,7 @@ export function LibraryView() {
             <SectionSkeleton cards={2} />
           </div>
         ) : !home && !homeStale && homeMeta.state === 'error' ? (
-          <div className="glass flex flex-col items-center gap-3 rounded-2xl p-8 text-center" role="alert">
+          <div className="clay flex flex-col items-center gap-3 rounded-2xl p-8 text-center" role="alert">
             <h1 className="text-lg font-semibold tracking-tight">The Resource Hub didn&apos;t load</h1>
             <p className="max-w-sm text-sm leading-relaxed text-ink-soft">
               The catalog engine did not respond — it may still be warming up. Nothing is lost; retry below.

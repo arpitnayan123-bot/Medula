@@ -118,7 +118,7 @@ function AiAnalyst({ attemptId }: { attemptId: string }) {
   return (
     <Reveal index={9} className="space-y-3">
       <SectionTitle className="text-primary">AI test analyst — narrates your numbers, never invents them</SectionTitle>
-      <div className="glass space-y-4 rounded-2xl p-4 md:p-5">
+      <div className="clay space-y-4 rounded-2xl p-4 md:p-5">
         <div className="flex flex-wrap gap-2">
           {AI_ACTIONS.map(({ action, label }) => {
             const busy = loading === action
@@ -204,7 +204,7 @@ export function ExamAnalysisView({ analysis, onOpenReview, onRetest, onHome, onH
     <div className="mx-auto max-w-5xl space-y-6 p-4 md:p-6">
       {/* ── Score hero ── */}
       <Reveal index={0}>
-        <section className="glass flex flex-col items-center gap-6 rounded-2xl p-6 text-center md:flex-row md:p-8 md:text-left" aria-label="Score summary">
+        <section className="clay flex flex-col items-center gap-6 rounded-2xl p-6 text-center md:flex-row md:p-8 md:text-left" aria-label="Score summary">
           <ScoreRing pct={pct} />
           <div className="min-w-0 flex-1 space-y-3">
             <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-ink-soft">{analysis.label}</p>
@@ -226,7 +226,7 @@ export function ExamAnalysisView({ analysis, onOpenReview, onRetest, onHome, onH
       {/* ── Improvement vs previous test ── */}
       {analysis.improvement && (
         <Reveal index={1}>
-          <section className="glass space-y-3 rounded-2xl p-4 md:p-5" aria-label="Improvement vs previous test">
+          <section className="clay space-y-3 rounded-2xl p-4 md:p-5" aria-label="Improvement vs previous test">
             <SectionTitle>Against your last test</SectionTitle>
             <p className="text-sm font-semibold">
               vs <span className="text-ink-soft">{analysis.improvement.vsLabel}</span>
@@ -263,7 +263,7 @@ export function ExamAnalysisView({ analysis, onOpenReview, onRetest, onHome, onH
           {mistakeTiles.map((m) => {
             const v = analysis.mistakes[m.key]
             return (
-              <div key={m.key} className="glass flex min-w-0 flex-col gap-1 rounded-2xl p-4">
+              <div key={m.key} className="clay flex min-w-0 flex-col gap-1 rounded-2xl p-4">
                 <span className={cn('grid size-8 place-items-center rounded-lg bg-surface-2', m.tone)}>
                   <m.icon className="size-4" aria-hidden />
                 </span>
@@ -275,7 +275,7 @@ export function ExamAnalysisView({ analysis, onOpenReview, onRetest, onHome, onH
           })}
         </div>
         {analysis.repeatedWrong.length > 0 && (
-          <div className="glass rounded-2xl p-4">
+          <div className="clay rounded-2xl p-4">
             <p className="text-xs font-semibold text-sev-crit">Repeated offenders — missed again today</p>
             <div className="mt-2 flex flex-wrap gap-1.5">
               {analysis.repeatedWrong.map((r) => (
@@ -291,7 +291,7 @@ export function ExamAnalysisView({ analysis, onOpenReview, onRetest, onHome, onH
       {/* ── Speed & time distribution ── */}
       <Reveal index={3} className="space-y-3">
         <SectionTitle>Speed &amp; time</SectionTitle>
-        <div className="glass space-y-4 rounded-2xl p-4 md:p-5">
+        <div className="clay space-y-4 rounded-2xl p-4 md:p-5">
           <div className="flex flex-wrap items-center gap-2">
             <Chip icon={Gauge} tone={analysis.speed.band === 'slow' ? 'border-sev-warn/30 bg-sev-warn/10 text-sev-warn' : undefined}>
               {formatMs(analysis.speed.avgTimeMs)} per question
@@ -317,7 +317,7 @@ export function ExamAnalysisView({ analysis, onOpenReview, onRetest, onHome, onH
       {analysis.subjects.length > 0 && (
         <Reveal index={4} className="space-y-3">
           <SectionTitle>Subject breakdown — best to worst</SectionTitle>
-          <div className="glass overflow-x-auto rounded-2xl p-2 md:p-3 [scrollbar-width:thin] [&::-webkit-scrollbar]:h-1.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-line">
+          <div className="clay overflow-x-auto rounded-2xl p-2 md:p-3 [scrollbar-width:thin] [&::-webkit-scrollbar]:h-1.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-line">
             <table className="w-full min-w-125 text-sm">
               <thead>
                 <tr className="text-left text-[10px] font-bold uppercase tracking-wider text-ink-soft">
@@ -354,7 +354,7 @@ export function ExamAnalysisView({ analysis, onOpenReview, onRetest, onHome, onH
       {/* ── Difficulty split + PYQ ── */}
       <Reveal index={5} className="grid grid-cols-1 gap-4 md:grid-cols-2">
         {analysis.difficulty.length > 0 && (
-          <div className="glass space-y-3 rounded-2xl p-4 md:p-5">
+          <div className="clay space-y-3 rounded-2xl p-4 md:p-5">
             <SectionTitle>By difficulty</SectionTitle>
             {analysis.difficulty.map((d) => {
               const pctD = d.total > 0 ? (d.correct / d.total) * 100 : 0
@@ -370,7 +370,7 @@ export function ExamAnalysisView({ analysis, onOpenReview, onRetest, onHome, onH
             })}
           </div>
         )}
-        <div className="glass space-y-3 rounded-2xl p-4 md:p-5">
+        <div className="clay space-y-3 rounded-2xl p-4 md:p-5">
           <SectionTitle>PYQ performance</SectionTitle>
           {analysis.pyq ? (
             <div className="flex flex-wrap items-center gap-2">
@@ -389,7 +389,7 @@ export function ExamAnalysisView({ analysis, onOpenReview, onRetest, onHome, onH
       {(analysis.weakTopics.length > 0 || analysis.strongTopics.length > 0) && (
         <Reveal index={6} className="grid grid-cols-1 gap-4 md:grid-cols-2">
           {analysis.weakTopics.length > 0 && (
-            <div className="glass space-y-3 rounded-2xl p-4 md:p-5">
+            <div className="clay space-y-3 rounded-2xl p-4 md:p-5">
               <SectionTitle className="text-sev-crit">Weak topics — drill them</SectionTitle>
               <div className="space-y-2.5">
                 {analysis.weakTopics.map((w) => (
@@ -411,7 +411,7 @@ export function ExamAnalysisView({ analysis, onOpenReview, onRetest, onHome, onH
             </div>
           )}
           {analysis.strongTopics.length > 0 && (
-            <div className="glass space-y-3 rounded-2xl p-4 md:p-5">
+            <div className="clay space-y-3 rounded-2xl p-4 md:p-5">
               <SectionTitle className="text-sev-ok">Strong topics — keep them warm</SectionTitle>
               <div className="space-y-2.5">
                 {analysis.strongTopics.map((w) => (
@@ -435,7 +435,7 @@ export function ExamAnalysisView({ analysis, onOpenReview, onRetest, onHome, onH
       {analysis.weakConcepts.length > 0 && (
         <Reveal index={7} className="space-y-3">
           <SectionTitle>Weak concepts — open and repair</SectionTitle>
-          <div className="glass flex flex-wrap gap-2 rounded-2xl p-4">
+          <div className="clay flex flex-wrap gap-2 rounded-2xl p-4">
             {analysis.weakConcepts.map((c) => {
               const mastery = asPct(c.mastery)
               return (
@@ -462,7 +462,7 @@ export function ExamAnalysisView({ analysis, onOpenReview, onRetest, onHome, onH
       {analysis.readiness.length > 0 && (
         <Reveal index={8} className="space-y-3">
           <SectionTitle>Readiness indicators</SectionTitle>
-          <div className="glass grid grid-cols-1 gap-4 rounded-2xl p-4 sm:grid-cols-2 md:grid-cols-3 md:p-5">
+          <div className="clay grid grid-cols-1 gap-4 rounded-2xl p-4 sm:grid-cols-2 md:grid-cols-3 md:p-5">
             {analysis.readiness.map((r) => (
               <div key={r.key} className="min-w-0 space-y-1.5">
                 <div className="flex items-baseline justify-between gap-2">
@@ -492,7 +492,7 @@ export function ExamAnalysisView({ analysis, onOpenReview, onRetest, onHome, onH
       {/* ── Recommended next test ── */}
       {analysis.recommended && (
         <Reveal index={10}>
-          <section className="glass space-y-3 rounded-2xl border-primary/25 p-4 md:p-5" aria-label="Recommended next test">
+          <section className="clay space-y-3 rounded-2xl border-primary/25 p-4 md:p-5" aria-label="Recommended next test">
             <div className="flex flex-wrap items-center gap-2">
               <span className="grid size-8 shrink-0 place-items-center rounded-lg bg-primary/12 text-primary">
                 <TrendingUp className="size-4" aria-hidden />

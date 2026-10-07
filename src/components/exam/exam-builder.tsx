@@ -98,7 +98,7 @@ export function ExamBuilder({ home, seed, onStart, onBack }: Props) {
       {/* ── Subjects ── */}
       <Reveal index={1} className="space-y-2.5">
         <SectionTitle>Subjects {subjects.size > 0 && <span className="normal-case tracking-normal">· {subjects.size} selected</span>}</SectionTitle>
-        <div className="glass flex max-h-60 flex-wrap gap-2 overflow-y-auto rounded-2xl p-4 [scrollbar-width:thin] [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-line">
+        <div className="clay flex max-h-60 flex-wrap gap-2 overflow-y-auto rounded-2xl p-4 [scrollbar-width:thin] [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-line">
           {home.facets.subjects.map((s) => {
             const active = subjects.has(s.code)
             return (
@@ -126,7 +126,7 @@ export function ExamBuilder({ home, seed, onStart, onBack }: Props) {
       {home.facets.topics.length > 0 && (
         <Reveal index={2} className="space-y-2.5">
           <SectionTitle>Topics {topics.size > 0 && <span className="normal-case tracking-normal">· {topics.size} selected</span>}</SectionTitle>
-          <div className="glass max-h-72 space-y-4 overflow-y-auto rounded-2xl p-4 [scrollbar-width:thin] [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-line">
+          <div className="clay max-h-72 space-y-4 overflow-y-auto rounded-2xl p-4 [scrollbar-width:thin] [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-line">
             {topicsBySubject.map(([code, list]) => (
               <div key={code} className="min-w-0 space-y-2">
                 <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-ink-soft">{subjectName(code)}</p>
@@ -188,7 +188,7 @@ export function ExamBuilder({ home, seed, onStart, onBack }: Props) {
       {/* ── Sources ── */}
       <Reveal index={4} className="space-y-2.5">
         <SectionTitle>Source bias</SectionTitle>
-        <div className="glass grid grid-cols-1 gap-2 rounded-2xl p-3 sm:grid-cols-2">
+        <div className="clay grid grid-cols-1 gap-2 rounded-2xl p-3 sm:grid-cols-2">
           {SOURCE_META.map((src) => {
             const active = sources.has(src.key)
             return (
@@ -243,7 +243,7 @@ export function ExamBuilder({ home, seed, onStart, onBack }: Props) {
             </button>
           ))}
         </div>
-        <div className="glass rounded-2xl p-4">
+        <div className="clay rounded-2xl p-4">
           <div className="mb-2 flex items-baseline justify-between">
             <Label htmlFor="exam-count" className="text-xs text-ink-soft">Custom count</Label>
             <span className="text-sm font-bold tabular-nums">{clampCount(count)} Q</span>
@@ -281,7 +281,7 @@ export function ExamBuilder({ home, seed, onStart, onBack }: Props) {
             </button>
           ))}
         </div>
-        <div className="glass flex items-center gap-3 rounded-2xl p-4">
+        <div className="clay flex items-center gap-3 rounded-2xl p-4">
           <Label htmlFor="exam-minutes" className="shrink-0 text-xs text-ink-soft">Custom (3–240)</Label>
           <Input
             id="exam-minutes"
@@ -301,7 +301,7 @@ export function ExamBuilder({ home, seed, onStart, onBack }: Props) {
       {/* ── Negative marking ── */}
       <Reveal index={7} className="space-y-2.5">
         <SectionTitle>Marking scheme</SectionTitle>
-        <div className="glass flex items-center justify-between gap-4 rounded-2xl p-4">
+        <div className="clay flex items-center justify-between gap-4 rounded-2xl p-4">
           <div className="min-w-0">
             <Label htmlFor="exam-neg" className="text-sm font-semibold">Negative marking</Label>
             <p className="mt-0.5 text-xs leading-relaxed text-ink-soft">

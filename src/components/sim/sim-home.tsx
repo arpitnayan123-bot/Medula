@@ -33,7 +33,7 @@ interface Props {
 
 function StatChip({ icon: Icon, value, label, accent }: { icon: LucideIcon; value: string; label: string; accent?: boolean }) {
   return (
-    <div className="glass flex min-h-16 min-w-0 flex-1 basis-40 items-center gap-3 rounded-2xl px-4 py-3">
+    <div className="clay flex min-h-16 min-w-0 flex-1 basis-40 items-center gap-3 rounded-2xl px-4 py-3">
       <span className={cn('grid size-9 shrink-0 place-items-center rounded-xl', accent ? 'bg-primary/12 text-primary' : 'bg-surface-2 text-ink-soft')}>
         <Icon className="size-4" aria-hidden />
       </span>
@@ -154,13 +154,19 @@ export function SimHomeScreen({ home, onOpenCase }: Props) {
 
   return (
     <div className="mx-auto max-w-5xl space-y-6 p-4 md:p-6">
-      {/* ── Hero ── */}
-      <Reveal index={0} className="min-w-0 space-y-2">
-        <MicroLabel className="text-primary">Product 09 · Clinical reasoning</MicroLabel>
-        <h1 className="text-3xl font-semibold tracking-tight md:text-4xl">Clinical Case Simulator</h1>
-        <p className="max-w-2xl text-sm leading-relaxed text-ink-soft">
-          Learn the concept → encounter the patient → reason through the case → decide what to do.
-        </p>
+      {/* ── Hero — the porcelain podium ── */}
+      <Reveal index={0}>
+        <div className="podium relative overflow-hidden rounded-3xl p-5 md:p-7">
+          <div className="pointer-events-none absolute -right-12 -top-16 size-52 rounded-full bg-[#f3d5a4]/35 blur-3xl" aria-hidden />
+          <div className="pointer-events-none absolute -left-14 -bottom-8 size-48 rounded-full bg-[#c9e8d4]/30 blur-3xl" aria-hidden />
+          <div className="relative min-w-0 space-y-2">
+            <MicroLabel className="text-primary">Product 09 · Clinical reasoning</MicroLabel>
+            <h1 className="font-display text-3xl font-semibold tracking-tight md:text-4xl">Clinical Case Simulator</h1>
+            <p className="max-w-2xl text-sm leading-relaxed text-ink-soft">
+              Learn the concept → encounter the patient → reason through the case → decide what to do.
+            </p>
+          </div>
+        </div>
       </Reveal>
 
       {/* ── Resume banner ── */}
@@ -286,8 +292,8 @@ export function SimHomeScreen({ home, onOpenCase }: Props) {
       <section aria-label="Case library" className="space-y-3">
         {home.cases.length === 0 ? (
           <Reveal index={5}>
-            <div className="glass flex flex-col items-center gap-3 rounded-2xl px-6 py-12 text-center">
-              <span className="grid size-14 place-items-center rounded-full bg-primary/10">
+            <div className="clay flex flex-col items-center gap-3 rounded-2xl px-6 py-12 text-center">
+              <span className="grid size-14 place-items-center rounded-full bg-primary/10 shadow-well">
                 <Compass className="size-7 text-primary" aria-hidden />
               </span>
               <h2 className="text-lg font-semibold tracking-tight">The library is empty for now</h2>
@@ -302,7 +308,7 @@ export function SimHomeScreen({ home, onOpenCase }: Props) {
           </Reveal>
         ) : filteredCases.length === 0 ? (
           <Reveal index={5}>
-            <div className="glass flex flex-col items-center gap-3 rounded-2xl px-6 py-10 text-center">
+            <div className="clay flex flex-col items-center gap-3 rounded-2xl px-6 py-10 text-center">
               <p className="text-sm font-medium">No cases match these filters.</p>
               <Button
                 variant="outline"
@@ -326,7 +332,7 @@ export function SimHomeScreen({ home, onOpenCase }: Props) {
       {home.weakAreas.length > 0 && (
         <Reveal index={6} className="space-y-3">
           <MicroLabel className="text-sev-warn">Weak areas — below 70% measured</MicroLabel>
-          <div className="glass space-y-3.5 rounded-2xl p-4 md:p-5">
+          <div className="clay space-y-3.5 rounded-2xl p-4 md:p-5">
             {home.weakAreas.map((w, i) => {
               const pct = w.accuracy != null ? Math.round(w.accuracy <= 1 ? w.accuracy * 100 : w.accuracy) : null
               return (
@@ -350,7 +356,7 @@ export function SimHomeScreen({ home, onOpenCase }: Props) {
       {home.repeatedErrors.length > 0 && (
         <Reveal index={7} className="space-y-3">
           <MicroLabel className="text-sev-crit">Repeated misses — same decision, several runs</MicroLabel>
-          <div className="glass divide-y divide-line/70 rounded-2xl p-2 md:p-3">
+          <div className="clay divide-y divide-line/70 rounded-2xl p-2 md:p-3">
             {home.repeatedErrors.map((e, i) => (
               <div key={i} className="flex min-w-0 items-start gap-3 p-2.5 md:p-3">
                 <span className="mt-0.5 grid size-8 shrink-0 place-items-center rounded-lg bg-sev-crit/10 text-sev-crit">
@@ -371,7 +377,7 @@ export function SimHomeScreen({ home, onOpenCase }: Props) {
       {/* ── Recommended next case ── */}
       {home.recommended && (
         <Reveal index={8}>
-          <section className="glass space-y-3 rounded-2xl border-primary/25 p-4 md:p-5" aria-label="Recommended next case">
+          <section className="clay space-y-3 rounded-2xl border-primary/25 p-4 md:p-5" aria-label="Recommended next case">
             <div className="flex items-center gap-2">
               <span className="grid size-8 shrink-0 place-items-center rounded-lg bg-primary/12 text-primary">
                 <TrendingUp className="size-4" aria-hidden />
@@ -397,7 +403,7 @@ export function SimHomeScreen({ home, onOpenCase }: Props) {
                 key={`${r.caseId}-${i}`}
                 type="button"
                 onClick={() => onOpenCase(r.caseId)}
-                className="glass flex w-56 shrink-0 flex-col gap-1 rounded-2xl p-3.5 text-left transition-colors hover:border-primary/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                className="clay clay-hover flex w-56 shrink-0 flex-col gap-1 rounded-2xl p-3.5 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 aria-label={`Reopen ${r.title} — score ${Math.round(r.score)}, ${r.diagnosisCorrect ? 'diagnosis made' : 'diagnosis missed'}`}
               >
                 <span className="flex items-center gap-1.5">

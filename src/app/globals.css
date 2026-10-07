@@ -8,6 +8,7 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --font-display: var(--font-source-serif), Georgia, "Times New Roman", serif;
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -51,58 +52,118 @@
   --color-sev-warn: var(--sev-warn);
   --color-sev-crit: var(--sev-crit);
   --color-info: var(--info);
+  /* Atelier accents — warm human palette */
+  --color-peach: var(--peach);
+  --color-gold: var(--gold);
+  --color-mint: var(--mint);
+  /* Tactile shadow tokens → shadow-raised / shadow-lift / shadow-well utilities */
+  --shadow-raised: var(--_shadow-raised);
+  --shadow-lift: var(--_shadow-lift);
+  --shadow-well: var(--_shadow-well);
+  --shadow-float: var(--_shadow-float);
 }
 
-/* ── MEDULA Light — one signature SKY-BLUE daylight theme ──
-   Night mode has been removed entirely: there is no .dark palette,
-   no theme toggle, and the provider force-pins "light" on every device. */
+/* ═══════════════════════════════════════════════════════════════════════════
+   MEDULA · PORCELAIN ATLAS — the signature design language
+   Warm ivory · porcelain surfaces · surgical teal · champagne · coral
+   Sophisticated neumorphism + selective glass + dimensional depth.
+   One theme. Light only. Warm + bright + medical + premium.
+   ═══════════════════════════════════════════════════════════════════════════ */
 :root {
   --radius: 0.75rem;
-  --background: oklch(0.955 0.024 222); /* clear sky-blue wash */
-  --foreground: oklch(0.18 0.03 250);
-  --card: oklch(0.995 0.004 220);
-  --card-foreground: oklch(0.18 0.03 250);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.18 0.03 250);
-  --primary: oklch(0.55 0.13 232); /* deep medical blue */
-  --primary-foreground: oklch(0.985 0.005 230);
-  --secondary: oklch(0.945 0.018 215);
-  --secondary-foreground: oklch(0.25 0.04 250);
-  --muted: oklch(0.95 0.012 225);
-  --muted-foreground: oklch(0.48 0.02 250);
-  --accent: oklch(0.93 0.03 205);
-  --accent-foreground: oklch(0.25 0.05 240);
-  --destructive: oklch(0.577 0.215 27.3);
-  --border: oklch(0.90 0.01 230);
-  --input: oklch(0.90 0.01 230);
-  --ring: oklch(0.62 0.12 220);
-  --chart-1: oklch(0.55 0.13 232);
-  --chart-2: oklch(0.72 0.12 200);
-  --chart-3: oklch(0.72 0.14 150);
-  --chart-4: oklch(0.78 0.13 80);
-  --chart-5: oklch(0.62 0.19 25);
-  --sidebar: oklch(0.985 0.004 230);
-  --sidebar-foreground: oklch(0.2 0.03 250);
-  --sidebar-primary: oklch(0.55 0.13 232);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.94 0.012 230);
-  --sidebar-accent-foreground: oklch(0.25 0.04 250);
-  --sidebar-border: oklch(0.90 0.01 230);
-  --sidebar-ring: oklch(0.62 0.12 220);
-  /* semantic */
-  --ink: oklch(0.18 0.03 250);
-  --ink-soft: oklch(0.47 0.02 250);
-  --surface: oklch(1 0 0 / 78%);
-  --surface-2: oklch(0.955 0.014 220);
-  --line: oklch(0.895 0.018 220);
-  /* claymorphism tokens (soft 3D clay) */
-  --clay-hi: oklch(1 0.01 220 / 92%);
-  --clay-lo: oklch(0.72 0.045 228 / 28%);
-  --clay-glow: oklch(0.85 0.06 210 / 45%);
-  --sev-ok: oklch(0.63 0.15 152);
-  --sev-warn: oklch(0.75 0.14 75);
-  --sev-crit: oklch(0.58 0.21 25);
-  --info: oklch(0.62 0.12 220);
+
+  /* ── Core canvas ── */
+  --background: oklch(0.968 0.011 85);      /* warm ivory paper */
+  --foreground: oklch(0.245 0.02 60);       /* warm ink (never blue-black) */
+  --card: oklch(0.991 0.005 92);            /* porcelain */
+  --card-foreground: oklch(0.245 0.02 60);
+  --popover: oklch(0.996 0.003 95);
+  --popover-foreground: oklch(0.245 0.02 60);
+
+  /* ── Brand: surgical teal ── */
+  --primary: oklch(0.505 0.078 197);
+  --primary-foreground: oklch(0.985 0.005 95);
+  --secondary: oklch(0.935 0.018 165);      /* gentle mint wash */
+  --secondary-foreground: oklch(0.30 0.035 190);
+  --muted: oklch(0.945 0.012 85);           /* warm grey wash */
+  --muted-foreground: oklch(0.49 0.02 70);
+  --accent: oklch(0.925 0.028 80);          /* champagne wash */
+  --accent-foreground: oklch(0.32 0.045 70);
+  --destructive: oklch(0.55 0.17 30);
+
+  --border: oklch(0.895 0.014 80);
+  --input: oklch(0.90 0.014 82);
+  --ring: oklch(0.60 0.08 195);
+
+  /* ── Data viz — one measured family ── */
+  --chart-1: oklch(0.505 0.078 197);        /* teal */
+  --chart-2: oklch(0.66 0.075 220);         /* soft sky */
+  --chart-3: oklch(0.62 0.105 158);         /* mint-emerald */
+  --chart-4: oklch(0.76 0.11 82);           /* champagne */
+  --chart-5: oklch(0.66 0.13 35);           /* coral */
+
+  /* ── Sidebar porcelain ── */
+  --sidebar: oklch(0.973 0.009 88);
+  --sidebar-foreground: oklch(0.25 0.02 60);
+  --sidebar-primary: oklch(0.505 0.078 197);
+  --sidebar-primary-foreground: oklch(0.985 0.005 95);
+  --sidebar-accent: oklch(0.945 0.012 85);
+  --sidebar-accent-foreground: oklch(0.30 0.03 65);
+  --sidebar-border: oklch(0.895 0.014 80);
+  --sidebar-ring: oklch(0.60 0.08 195);
+
+  /* ── Semantic inks & surfaces ── */
+  --ink: oklch(0.245 0.02 60);
+  --ink-soft: oklch(0.475 0.022 68);
+  --surface: oklch(0.992 0.005 92 / 80%);   /* warm glass base */
+  --surface-2: oklch(0.948 0.012 85);       /* recessed warm grey */
+  --line: oklch(0.895 0.014 80);
+
+  /* ── Atelier accents ── */
+  --peach: oklch(0.78 0.085 45);            /* human warmth */
+  --gold: oklch(0.80 0.115 85);             /* champagne — achievement */
+  --mint: oklch(0.80 0.085 165);            /* gentle mint */
+
+  /* ── Severity (measured states) ── */
+  --sev-ok: oklch(0.585 0.115 155);
+  --sev-warn: oklch(0.68 0.125 70);
+  --sev-crit: oklch(0.55 0.155 30);
+  --info: oklch(0.60 0.08 230);
+
+  /* ── Porcelain neumorphism — warm-tinted shadows (never blue-black) ── */
+  --clay-hi: oklch(1 0.004 95 / 95%);       /* top-left light */
+  --clay-lo: oklch(0.62 0.045 70 / 30%);    /* bottom-right warm shadow */
+  --clay-glow: oklch(0.88 0.05 165 / 42%);  /* mint glow */
+
+  --_shadow-raised:
+    0 1px 2px oklch(0.55 0.04 70 / 7%),
+    0 2px 8px -4px oklch(0.60 0.045 70 / 14%),
+    0 12px 32px -16px oklch(0.55 0.05 65 / 22%),
+    inset 0 1px 0 oklch(1 0 0 / 85%);
+  --_shadow-lift:
+    0 2px 4px oklch(0.55 0.04 70 / 8%),
+    0 6px 16px -6px oklch(0.60 0.045 70 / 18%),
+    0 20px 44px -20px oklch(0.55 0.05 65 / 26%),
+    inset 0 1px 0 oklch(1 0 0 / 90%);
+  --_shadow-well:
+    inset 2px 3px 7px -2px oklch(0.62 0.045 70 / 26%),
+    inset -2px -2px 6px -2px oklch(1 0 0 / 80%);
+  --_shadow-float:
+    0 4px 10px -4px oklch(0.60 0.045 70 / 12%),
+    0 24px 60px -24px oklch(0.55 0.05 65 / 30%),
+    inset 0 1px 0 oklch(1 0 0 / 85%);
+
+  /* ── Subject identities — subtle, sophisticated, one family ── */
+  --subj-anatomy: oklch(0.64 0.10 40);      /* terracotta — structure */
+  --subj-physiology: oklch(0.60 0.085 200); /* teal — flowing systems */
+  --subj-biochemistry: oklch(0.70 0.10 85); /* champagne — molecules */
+  --subj-pathology: oklch(0.62 0.10 18);    /* dusty rose — microscopy */
+  --subj-pharmacology: oklch(0.60 0.09 150);/* sage — interactions */
+  --subj-microbiology: oklch(0.62 0.075 130);/* moss — cultures */
+  --subj-medicine: oklch(0.56 0.075 235);   /* clinical blue — wards */
+  --subj-surgery: oklch(0.55 0.065 212);    /* steel — theatre */
+  --subj-paediatrics: oklch(0.72 0.085 50); /* peach — care */
+  --subj-obgyn: oklch(0.64 0.09 350);       /* rose — life */
 }
 
 @layer base {
@@ -114,168 +175,165 @@
     font-feature-settings: "cv11", "ss01";
     letter-spacing: -0.011em;
   }
-  h1, h2, h3, h4 {
-    letter-spacing: -0.025em;
+  /* Editorial voice: display serif carries the big moments, sans does the work */
+  h1, h2 {
+    font-family: var(--font-display), serif;
+    letter-spacing: -0.022em;
+    font-weight: 600;
+  }
+  h3, h4 {
+    letter-spacing: -0.02em;
+  }
+  ::selection {
+    background: oklch(0.505 0.078 197 / 18%);
   }
 }
 
-/* ── Scrollbars (slim, medical) ── */
+/* ── Scrollbars (slim, warm porcelain) ── */
 ::-webkit-scrollbar { width: 8px; height: 8px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: oklch(0.5 0.02 240 / 30%); border-radius: 8px; }
-::-webkit-scrollbar-thumb:hover { background: oklch(0.55 0.05 220 / 50%); }
+::-webkit-scrollbar-thumb { background: oklch(0.55 0.03 70 / 28%); border-radius: 8px; }
+::-webkit-scrollbar-thumb:hover { background: oklch(0.50 0.06 195 / 45%); }
 
-/* ── CLAYMORPHISM (soft 3D clay surfaces) ── */
-/* Cards & panels: puffy, pressed-in highlight top-left, soft sky shadow bottom-right */
+/* ═══════════════════════════════════════════════════════════════════════════
+   PORCELAIN SYSTEM — the canonical tactile surfaces
+   .clay        raised porcelain card (soft 3D presence)
+   .clay-hover  tactile lift on hover
+   .clay-in     recessed well (pressed-in controls, chips, filters)
+   ═══════════════════════════════════════════════════════════════════════════ */
 .clay {
   background:
-    linear-gradient(145deg,
-      color-mix(in oklab, var(--clay-hi) 70%, transparent),
-      color-mix(in oklab, var(--surface-2) 55%, transparent) 55%,
-      color-mix(in oklab, var(--clay-glow) 24%, transparent));
-  border: 1px solid color-mix(in oklab, var(--clay-hi) 55%, var(--line));
-  box-shadow:
-    10px 12px 26px -12px var(--clay-lo),
-    -6px -6px 16px -8px var(--clay-hi),
-    inset 1.5px 2px 5px -1px var(--clay-hi),
-    inset -2px -3px 8px -2px var(--clay-lo);
-  backdrop-filter: blur(14px) saturate(1.3);
-  -webkit-backdrop-filter: blur(14px) saturate(1.3);
-  transition: box-shadow 0.25s ease, transform 0.25s ease;
+    linear-gradient(150deg,
+      color-mix(in oklab, oklch(1 0.005 95) 92%, transparent),
+      color-mix(in oklab, var(--card) 88%, transparent) 52%,
+      color-mix(in oklab, var(--surface-2) 46%, transparent));
+  border: 1px solid color-mix(in oklab, oklch(1 0 0) 55%, var(--line));
+  box-shadow: var(--_shadow-raised);
+  backdrop-filter: blur(14px) saturate(1.25);
+  -webkit-backdrop-filter: blur(14px) saturate(1.25);
+  transition: box-shadow 0.28s cubic-bezier(0.22, 1, 0.36, 1), transform 0.28s cubic-bezier(0.22, 1, 0.36, 1);
 }
 .clay-hover:hover {
   transform: translateY(-2px);
-  box-shadow:
-    14px 18px 34px -14px var(--clay-lo),
-    -8px -8px 20px -8px var(--clay-hi),
-    inset 1.5px 2px 5px -1px var(--clay-hi),
-    inset -2px -3px 8px -2px var(--clay-lo);
+  box-shadow: var(--_shadow-lift);
 }
-/* Pressed-in clay (chips, toggles, active filters) */
+/* Pressed-in porcelain (chips, toggles, active filters) */
 .clay-in {
-  background: linear-gradient(145deg,
-    color-mix(in oklab, var(--clay-lo) 26%, transparent),
-    color-mix(in oklab, var(--clay-hi) 30%, transparent));
-  box-shadow:
-    inset 3px 4px 8px -2px var(--clay-lo),
-    inset -3px -3px 7px -2px var(--clay-hi);
-  border: 1px solid color-mix(in oklab, var(--line) 80%, transparent);
+  background: linear-gradient(150deg,
+    color-mix(in oklab, var(--clay-lo) 20%, transparent),
+    color-mix(in oklab, oklch(1 0 0) 55%, transparent));
+  box-shadow: var(--_shadow-well);
+  border: 1px solid color-mix(in oklab, var(--line) 85%, transparent);
 }
 
-/* ── Clay inner surfaces — inputs, selects, tabs (Task 9-c) ── */
-/* Recessed clay field: default Input / SelectTrigger well. Declared after .clay-in
-   so an explicit clay-in override still wins on background/border/box-shadow. */
+/* ── Porcelain inner surfaces — inputs, selects, tabs ── */
 .clay-field {
   --clay-field-edge: color-mix(in oklab, var(--line) 88%, var(--clay-lo));
   --clay-field-focus: color-mix(in oklab, var(--clay-glow) 45%, transparent);
   background-image: linear-gradient(150deg,
-    color-mix(in oklab, var(--clay-lo) 18%, transparent),
-    color-mix(in oklab, var(--clay-hi) 24%, transparent));
+    color-mix(in oklab, var(--clay-lo) 14%, transparent),
+    color-mix(in oklab, oklch(1 0.004 95) 30%, transparent));
   border-color: var(--clay-field-edge);
   box-shadow:
-    inset 2px 3px 6px -2px var(--clay-lo),
-    inset -2px -2px 5px -2px var(--clay-hi),
-    0 2px 5px -3px var(--clay-lo);
+    inset 2px 3px 6px -2px oklch(0.62 0.045 70 / 22%),
+    inset -2px -2px 5px -2px oklch(1 0 0 / 75%),
+    0 1px 2px oklch(0.55 0.04 70 / 5%);
   transition: box-shadow 0.2s ease, border-color 0.2s ease;
 }
 .clay-field:hover { border-color: color-mix(in oklab, var(--clay-glow) 40%, var(--clay-field-edge)); }
 .clay-field:focus-visible {
   border-color: color-mix(in oklab, var(--clay-glow) 60%, var(--ring));
   box-shadow:
-    inset 2px 3px 6px -2px var(--clay-lo),
-    inset -2px -2px 5px -2px var(--clay-hi),
+    inset 2px 3px 6px -2px oklch(0.62 0.045 70 / 22%),
+    inset -2px -2px 5px -2px oklch(1 0 0 / 75%),
     0 0 0 2px var(--clay-field-focus);
 }
 .clay-field[aria-invalid="true"] {
   border-color: var(--destructive);
   box-shadow:
-    inset 2px 3px 6px -2px var(--clay-lo),
-    inset -2px -2px 5px -2px var(--clay-hi),
-    0 0 0 2px color-mix(in oklab, var(--destructive) 18%, transparent);
+    inset 2px 3px 6px -2px oklch(0.62 0.045 70 / 22%),
+    inset -2px -2px 5px -2px oklch(1 0 0 / 75%),
+    0 0 0 2px color-mix(in oklab, var(--destructive) 16%, transparent);
 }
-/* Light-mode contrast audit: darken field edges so wells stay visible on the sky-wash bg */
 :root:not(.dark) .clay-field {
-  --clay-field-edge: color-mix(in oklab, var(--foreground) 14%, var(--line));
-  --clay-field-focus: color-mix(in oklab, var(--clay-glow) 70%, transparent);
+  --clay-field-edge: color-mix(in oklab, var(--foreground) 13%, var(--line));
+  --clay-field-focus: color-mix(in oklab, var(--clay-glow) 68%, transparent);
 }
-/* Recessed clay tray: TabsList (background-image only, so bg-* utilities still layer) */
+/* Recessed porcelain tray: TabsList */
 .clay-tray {
   background-image: linear-gradient(150deg,
-    color-mix(in oklab, var(--clay-lo) 14%, transparent),
-    color-mix(in oklab, var(--clay-hi) 18%, transparent));
+    color-mix(in oklab, var(--clay-lo) 12%, transparent),
+    color-mix(in oklab, oklch(1 0.004 95) 22%, transparent));
   border: 1px solid color-mix(in oklab, var(--line) 75%, transparent);
-  box-shadow:
-    inset 2px 3px 6px -2px var(--clay-lo),
-    inset -2px -2px 5px -2px var(--clay-hi);
+  box-shadow: var(--_shadow-well);
 }
-/* Raised clay pill: active TabsTrigger — inactive triggers stay flat */
+/* Raised porcelain pill: active TabsTrigger — inactive triggers stay flat */
 .clay-tab {
   transition: color 0.2s ease, background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
 }
 .clay-tab[data-state="active"] {
   background-image: linear-gradient(150deg,
-    color-mix(in oklab, var(--clay-hi) 70%, transparent),
-    color-mix(in oklab, var(--clay-glow) 16%, transparent));
-  border-color: color-mix(in oklab, var(--clay-hi) 45%, var(--line));
+    color-mix(in oklab, oklch(1 0.005 95) 85%, transparent),
+    color-mix(in oklab, var(--clay-glow) 14%, transparent));
+  border-color: color-mix(in oklab, oklch(1 0 0) 50%, var(--line));
   box-shadow:
-    0 4px 10px -4px var(--clay-lo),
-    inset 0 1.5px 3px -1px var(--clay-hi),
-    inset 0 -2px 5px -2px var(--clay-lo);
+    0 4px 10px -4px oklch(0.62 0.045 70 / 26%),
+    inset 0 1.5px 3px -1px oklch(1 0 0 / 85%),
+    inset 0 -2px 5px -2px oklch(0.62 0.045 70 / 16%);
 }
 .clay-tab[data-state="active"]:focus-visible {
   box-shadow:
-    0 4px 10px -4px var(--clay-lo),
-    inset 0 1.5px 3px -1px var(--clay-hi),
-    inset 0 -2px 5px -2px var(--clay-lo),
+    0 4px 10px -4px oklch(0.62 0.045 70 / 26%),
+    inset 0 1.5px 3px -1px oklch(1 0 0 / 85%),
     0 0 0 2px color-mix(in oklab, var(--clay-glow) 55%, transparent);
 }
-/* Light-mode contrast audit: keep tray + active-pill edges visible on the sky wash */
 :root:not(.dark) .clay-tray {
-  border-color: color-mix(in oklab, var(--foreground) 12%, var(--line));
+  border-color: color-mix(in oklab, var(--foreground) 11%, var(--line));
 }
 :root:not(.dark) .clay-tab[data-state="active"] {
-  border-color: color-mix(in oklab, var(--foreground) 12%, var(--line));
+  border-color: color-mix(in oklab, var(--foreground) 11%, var(--line));
 }
 
-/* Clay buttons — puffy, squishy press */
+/* ── Tactile porcelain buttons — soft press, springy release ── */
 .clay-btn {
   border-radius: calc(var(--radius) + 2px);
   box-shadow:
-    0 10px 20px -8px var(--clay-lo),
-    0 -4px 10px -6px var(--clay-hi) inset,
-    0 5px 9px -5px var(--clay-lo) inset;
+    0 1px 2px oklch(0.55 0.04 70 / 8%),
+    0 10px 22px -10px oklch(0.50 0.07 197 / 42%),
+    inset 0 1.5px 0 oklch(1 0 0 / 28%),
+    inset 0 -3px 8px -4px oklch(0.35 0.05 210 / 30%);
   transition: transform 0.16s ease, box-shadow 0.16s ease, filter 0.16s ease;
 }
-.clay-btn:hover { filter: brightness(1.04); transform: translateY(-1px); }
+.clay-btn:hover { filter: brightness(1.05) saturate(1.04); transform: translateY(-1px); }
 .clay-btn:active,
 .clay-btn[data-state="open"] {
   transform: translateY(1px) scale(0.985);
   box-shadow:
-    0 3px 8px -4px var(--clay-lo),
-    0 4px 8px -4px var(--clay-hi) inset,
-    0 -2px 6px -3px var(--clay-lo) inset;
+    0 3px 8px -4px oklch(0.50 0.07 197 / 32%),
+    inset 0 3px 8px -4px oklch(0.35 0.05 210 / 35%),
+    inset 0 -2px 6px -3px oklch(1 0 0 / 20%);
 }
-/* Outline/ghost clay */
+/* Soft/ghost porcelain button */
 .clay-btn-soft {
   border-radius: calc(var(--radius) + 2px);
   background:
-    linear-gradient(145deg,
-      color-mix(in oklab, var(--clay-hi) 55%, transparent),
+    linear-gradient(150deg,
+      color-mix(in oklab, oklch(1 0.005 95) 72%, transparent),
       color-mix(in oklab, var(--clay-glow) 16%, transparent));
-  border: 1px solid color-mix(in oklab, var(--clay-hi) 45%, var(--line));
+  border: 1px solid color-mix(in oklab, oklch(1 0 0) 50%, var(--line));
   box-shadow:
-    0 6px 14px -8px var(--clay-lo),
-    inset 0 2px 4px -2px var(--clay-hi),
-    inset 0 -3px 6px -3px var(--clay-lo);
+    0 6px 14px -8px oklch(0.62 0.045 70 / 26%),
+    inset 0 2px 4px -2px oklch(1 0 0 / 80%),
+    inset 0 -3px 6px -3px oklch(0.62 0.045 70 / 14%);
   transition: transform 0.16s ease, box-shadow 0.16s ease, background 0.16s ease;
 }
 .clay-btn-soft:hover { transform: translateY(-1px); }
 .clay-btn-soft:active {
   transform: translateY(1px) scale(0.985);
-  box-shadow: inset 2px 3px 7px -2px var(--clay-lo), inset -2px -2px 6px -2px var(--clay-hi);
+  box-shadow: inset 2px 3px 7px -2px oklch(0.62 0.045 70 / 24%), inset -2px -2px 6px -2px oklch(1 0 0 / 70%);
 }
 
-/* Ambient page backdrop — clear sky-blue → warm dawn wash (light only) */
+/* ── Ambient page backdrop — warm ivory dawn (the campus at golden hour) ── */
 body::before {
   content: '';
   position: fixed;
@@ -283,32 +341,36 @@ body::before {
   z-index: -1;
   pointer-events: none;
   background:
-    radial-gradient(ellipse 60% 44% at 12% -4%, color-mix(in oklab, #7dd3fc 20%, transparent), transparent 62%),
-    radial-gradient(ellipse 52% 40% at 92% 4%, color-mix(in oklab, #fcd34d 14%, transparent), transparent 60%),
-    radial-gradient(ellipse 70% 46% at 50% 108%, color-mix(in oklab, #6ee7b7 13%, transparent), transparent 66%);
-  opacity: 0.85;
+    radial-gradient(ellipse 64% 46% at 8% -6%, color-mix(in oklab, #f3d5a4 26%, transparent), transparent 62%),
+    radial-gradient(ellipse 52% 40% at 96% 2%, color-mix(in oklab, #bfe3ea 20%, transparent), transparent 60%),
+    radial-gradient(ellipse 76% 48% at 50% 110%, color-mix(in oklab, #c9e8d4 18%, transparent), transparent 66%);
+  opacity: 0.9;
 }
 
-/* ── Glass surfaces ── */
+/* ═══════════════════════════════════════════════════════════════════════════
+   GLASS — warm, selective, always readable
+   Floating nav · command palette · modals · sticky headers · AI panels
+   ═══════════════════════════════════════════════════════════════════════════ */
 .glass {
   background: var(--surface);
-  backdrop-filter: blur(18px) saturate(1.4);
-  -webkit-backdrop-filter: blur(18px) saturate(1.4);
-  border: 1px solid var(--line);
+  backdrop-filter: blur(18px) saturate(1.35);
+  -webkit-backdrop-filter: blur(18px) saturate(1.35);
+  border: 1px solid color-mix(in oklab, oklch(1 0 0) 40%, var(--line));
 }
 .glass-strong {
-  background: var(--surface);
-  backdrop-filter: blur(28px) saturate(1.6);
-  -webkit-backdrop-filter: blur(28px) saturate(1.6);
-  border: 1px solid var(--line);
+  background: color-mix(in oklab, oklch(0.995 0.004 92) 88%, transparent);
+  backdrop-filter: blur(28px) saturate(1.5);
+  -webkit-backdrop-filter: blur(28px) saturate(1.5);
+  border: 1px solid color-mix(in oklab, oklch(1 0 0) 45%, var(--line));
 }
 
-/* ── Ambient grid backdrop for hero/map ── */
+/* ── Fine academic grid (hero / map backdrop) ── */
 .med-grid {
   background-image:
-    linear-gradient(to right, color-mix(in oklab, var(--foreground) 5%, transparent) 1px, transparent 1px),
-    linear-gradient(to bottom, color-mix(in oklab, var(--foreground) 5%, transparent) 1px, transparent 1px);
-  background-size: 44px 44px;
+    radial-gradient(color-mix(in oklab, var(--foreground) 8%, transparent) 1px, transparent 1px),
+    linear-gradient(to right, color-mix(in oklab, var(--foreground) 3.5%, transparent) 1px, transparent 1px),
+    linear-gradient(to bottom, color-mix(in oklab, var(--foreground) 3.5%, transparent) 1px, transparent 1px);
+  background-size: 44px 44px, 44px 44px, 44px 44px;
   mask-image: radial-gradient(ellipse 90% 70% at 50% 30%, black 30%, transparent 75%);
 }
 
@@ -349,17 +411,13 @@ body::before {
   animation: shimmer 1.6s infinite;
 }
 
-/* ── Safe-area + fixed-nav clearance (notched phones / standalone PWA) ──
-   The mobile bottom nav (min-h-14 rows ≈ 3.5rem + home-indicator inset) is
-   position:fixed, so flow content would slide under it. 5rem + inset clears
-   the bar with a small breathing gap; on lg the nav is hidden entirely. */
+/* ── Safe-area + fixed-nav clearance (notched phones / standalone PWA) ── */
 .pb-safe-nav {
   padding-bottom: calc(5rem + env(safe-area-inset-bottom, 0px));
 }
 @media (min-width: 64rem) {
   .pb-safe-nav { padding-bottom: 0px; }
 }
-/* Inside the fixed nav / bottom sheet itself: only the device inset */
 .pb-safe-inset {
   padding-bottom: env(safe-area-inset-bottom, 0px);
 }
@@ -378,7 +436,7 @@ body::before {
   font-size: 0.875rem;
   font-weight: 600;
   letter-spacing: -0.01em;
-  box-shadow: 0 10px 24px -10px var(--clay-lo);
+  box-shadow: var(--_shadow-lift);
   transition: transform 0.15s ease;
 }
 .skip-link:focus,
@@ -396,49 +454,45 @@ body::before {
   .ecg-line { animation: none; }
 }
 
-/* ── Long-form typography for concept pages ── */
-.medprose p { margin-bottom: 0.65rem; line-height: 1.65; }
+/* ── Long-form typography for concept pages — editorial reading rhythm ── */
+.medprose {
+  font-size: 0.9375rem;
+}
+.medprose p { margin-bottom: 0.7rem; line-height: 1.72; }
+.medprose strong { font-weight: 600; color: var(--ink); }
 
-/* ── WARM NATURE SCENES (calm-first design language) ── */
-
-/* Warm scene wrapper — sunrise + sky-blue glass card */
+/* ═══════════════════════════════════════════════════════════════════════════
+   WARM SCENES — hero moments (ivory dawn, not neon)
+   ═══════════════════════════════════════════════════════════════════════════ */
 .warm-scene {
   background:
     linear-gradient(160deg,
-      color-mix(in oklab, #7dd3fc 10%, transparent) 0%,
-      color-mix(in oklab, #fbbf24 9%, transparent) 38%,
-      color-mix(in oklab, #34d399 7%, transparent) 70%,
-      color-mix(in oklab, #38bdf8 7%, transparent) 100%),
+      color-mix(in oklab, #f6e3c6 22%, transparent) 0%,
+      color-mix(in oklab, #f3cdb9 14%, transparent) 36%,
+      color-mix(in oklab, #cfe9db 13%, transparent) 68%,
+      color-mix(in oklab, #cfe4ec 12%, transparent) 100%),
     var(--surface);
-  backdrop-filter: blur(18px) saturate(1.35);
-  -webkit-backdrop-filter: blur(18px) saturate(1.35);
-  border: 1px solid color-mix(in oklab, #f59e0b 16%, var(--line));
-  box-shadow: 0 12px 44px -18px color-mix(in oklab, #f59e0b 32%, transparent);
+  backdrop-filter: blur(18px) saturate(1.3);
+  -webkit-backdrop-filter: blur(18px) saturate(1.3);
+  border: 1px solid color-mix(in oklab, #e0b078 22%, var(--line));
+  box-shadow: var(--_shadow-raised);
 }
-
-/* Dawn gradient overlay behind the map hero */
 .scene-dawn {
   background:
-    radial-gradient(ellipse 70% 55% at 18% 0%, color-mix(in oklab, #fcd34d 16%, transparent), transparent 65%),
-    radial-gradient(ellipse 60% 50% at 85% 12%, color-mix(in oklab, #6ee7b7 13%, transparent), transparent 60%),
-    radial-gradient(ellipse 80% 60% at 50% 105%, color-mix(in oklab, #38bdf8 12%, transparent), transparent 70%);
+    radial-gradient(ellipse 70% 55% at 18% 0%, color-mix(in oklab, #f3d5a4 20%, transparent), transparent 65%),
+    radial-gradient(ellipse 60% 50% at 85% 12%, color-mix(in oklab, #bfe3ea 16%, transparent), transparent 60%),
+    radial-gradient(ellipse 80% 60% at 50% 105%, color-mix(in oklab, #c9e8d4 14%, transparent), transparent 70%);
 }
-
-/* Canopy light texture for section cards */
 .scene-canopy {
   background:
-    radial-gradient(ellipse 45% 65% at 12% 10%, color-mix(in oklab, #34d399 40%, transparent), transparent 70%),
-    radial-gradient(ellipse 50% 60% at 88% 90%, color-mix(in oklab, #fbbf24 32%, transparent), transparent 70%);
+    radial-gradient(ellipse 45% 65% at 12% 10%, color-mix(in oklab, #a9dcc0 34%, transparent), transparent 70%),
+    radial-gradient(ellipse 50% 60% at 88% 90%, color-mix(in oklab, #f3d5a4 30%, transparent), transparent 70%);
 }
-
-/* Slow breathing light blobs */
 @keyframes scene-float {
   0%, 100% { transform: translate3d(0, 0, 0) scale(1); opacity: 0.8; }
   50% { transform: translate3d(12px, -14px, 0) scale(1.08); opacity: 1; }
 }
 .scene-float { animation: scene-float 11s ease-in-out infinite; }
-
-/* Nature emoji drifting gently across the hero */
 @keyframes leaf-drift {
   0% { transform: translate3d(0, 0, 0) rotate(0deg); }
   25% { transform: translate3d(14px, 10px, 0) rotate(9deg); }
@@ -448,30 +502,19 @@ body::before {
 }
 .animate-leaf-drift { animation: leaf-drift 12s ease-in-out infinite; }
 
-/* Warm mini-card (struggle zones) */
+/* Warm champagne-tinted card (struggle zones, warm callouts) */
 .warm-card {
   background:
-    linear-gradient(155deg, color-mix(in oklab, #fbbf24 7%, transparent), color-mix(in oklab, #fb7185 6%, transparent) 70%),
+    linear-gradient(155deg, color-mix(in oklab, #f3d5a4 16%, transparent), color-mix(in oklab, #f0b9a0 10%, transparent) 70%),
     var(--card);
-  border: 1px solid color-mix(in oklab, #f59e0b 14%, var(--line));
-  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  border: 1px solid color-mix(in oklab, #e0b078 22%, var(--line));
+  box-shadow: 0 3px 14px -8px color-mix(in oklab, #d9a05b 30%, transparent);
+  transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.25s ease;
   animation: fade-rise 0.5s both ease-out;
 }
 .warm-card:hover {
   transform: translateY(-3px);
-  box-shadow: 0 14px 34px -16px color-mix(in oklab, #f59e0b 45%, transparent);
-}
-/* Light mode: strengthen the warm tint so cards hold contrast on white */
-:root:not(.dark) .warm-card {
-  background:
-    linear-gradient(155deg, color-mix(in oklab, #fbbf24 14%, transparent), color-mix(in oklab, #fb7185 10%, transparent) 70%),
-    var(--card);
-  border: 1px solid color-mix(in oklab, #f59e0b 30%, var(--line));
-  box-shadow: 0 3px 14px -8px color-mix(in oklab, #f59e0b 35%, transparent);
-}
-:root:not(.dark) .warm-scene {
-  border: 1px solid color-mix(in oklab, #f59e0b 28%, var(--line));
-  box-shadow: 0 12px 40px -20px color-mix(in oklab, #f59e0b 40%, transparent);
+  box-shadow: 0 14px 34px -16px color-mix(in oklab, #d9a05b 40%, transparent);
 }
 @keyframes fade-rise {
   from { opacity: 0; transform: translateY(10px); }
@@ -479,9 +522,9 @@ body::before {
 }
 
 /* Slim warm scrollbar for horizontally scrolling strips */
-.med-scroll { scrollbar-width: thin; scrollbar-color: color-mix(in oklab, #f59e0b 35%, transparent) transparent; }
+.med-scroll { scrollbar-width: thin; scrollbar-color: color-mix(in oklab, #d9a05b 35%, transparent) transparent; }
 .med-scroll::-webkit-scrollbar { width: 6px; height: 6px; }
-.med-scroll::-webkit-scrollbar-thumb { background: color-mix(in oklab, #f59e0b 35%, transparent); border-radius: 8px; }
+.med-scroll::-webkit-scrollbar-thumb { background: color-mix(in oklab, #d9a05b 35%, transparent); border-radius: 8px; }
 
 /* Fully hidden scrollbar — filter/legend strips that scroll but show no track */
 .no-scrollbar { scrollbar-width: none; }
@@ -492,7 +535,9 @@ body::before {
   .warm-card { animation: none !important; }
 }
 
-/* ═══ 3D VISUAL LEARNING (layered CSS-3D diagrams) ═══ */
+/* ═══════════════════════════════════════════════════════════════════════════
+   3D VISUAL LEARNING (layered CSS-3D diagrams) — porcelain depth
+   ═══════════════════════════════════════════════════════════════════════════ */
 .stage3d {
   perspective: 1100px;
   perspective-origin: 50% 42%;
@@ -506,14 +551,14 @@ body::before {
 }
 .layer3d-card {
   background: linear-gradient(150deg,
-    color-mix(in oklab, var(--clay-hi) 62%, transparent),
-    color-mix(in oklab, var(--surface) 82%, transparent) 60%,
-    color-mix(in oklab, var(--clay-glow) 20%, transparent));
-  border: 1px solid color-mix(in oklab, var(--clay-hi) 50%, var(--line));
+    color-mix(in oklab, oklch(1 0.005 95) 80%, transparent),
+    color-mix(in oklab, var(--card) 86%, transparent) 60%,
+    color-mix(in oklab, var(--clay-glow) 18%, transparent));
+  border: 1px solid color-mix(in oklab, oklch(1 0 0) 55%, var(--line));
   box-shadow:
-    0 18px 32px -16px var(--clay-lo),
-    inset 0 1.5px 4px -1px var(--clay-hi),
-    inset 0 -3px 8px -3px var(--clay-lo);
+    0 18px 32px -16px oklch(0.60 0.045 70 / 28%),
+    inset 0 1.5px 4px -1px oklch(1 0 0 / 85%),
+    inset 0 -3px 8px -3px oklch(0.62 0.045 70 / 14%);
 }
 @keyframes layer-float {
   0%, 100% { transform: translateZ(var(--lz, 0px)) translateY(0); }
@@ -571,3 +616,103 @@ body::before {
   .medos-flow, .medos-dash, .medos-anchor-pulse { animation: none !important; }
 }
 
+/* ═══════════════════════════════════════════════════════════════════════════
+   ATELIER ADDITIONS — content presentation, micro-interaction, states
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── Editorial content callouts — medical information never a wall of text ── */
+.callout {
+  position: relative;
+  border-radius: calc(var(--radius) + 2px);
+  border: 1px solid var(--line);
+  border-left-width: 3px;
+  padding: 0.875rem 1rem 0.875rem 1.125rem;
+  background: var(--card);
+  box-shadow: 0 1px 2px oklch(0.55 0.04 70 / 5%);
+}
+.callout-pearl {
+  border-left-color: var(--gold);
+  background: linear-gradient(150deg, color-mix(in oklab, #f3d5a4 14%, transparent), var(--card) 55%);
+}
+.callout-key {
+  border-left-color: var(--primary);
+  background: linear-gradient(150deg, color-mix(in oklab, oklch(0.62 0.08 197) 9%, transparent), var(--card) 55%);
+}
+.callout-exam {
+  border-left-color: var(--sev-crit);
+  background: linear-gradient(150deg, color-mix(in oklab, oklch(0.66 0.13 35) 9%, transparent), var(--card) 55%);
+}
+.callout-easy {
+  border-left-color: var(--mint);
+  background: linear-gradient(150deg, color-mix(in oklab, #c9e8d4 16%, transparent), var(--card) 55%);
+}
+.callout-warn {
+  border-left-color: var(--sev-warn);
+  background: linear-gradient(150deg, color-mix(in oklab, #f3d5a4 16%, transparent), var(--card) 55%);
+}
+
+/* ── Universal tactile hover / press — every interactive surface gets a soul ── */
+.lift {
+  transition: transform 0.22s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.22s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.lift:hover { transform: translateY(-2px); }
+.lift:active { transform: translateY(0) scale(0.99); }
+.press { transition: transform 0.12s ease; }
+.press:active { transform: scale(0.985); }
+
+/* ── Consistent focus ring ── */
+.ring-focus:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--background), 0 0 0 4px color-mix(in oklab, var(--ring) 70%, transparent);
+}
+
+/* ── Gradient ink — the one allowed text gradient (teal→ink, warm) ── */
+.ink-gradient {
+  background: linear-gradient(100deg, oklch(0.45 0.075 197), oklch(0.38 0.05 210) 55%, oklch(0.42 0.06 150));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* ── Hairline divider with engraved warmth ── */
+.rule-soft {
+  height: 1px;
+  background: linear-gradient(to right, transparent, color-mix(in oklab, var(--line) 90%, transparent), transparent);
+}
+
+/* ── Staggered reveal (scroll experience) ── */
+@keyframes rise-in {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.rise-in { animation: rise-in 0.55s cubic-bezier(0.22, 1, 0.36, 1) both; }
+.rise-in-1 { animation: rise-in 0.55s cubic-bezier(0.22, 1, 0.36, 1) 0.06s both; }
+.rise-in-2 { animation: rise-in 0.55s cubic-bezier(0.22, 1, 0.36, 1) 0.12s both; }
+.rise-in-3 { animation: rise-in 0.55s cubic-bezier(0.22, 1, 0.36, 1) 0.18s both; }
+.rise-in-4 { animation: rise-in 0.55s cubic-bezier(0.22, 1, 0.36, 1) 0.24s both; }
+.rise-in-5 { animation: rise-in 0.55s cubic-bezier(0.22, 1, 0.36, 1) 0.30s both; }
+.rise-in-6 { animation: rise-in 0.55s cubic-bezier(0.22, 1, 0.36, 1) 0.36s both; }
+@media (prefers-reduced-motion: reduce) {
+  .rise-in, .rise-in-1, .rise-in-2, .rise-in-3, .rise-in-4, .rise-in-5, .rise-in-6 { animation: none; }
+}
+
+/* ── Anatomy podium — the hero stage where 3D organs rest ── */
+.podium {
+  background:
+    radial-gradient(ellipse 62% 46% at 50% 24%, color-mix(in oklab, oklch(1 0.005 95) 75%, transparent), transparent 72%),
+    linear-gradient(165deg, color-mix(in oklab, #f6e3c6 18%, transparent), color-mix(in oklab, #cfe4ec 14%, transparent) 62%, color-mix(in oklab, #c9e8d4 13%, transparent));
+  border: 1px solid color-mix(in oklab, oklch(1 0 0) 45%, var(--line));
+  box-shadow: var(--_shadow-raised);
+}
+
+/* ── Floating anatomical glyphs (decorative 3D hero elements) ── */
+@keyframes glyph-float {
+  0%, 100% { transform: translateY(0) rotate(-1.2deg); }
+  50% { transform: translateY(-8px) rotate(1.2deg); }
+}
+.glyph-float { animation: glyph-float 7s ease-in-out infinite; }
+.glyph-float-slow { animation: glyph-float 9.5s ease-in-out 0.8s infinite; }
+.glyph-float-fast { animation: glyph-float 5.6s ease-in-out 0.3s infinite; }
+@media (prefers-reduced-motion: reduce) {
+  .glyph-float, .glyph-float-slow, .glyph-float-fast { animation: none; }
+}

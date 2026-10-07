@@ -10,9 +10,10 @@ import { motion } from 'framer-motion'
 import { cn } from '@/lib/utils'
 import type { OsActivityItem, OsCommandCenter, OsWeakItem } from '@/lib/types'
 import {
-  MicroLabel, OsCard, OsGoButton, EmptyNote, FootNote, MiniBar,
+  OsCard, OsGoButton, EmptyNote, FootNote, MiniBar,
   OS_ACTIVITY_ICON, OS_KIND_ICON, useOsNavigate,
 } from '@/components/os/os-shared'
+import { SectionTitle } from '@/components/primitives/kit'
 import {
   CalendarCheck, CircleHelp, Bandage, ClipboardList, ChevronRight,
   AlertTriangle, Clock, BookOpen, CirclePause, ArrowRight,
@@ -33,17 +34,9 @@ function Section({ title, icon: Icon, action, children, className }: {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3, ease: EASE }}
       aria-label={title}
-      className={cn('rounded-2xl border border-border/70 bg-card/80 p-4 shadow-sm backdrop-blur-sm', className)}
+      className={cn('clay rounded-2xl p-4', className)}
     >
-      <div className="mb-3 flex items-center justify-between gap-2">
-        <div className="flex items-center gap-2">
-          <span className="flex size-7 items-center justify-center rounded-lg border border-border/70 bg-background">
-            <Icon className="size-3.5 text-ink-soft" aria-hidden />
-          </span>
-          <MicroLabel>{title}</MicroLabel>
-        </div>
-        {action}
-      </div>
+      <SectionTitle icon={Icon} right={action}>{title}</SectionTitle>
       {children}
     </motion.section>
   )

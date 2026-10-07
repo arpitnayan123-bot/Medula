@@ -12,6 +12,7 @@ import type { LibraryHomePayload, LibraryQuery } from '@/lib/types'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { cn } from '@/lib/utils'
+import { PageHeader } from '@/components/primitives/kit'
 import {
   CardGrid, DisclaimerFootnote, KindIcon, LibraryCard, MicroLabel, Reveal,
   StatChip, kindLabel,
@@ -37,16 +38,23 @@ export function LibraryHomeScreen({
   return (
     <div className="space-y-9">
       {/* ── hero ── */}
-      <Reveal index={0} className="space-y-3">
-        <p className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-ink-soft">
-          <BookMarked className="size-3.5 text-primary" aria-hidden /> MEDULA Library
-        </p>
-        <h1 className="text-3xl font-semibold tracking-tight md:text-4xl">Resource Hub</h1>
-        <p className="max-w-xl text-sm leading-relaxed text-ink-soft">
-          Discover <span aria-hidden>→</span> Learn <span aria-hidden>→</span> Compare{' '}
-          <span aria-hidden>→</span> Practice <span aria-hidden>→</span> Save — one organised
-          ecosystem of platform lessons and hand-curated external resources.
-        </p>
+      <Reveal index={0}>
+        <PageHeader
+          eyebrow={
+            <>
+              <BookMarked className="mr-1 inline size-3" />
+              MEDULA Library
+            </>
+          }
+          title="Resource Hub"
+          intro={
+            <>
+              Discover <span aria-hidden>→</span> Learn <span aria-hidden>→</span> Compare{' '}
+              <span aria-hidden>→</span> Practice <span aria-hidden>→</span> Save — one organised
+              ecosystem of platform lessons and hand-curated external resources.
+            </>
+          }
+        />
 
         {/* search — explicit, never autofocuses */}
         <form

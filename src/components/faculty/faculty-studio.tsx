@@ -380,12 +380,12 @@ function DraftBodyView({ draft }: { draft: FacultyDraftView }) {
                 key={o.id}
                 className={cn(
                   'flex items-start gap-2 rounded-lg px-2 py-1 text-[11px] leading-relaxed',
-                  o.id === m.answer ? 'bg-emerald-500/10 font-medium text-emerald-800' : 'text-ink-soft',
+                  o.id === m.answer ? 'bg-sev-ok/10 font-medium text-sev-ok' : 'text-ink-soft',
                 )}
               >
                 <span className="shrink-0 font-semibold uppercase">{o.id}</span>
                 <span>{o.text}</span>
-                {o.id === m.answer && <span className="ml-auto shrink-0 text-[9px] font-semibold uppercase tracking-wide text-emerald-700">answer</span>}
+                {o.id === m.answer && <span className="ml-auto shrink-0 text-[9px] font-semibold uppercase tracking-wide text-sev-ok">answer</span>}
               </li>
             ))}
           </ul>
@@ -487,7 +487,7 @@ function DraftActions({ draft, onChanged }: { draft: FacultyDraftView; onChanged
   if (draft.status === 'published') {
     return (
       <div className="mt-3 border-t border-line pt-3" role="status">
-        <p className="text-[11px] font-semibold text-emerald-700">
+        <p className="text-[11px] font-semibold text-sev-ok">
           Published as v{draft.publishedVersion ?? '—'} · reviewed by {draft.reviewedBy || 'Faculty (demo)'}
         </p>
       </div>
@@ -497,7 +497,7 @@ function DraftActions({ draft, onChanged }: { draft: FacultyDraftView; onChanged
   if (draft.status === 'rejected') {
     return (
       <div className="mt-3 border-t border-line pt-3" role="note">
-        <p className="text-[11px] font-semibold text-rose-700">Rejected by {draft.reviewedBy || 'Faculty (demo)'}</p>
+        <p className="text-[11px] font-semibold text-sev-crit">Rejected by {draft.reviewedBy || 'Faculty (demo)'}</p>
         {draft.reviewerNote && <p className="mt-0.5 text-[11px] leading-relaxed text-ink-soft">Reviewer note: {draft.reviewerNote}</p>}
       </div>
     )

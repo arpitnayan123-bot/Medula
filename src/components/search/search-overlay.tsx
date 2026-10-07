@@ -210,7 +210,7 @@ export function SearchOverlay() {
                 <CommandItem
                   value="ask-the-tutor"
                   onSelect={askTutor}
-                  className="min-h-11 gap-2.5 rounded-xl border border-primary/25 bg-primary/5 data-[selected=true]:border-primary/40"
+                  className="min-h-11 gap-2.5 rounded-xl border border-primary/25 bg-primary/5 data-[selected=true]:border-primary/40 data-[selected=true]:bg-surface-2"
                 >
                   <RowIcon icon={Sparkles} tone="primary" />
                   <TwoLine title={`Ask the tutor: “${query}”`} sub="Full explanation in tutor mode — educational only" />
@@ -222,7 +222,7 @@ export function SearchOverlay() {
                     setSearchOpen(false)
                     openAsk({ q: query })
                   }}
-                  className="min-h-11 gap-2.5 rounded-xl border border-primary/25 bg-primary/5 data-[selected=true]:border-primary/40"
+                  className="min-h-11 gap-2.5 rounded-xl border border-primary/25 bg-primary/5 data-[selected=true]:border-primary/40 data-[selected=true]:bg-surface-2"
                 >
                   <RowIcon icon={ScanSearch} tone="primary" />
                   <TwoLine title={`Ask the engine: “${query}”`} sub="Grounded answer with levels, verified sources and practice" />
@@ -282,7 +282,7 @@ export function SearchOverlay() {
                           openConcept(c.id)
                           close()
                         }}
-                        className="min-h-11 gap-2.5 rounded-xl"
+                        className="min-h-11 gap-2.5 rounded-xl data-[selected=true]:bg-surface-2"
                       >
                         <RowIcon icon={Brain} tone="primary" />
                         <TwoLine title={c.name} sub={`${c.kind.replace('_', ' ')} · ${c.subject} — ${c.summary}`} />
@@ -298,7 +298,7 @@ export function SearchOverlay() {
                         key={s.id}
                         value={`subject-${s.id}`}
                         onSelect={() => goTo('learn')}
-                        className="min-h-11 gap-2.5 rounded-xl"
+                        className="min-h-11 gap-2.5 rounded-xl data-[selected=true]:bg-surface-2"
                       >
                         <RowIcon icon={Library} />
                         <TwoLine title={s.name} sub={s.blurb} />
@@ -315,7 +315,7 @@ export function SearchOverlay() {
                         key={t.id}
                         value={`topic-${t.id}`}
                         onSelect={() => goTo('learn')}
-                        className="min-h-11 gap-2.5 rounded-xl"
+                        className="min-h-11 gap-2.5 rounded-xl data-[selected=true]:bg-surface-2"
                       >
                         <RowIcon icon={FileText} />
                         <TwoLine title={t.name} sub={t.subject} />
@@ -334,7 +334,7 @@ export function SearchOverlay() {
                           setQuizPreset({ count: 8 })
                           goTo('questions')
                         }}
-                        className="min-h-11 gap-2.5 rounded-xl"
+                        className="min-h-11 gap-2.5 rounded-xl data-[selected=true]:bg-surface-2"
                       >
                         <RowIcon icon={CircleHelp} />
                         <TwoLine title={qq.stem} />
@@ -351,7 +351,7 @@ export function SearchOverlay() {
                         key={f.id}
                         value={`flashcard-${f.id}`}
                         onSelect={() => goTo('revise')}
-                        className="min-h-11 gap-2.5 rounded-xl"
+                        className="min-h-11 gap-2.5 rounded-xl data-[selected=true]:bg-surface-2"
                       >
                         <RowIcon icon={Layers} />
                         <TwoLine title={f.front} />
@@ -368,7 +368,7 @@ export function SearchOverlay() {
                         key={cs.id}
                         value={`case-${cs.id}`}
                         onSelect={() => goTo('cases')}
-                        className="min-h-11 gap-2.5 rounded-xl"
+                        className="min-h-11 gap-2.5 rounded-xl data-[selected=true]:bg-surface-2"
                       >
                         <RowIcon icon={Stethoscope} />
                         <TwoLine title={cs.title} sub={cs.specialty} />

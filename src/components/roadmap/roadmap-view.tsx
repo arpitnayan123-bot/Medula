@@ -6,6 +6,7 @@ import {
   Activity,
   ArrowRight,
   CalendarCheck,
+  CalendarDays,
   Check,
   ChevronDown,
   Clock3,
@@ -29,6 +30,7 @@ import { useAppStore } from '@/lib/store'
 import type { RoadmapPayload, RoadmapPhase, WeekDayPlan } from '@/lib/types'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
+import { PageHeader } from '@/components/primitives/kit'
 import { cn } from '@/lib/utils'
 
 const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1]
@@ -114,7 +116,7 @@ function DayCard({
         {plan.isWeekend && (
           <span
             aria-hidden
-            className="pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-br from-amber-400/15 via-amber-300/5 to-transparent"
+            className="pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-br from-gold/20 via-gold/5 to-transparent"
           />
         )}
         <button
@@ -171,7 +173,7 @@ function DayDetailPanel({
       id={`day-panel-${plan.day}`}
       role="region"
       aria-label={`${plan.day} — detailed plan`}
-      className="clay-in mt-3 rounded-2xl border-amber-400/30! p-4 md:p-5"
+      className="clay-in mt-3 rounded-2xl border-gold/40! p-4 md:p-5"
     >
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
@@ -181,7 +183,7 @@ function DayDetailPanel({
               {plan.hours}h target
             </span>
             {plan.isWeekend && (
-              <span className="rounded-full bg-amber-400/15 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-amber-600 dark:text-amber-400">
+              <span className="rounded-full bg-gold/15 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-gold">
                 Weekend
               </span>
             )}
@@ -308,7 +310,7 @@ function PhaseNode({ phase, index, reduce }: { phase: RoadmapPhase; index: numbe
 
       <article
         className={cn(
-          'glass rounded-2xl p-4 md:p-5',
+          'clay rounded-2xl p-4 md:p-5',
           index === 0 && 'border-primary/40 shadow-lg shadow-primary/20',
         )}
       >
@@ -386,7 +388,7 @@ function RoadmapSkeleton() {
 function RoadmapError({ onRetry }: { onRetry: () => void }) {
   return (
     <div className="mx-auto max-w-5xl p-4 md:p-6">
-      <div className="glass flex flex-col items-center gap-3 rounded-2xl p-8 text-center md:p-12">
+      <div className="clay flex flex-col items-center gap-3 rounded-2xl p-8 text-center md:p-12">
         <span className="grid size-12 place-items-center rounded-full bg-sev-crit/10">
           <RefreshCw className="size-6 text-sev-crit" />
         </span>
@@ -484,10 +486,16 @@ export function RoadmapView() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, ease: EASE }}
       >
-        <h1 className="text-3xl font-semibold tracking-tight md:text-4xl">ROADMAP</h1>
-        <p className="max-w-2xl text-sm text-ink-soft md:text-base">
-          From your classroom today to your NEET-PG attempt — dynamically computed from your profile.
-        </p>
+        <PageHeader
+          eyebrow={
+            <>
+              <Timer className="mr-1 inline size-3" />
+              Your NEET-PG journey
+            </>
+          }
+          title="Roadmap"
+          intro="From your classroom today to your NEET-PG attempt — dynamically computed from your profile."
+        />
       </motion.header>
 
       {/* 1 · NEET-PG clock hero */}
@@ -495,7 +503,7 @@ export function RoadmapView() {
         initial={reduce ? false : { opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay: reduce ? 0 : 0.08, ease: EASE }}
-        className="glass relative overflow-hidden rounded-3xl p-5 md:p-8"
+        className="clay relative overflow-hidden rounded-3xl p-5 md:p-8"
       >
         <div className="med-grid pointer-events-none absolute inset-0 opacity-60" aria-hidden="true" />
         <div className="relative">
@@ -563,7 +571,7 @@ export function RoadmapView() {
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: '-60px' }}
         transition={{ duration: 0.5, ease: EASE }}
-        className="glass rounded-2xl p-4 md:p-6"
+        className="clay rounded-2xl p-4 md:p-6"
       >
         <div className="flex flex-wrap items-center justify-between gap-2">
           <h2 className="text-sm font-semibold uppercase tracking-[0.14em] text-ink-soft">Weekly split</h2>
@@ -598,12 +606,12 @@ export function RoadmapView() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: '-60px' }}
           transition={{ duration: 0.5, ease: EASE }}
-          className="glass rounded-2xl p-4 md:p-6"
+          className="clay rounded-2xl p-4 md:p-6"
         >
           <div className="flex flex-wrap items-center justify-between gap-2">
             <h2 className="text-sm font-semibold uppercase tracking-[0.14em] text-ink-soft">
               Your week, planned
-              <span aria-hidden className="ml-1.5">🗓️</span>
+              <CalendarDays aria-hidden className="ml-1.5 inline size-3.5 text-primary" />
             </h2>
             <span className="text-[11px] text-muted-foreground">
               built from the {data.neetClock.stage.toLowerCase()} stage and your declared hours — Sunday evening is mock night
@@ -656,7 +664,7 @@ export function RoadmapView() {
                 {s.label}
               </span>
             ))}
-            <span className="ml-auto">Saturday evening stays protected — burnout is a real syllabus risk 🌿</span>
+            <span className="ml-auto">Saturday evening stays protected — burnout is a real syllabus risk</span>
           </div>
         </motion.section>
       )}
@@ -682,7 +690,7 @@ export function RoadmapView() {
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: '-60px' }}
         transition={{ duration: 0.5, ease: EASE }}
-        className="glass flex flex-col gap-4 rounded-2xl border-l-4 border-l-primary p-5 sm:flex-row sm:items-center md:p-6"
+        className="clay flex flex-col gap-4 rounded-2xl border-l-4 border-l-primary p-5 sm:flex-row sm:items-center md:p-6"
       >
         <div className="flex-1">
           <h2 className="text-lg font-semibold tracking-tight md:text-xl">

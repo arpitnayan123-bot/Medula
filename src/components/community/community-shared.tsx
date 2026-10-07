@@ -133,9 +133,9 @@ export const SPACE_KIND_LABEL: Record<string, string> = {
 const POST_KIND_META: Record<string, { label: string; cls: string }> = {
   question: { label: 'Question', cls: 'border-primary/40 bg-primary/10 text-primary' },
   discussion: { label: 'Discussion', cls: 'border-line bg-surface-2 text-ink-soft' },
-  pyq: { label: 'PYQ', cls: 'border-amber-500/40 bg-amber-500/10 text-amber-600 dark:text-amber-400' },
-  mcq: { label: 'MCQ', cls: 'border-emerald-500/40 bg-emerald-500/10 text-emerald-700 dark:text-emerald-400' },
-  case: { label: 'Case', cls: 'border-rose-500/40 bg-rose-500/10 text-rose-600 dark:text-rose-400' },
+  pyq: { label: 'PYQ', cls: 'border-gold/40 bg-gold/10 text-gold' },
+  mcq: { label: 'MCQ', cls: 'border-sev-ok/40 bg-sev-ok/10 text-sev-ok' },
+  case: { label: 'Case', cls: 'border-sev-crit/40 bg-sev-crit/10 text-sev-crit' },
 }
 
 export function KindChip({ kind, className }: { kind: string; className?: string }) {
@@ -152,17 +152,17 @@ export function StatusBadges({ post, className }: { post: Pick<CommunityPostSumm
   return (
     <span className={cn('inline-flex flex-wrap items-center gap-1.5', className)}>
       {post.resolved ? (
-        <span className="inline-flex shrink-0 items-center gap-1 rounded-full border border-emerald-500/40 bg-emerald-500/10 px-2 py-0.5 text-[10px] font-bold text-emerald-700 dark:text-emerald-400">
+        <span className="inline-flex shrink-0 items-center gap-1 rounded-full border border-sev-ok/40 bg-sev-ok/10 px-2 py-0.5 text-[10px] font-bold text-sev-ok">
           <CheckCircle2 className="size-3" aria-hidden /> Resolved
         </span>
       ) : post.answered ? (
-        <span className="inline-flex shrink-0 items-center gap-1 rounded-full border border-emerald-500/30 bg-emerald-500/5 px-2 py-0.5 text-[10px] font-semibold text-emerald-700/90 dark:text-emerald-400/90">
+        <span className="inline-flex shrink-0 items-center gap-1 rounded-full border border-sev-ok/30 bg-sev-ok/5 px-2 py-0.5 text-[10px] font-semibold text-sev-ok/90">
           <Check className="size-3" aria-hidden /> Answered
         </span>
       ) : null}
       {(post.flagged || post.status === 'review') && (
         <span
-          className="inline-flex shrink-0 items-center gap-1 rounded-full border border-amber-500/40 bg-amber-500/10 px-2 py-0.5 text-[10px] font-bold text-amber-600 dark:text-amber-400"
+          className="inline-flex shrink-0 items-center gap-1 rounded-full border border-sev-warn/40 bg-sev-warn/10 px-2 py-0.5 text-[10px] font-bold text-sev-warn"
           title={post.flagged ? `Held for review (${post.flagged})` : 'Held for review'}
         >
           <AlertTriangle className="size-3" aria-hidden /> Held for review
@@ -264,7 +264,7 @@ export function ProgressMeter({
         <div
           className={cn(
             'h-full rounded-full transition-all',
-            done || tone === 'emerald' ? 'bg-emerald-500' : tone === 'amber' ? 'bg-amber-500' : 'bg-primary',
+            done || tone === 'emerald' ? 'bg-sev-ok' : tone === 'amber' ? 'bg-gold' : 'bg-primary',
           )}
           style={{ width: `${pct}%` }}
         />
@@ -280,11 +280,11 @@ export function StreakFlame({ current, longest, todayActive, className }: { curr
       <span
         className={cn(
           'grid size-10 shrink-0 place-items-center rounded-xl border',
-          todayActive ? 'border-amber-500/40 bg-amber-500/10' : 'border-line bg-surface-2',
+          todayActive ? 'border-gold/40 bg-gold/10' : 'border-line bg-surface-2',
         )}
         aria-hidden
       >
-        <Flame className={cn('size-5', todayActive ? 'text-amber-500' : 'text-ink-soft/50')} />
+        <Flame className={cn('size-5', todayActive ? 'text-gold' : 'text-ink-soft/50')} />
       </span>
       <span className="leading-tight">
         <span className="block text-lg font-bold tabular-nums">{current} day{current === 1 ? '' : 's'}</span>
@@ -309,9 +309,9 @@ export function EmptyState({
   className?: string
 }) {
   return (
-    <div className={cn('flex flex-col items-center gap-2.5 rounded-2xl border border-dashed border-line bg-surface-2/40 px-6 py-10 text-center', className)}>
-      <span className="clay-in grid size-11 place-items-center rounded-xl" aria-hidden>
-        <Icon className="size-5 text-ink-soft" />
+    <div className={cn('flex flex-col items-center gap-2.5 rounded-2xl border border-dashed border-line bg-card/50 px-6 py-10 text-center', className)}>
+      <span className="mb-0.5 grid size-11 place-items-center rounded-2xl bg-surface-2 text-ink-soft shadow-well" aria-hidden>
+        <Icon className="size-5" aria-hidden />
       </span>
       <p className="text-sm font-semibold">{title}</p>
       {hint && <p className="max-w-sm text-xs leading-relaxed text-ink-soft">{hint}</p>}
@@ -431,8 +431,8 @@ export function useCommunityReport() {
 // ── Cards ─────────────────────────────────────────────────────────────────────
 
 const KIND_DOT: Record<string, string> = {
-  exam: 'bg-primary', subject: 'bg-emerald-500', doubt: 'bg-amber-500',
-  pyq: 'bg-amber-500', case: 'bg-rose-500', revision: 'bg-primary',
+  exam: 'bg-primary', subject: 'bg-sev-ok', doubt: 'bg-gold',
+  pyq: 'bg-gold', case: 'bg-sev-crit', revision: 'bg-primary',
 }
 
 export function SpaceCard({
@@ -467,7 +467,7 @@ export function SpaceCard({
           <MessageSquare className="size-3" aria-hidden /> {space.posts} post{space.posts === 1 ? '' : 's'}
         </span>
         {space.unresolved > 0 && (
-          <span className="inline-flex items-center gap-1 rounded-full border border-amber-500/40 bg-amber-500/10 px-2 py-0.5 text-[10px] font-semibold text-amber-600 dark:text-amber-400">
+          <span className="inline-flex items-center gap-1 rounded-full border border-sev-warn/40 bg-sev-warn/10 px-2 py-0.5 text-[10px] font-semibold text-sev-warn">
             {space.unresolved} unresolved
           </span>
         )}
@@ -637,7 +637,7 @@ export function ReplyCard({
     <article
       className={cn(
         'clay flex gap-3 rounded-2xl p-4',
-        reply.isAnswer && 'border-emerald-500/40 bg-emerald-500/5',
+        reply.isAnswer && 'border-sev-ok/40 bg-sev-ok/5',
       )}
     >
       <VoteButton
@@ -651,13 +651,13 @@ export function ReplyCard({
         <div className="mb-1.5 flex flex-wrap items-center gap-2">
           <ActorChip actor={reply.author} size="sm" />
           {reply.isAnswer && (
-            <span className="inline-flex shrink-0 items-center gap-1 rounded-full border border-emerald-500/40 bg-emerald-500/10 px-2 py-0.5 text-[10px] font-bold text-emerald-700 dark:text-emerald-400">
+            <span className="inline-flex shrink-0 items-center gap-1 rounded-full border border-sev-ok/40 bg-sev-ok/10 px-2 py-0.5 text-[10px] font-bold text-sev-ok">
               <BadgeCheck className="size-3" aria-hidden /> Marked answer
             </span>
           )}
           {reply.aiAssisted && <AIBadge />}
           {reply.status === 'review' && (
-            <span className="inline-flex shrink-0 items-center gap-1 rounded-full border border-amber-500/40 bg-amber-500/10 px-2 py-0.5 text-[10px] font-bold text-amber-600 dark:text-amber-400">
+            <span className="inline-flex shrink-0 items-center gap-1 rounded-full border border-sev-warn/40 bg-sev-warn/10 px-2 py-0.5 text-[10px] font-bold text-sev-warn">
               <AlertTriangle className="size-3" aria-hidden /> Held for review
             </span>
           )}
@@ -674,7 +674,7 @@ export function ReplyCard({
               disabled={busy}
               title="Mark this reply as the answer — resolves your question"
             >
-              <Star className="size-3.5 text-amber-500" aria-hidden /> Mark as answer
+              <Star className="size-3.5 text-gold" aria-hidden /> Mark as answer
             </Button>
           )}
           {onReport && !reply.mine && reply.status === 'open' && (
@@ -703,7 +703,7 @@ export function GroupCard({
   mine?: boolean
 }) {
   return (
-    <article className="clay flex h-full min-w-0 flex-col gap-2.5 rounded-2xl p-4">
+    <article className="clay clay-hover flex h-full min-w-0 flex-col gap-2.5 rounded-2xl p-4">
       <button
         type="button"
         onClick={() => onOpen(group.id)}

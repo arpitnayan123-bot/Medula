@@ -78,7 +78,7 @@ export function TaskRow({
     <div
       className={cn(
         'rounded-xl border p-3 transition-colors',
-        done ? 'border-sev-ok/30 bg-sev-ok/5' : skipped ? 'border-border/60 bg-muted/30 opacity-70' : 'border-border bg-background',
+        done ? 'border-sev-ok/30 bg-sev-ok/5' : skipped ? 'border-border/60 bg-muted/30 opacity-70' : 'clay-in',
       )}
     >
       <div className="flex items-start justify-between gap-2">
@@ -179,7 +179,7 @@ export function SubjectBar({ row }: { row: PlannerSubjectRow }) {
           {row.coverage}% covered · weight ~{row.neetWeight}%
         </p>
       </div>
-      <div className="mt-1 h-1.5 overflow-hidden rounded-full bg-muted">
+      <div className="clay-in mt-1 h-1.5 overflow-hidden rounded-full">
         <div
           className="h-full rounded-full transition-all"
           style={{ width: `${Math.max(2, row.coverage)}%`, backgroundColor: row.color }}
@@ -194,7 +194,7 @@ export function SubjectBar({ row }: { row: PlannerSubjectRow }) {
 
 export function MiniStat({ label, value, tone }: { label: string; value: string | number; tone?: 'ok' | 'warn' | 'crit' }) {
   return (
-    <div className="min-w-0 rounded-xl border border-border/70 bg-background p-2.5 text-center">
+    <div className="clay-in min-w-0 rounded-xl p-2.5 text-center">
       <p className={cn(
         'truncate text-base font-bold',
         tone === 'ok' && 'text-sev-ok', tone === 'warn' && 'text-sev-warn', tone === 'crit' && 'text-sev-crit',

@@ -26,6 +26,9 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Progress } from '@/components/ui/progress'
+import {
+  AnimatedNumber, EmptyState, MicroLabel, Reveal, SectionTitle, SubjectGlyph,
+} from '@/components/primitives/kit'
 import { cn } from '@/lib/utils'
 
 // ── presentation-only helpers ────────────────────────────────────────────────
@@ -47,7 +50,11 @@ function prettyKey(k: string): string {
 function MasteryBar({ value, className = '' }: { value: number; className?: string }) {
   return (
     <div className={cn('flex items-center gap-2', className)}>
-      <Progress value={value} className="h-1.5 flex-1" aria-label={`Mastery ${value}%`} />
+      <Progress
+        value={value}
+        className="h-1.5 flex-1 bg-surface-2 shadow-well [&>[data-slot=progress-indicator]]:bg-gradient-to-r [&>[data-slot=progress-indicator]]:from-primary [&>[data-slot=progress-indicator]]:to-[oklch(0.62_0.105_158)]"
+        aria-label={`Mastery ${value}%`}
+      />
       <span className="w-9 text-right text-xs tabular-nums text-ink-soft">{value}%</span>
     </div>
   )
@@ -65,12 +72,9 @@ function ImportanceDots({ n }: { n: number }) {
 
 function SectionHeader({ icon: Icon, title, sub }: { icon: typeof BookOpen; title: string; sub?: string }) {
   return (
-    <div className="flex items-center gap-2">
-      <Icon className="size-4 text-primary" aria-hidden />
-      <h2 className="text-sm font-semibold uppercase tracking-widest text-ink-soft">{title}</h2>
-      <div className="h-px flex-1 bg-line" aria-hidden />
-      {sub && <span className="text-xs text-muted-foreground">{sub}</span>}
-    </div>
+    <SectionTitle icon={Icon} right={sub ? <span className="text-xs text-muted-foreground">{sub}</span> : undefined}>
+      {title}
+    </SectionTitle>
   )
 }
 
@@ -202,7 +206,7 @@ export function LearnView() {
               transition={{ duration: 9, repeat: Infinity, ease: 'easeInOut' }}
             />
             <motion.div
-              className="absolute top-10 left-[2%] size-36 rounded-full bg-teal-400/10 blur-3xl"
+              className="absolute top-10 left-[2%] size-36 rounded-full bg-mint/15 blur-3xl"
               animate={{ y: [0, -12, 0], opacity: [0.5, 0.85, 0.5] }}
               transition={{ duration: 11, repeat: Infinity, ease: 'easeInOut' }}
             />
@@ -222,8 +226,10 @@ export function LearnView() {
           </div>
         ) : (
           <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }}>
-            <p className="text-[11px] font-bold uppercase tracking-[0.3em] text-primary">Knowledge engine</p>
-            <h1 id="learn-hero-title" className="mt-2 text-5xl font-bold tracking-tight md:text-6xl">LEARN</h1>
+            <MicroLabel>Knowledge engine</MicroLabel>
+            <h1 id="learn-hero-title" className="mt-2 font-display text-5xl font-semibold tracking-tight md:text-6xl">
+              <span className="ink-gradient">LEARN</span>
+            </h1>
             <p className="mt-3 max-w-xl text-sm leading-relaxed text-ink-soft md:text-base">
               The whole MBBS curriculum as one living map — build concepts from first principles, connect them across subjects, and keep them recall-ready.
             </p>
@@ -234,9 +240,9 @@ export function LearnView() {
                   initial={{ opacity: 0, y: 8 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.08 + i * 0.05 }}
-                  className="inline-flex items-baseline gap-1.5 rounded-full border border-line bg-surface px-3 py-1.5 text-xs text-ink-soft"
+                  className="inline-flex items-baseline gap-1.5 rounded-full clay-in px-3 py-1.5 text-xs text-ink-soft shadow-well"
                 >
-                  <span className="text-sm font-bold tabular-nums text-foreground">{c.value}</span>
+                  <AnimatedNumber value={c.value} className="text-sm font-bold text-foreground" />
                   {c.label}
                 </motion.span>
               ))}
@@ -259,14 +265,16 @@ export function LearnView() {
               {Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-40 w-64 shrink-0 rounded-2xl" />)}
             </div>
           ) : home.continueLearning.length === 0 ? (
-            <Card className="glass mt-4 rounded-2xl">
-              <CardContent className="flex flex-col items-start gap-2 p-5 md:flex-row md:items-center">
-                <p className="text-sm text-ink-soft">Start your first concept — pick a subject below.</p>
-                <Button variant="outline" size="sm" className="md:ml-auto" onClick={() => scrollToId('learn-curriculum')}>
+            <EmptyState
+              className="mt-4"
+              icon={BookOpen}
+              title="Start your first concept — pick a subject below."
+              action={
+                <Button variant="outline" size="sm" onClick={() => scrollToId('learn-curriculum')}>
                   Browse the curriculum <ChevronRight className="ml-1 size-3.5" />
                 </Button>
-              </CardContent>
-            </Card>
+              }
+            />
           ) : (
             <div className="med-scroll -mx-4 mt-4 flex snap-x gap-4 overflow-x-auto px-4 pb-2 md:-mx-6 md:px-6">
               {home.continueLearning.map((c, i) => (
@@ -277,7 +285,7 @@ export function LearnView() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: i * 0.05 }}
                   onClick={() => openConcept(c.conceptId)}
-                  className="group w-64 shrink-0 snap-start rounded-2xl border border-line bg-card p-4 text-left transition-all hover:border-primary/45 hover:shadow-lg hover:shadow-primary/5"
+                  className="clay clay-hover group w-64 shrink-0 snap-start rounded-2xl p-4 text-left"
                 >
                   <div className="flex items-center gap-2">
                     <span className="size-2.5 shrink-0 rounded-full" style={{ background: c.subjectColor }} />
@@ -336,7 +344,7 @@ export function LearnView() {
               </Card>
 
               {/* Weak concepts */}
-              <Card className="min-w-0 rounded-2xl border-line">
+              <Card className="clay min-w-0 rounded-2xl">
                 <CardContent className="p-5">
                   <p className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.2em] text-sev-crit">
                     <TrendingDown className="size-3" aria-hidden /> Weak concepts
@@ -476,7 +484,7 @@ export function LearnView() {
           phaseOrder.map((phase) => {
             const subjects = yearFilteredSubjects(phase)
             return (
-              <div key={phase} className="mt-8">
+              <Reveal key={phase} index={1} className="mt-8">
                 <div className="flex items-center gap-2">
                   <h3 className="text-base font-semibold tracking-tight">{phaseLabel[phase] ?? prettyKey(phase)}</h3>
                   <Badge variant="secondary" className="text-[10px] uppercase tracking-wider">{subjects.length} subjects</Badge>
@@ -496,13 +504,12 @@ export function LearnView() {
                         onClick={() => openLearn('subject', s.id)}
                         aria-label={`Open ${s.name} study page`}
                         className={cn(
-                          'group min-w-0 rounded-2xl border bg-card p-5 text-left transition-all hover:border-primary/45 hover:shadow-lg hover:shadow-primary/5',
-                          'border-line',
+                          'clay clay-hover group min-w-0 rounded-2xl p-5 text-left',
                           dimmed && 'opacity-35 saturate-50',
                         )}
                       >
                         <div className="flex items-center gap-2.5">
-                          <span className="size-3 shrink-0 rounded-full" style={{ background: s.color }} />
+                          <SubjectGlyph code={s.id} name={s.name} />
                           <span className="truncate font-medium group-hover:text-primary">{s.name}</span>
                           <Badge variant="outline" className="ml-auto shrink-0 text-[9px] uppercase tracking-wider">
                             {s.year > 0 ? `Y${s.year}` : 'all'}
@@ -520,7 +527,7 @@ export function LearnView() {
                     )
                   })}
                 </div>
-              </div>
+              </Reveal>
             )
           })
         )}
@@ -536,7 +543,7 @@ export function LearnView() {
             {Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-44 w-60 shrink-0 rounded-2xl" />)}
           </div>
         ) : atlas.length === 0 ? (
-          <p className="mt-4 rounded-2xl border border-line bg-card p-5 text-sm text-ink-soft">The 3D atlas is empty right now.</p>
+          <EmptyState className="mt-4" icon={Orbit} title="The 3D atlas is empty right now." />
         ) : (
           <>
             <div className="med-scroll -mx-4 mt-4 flex snap-x gap-4 overflow-x-auto px-4 pb-2 md:-mx-6 md:px-6">
@@ -554,7 +561,7 @@ export function LearnView() {
                       if (openable) { openConcept(a.conceptIds[0]); return }
                       setOpenAsset((cur) => (cur === a.diagramKey ? null : a.diagramKey))
                     }}
-                    className="w-60 shrink-0 snap-start rounded-2xl border border-line bg-card p-4 text-left transition-all hover:border-primary/45 hover:shadow-lg hover:shadow-primary/5"
+                    className="clay clay-hover w-60 shrink-0 snap-start rounded-2xl p-4 text-left"
                   >
                     <div className="flex items-center gap-2">
                       <span className={cn('rounded-full px-2 py-0.5 text-[10px] font-semibold', a.handcrafted ? 'bg-primary/15 text-primary' : 'bg-muted text-muted-foreground')}>
@@ -595,11 +602,11 @@ export function LearnView() {
                     exit={{ opacity: 0, height: 0 }}
                     className="overflow-hidden"
                   >
-                    <div className="mt-3 rounded-2xl border border-primary/35 bg-card p-4 md:p-5">
+                    <div className="clay mt-3 rounded-2xl p-4 md:p-5">
                       <p className="text-sm font-semibold">{asset.title}</p>
                       <div className="mt-3 space-y-2.5">
                         {rows.map(([label, body]) => (
-                          <div key={label} className="rounded-xl border border-line bg-surface-2 p-3.5">
+                          <div key={label} className="clay-in rounded-xl p-3.5">
                             <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-ink-soft">{label}</p>
                             <p className="mt-1 text-sm leading-relaxed">{body}</p>
                           </div>
@@ -616,13 +623,14 @@ export function LearnView() {
 
       {/* ── 7 · AI IN MEDICINE + RESEARCH ───────────────────────────────── */}
       <section aria-label="AI in medicine" ref={aiBandRef}>
-        <div className="rounded-3xl bg-gradient-to-r from-violet-500/50 via-teal-500/40 to-primary/40 p-px">
-          <div className="rounded-3xl bg-card p-5 md:p-7">
-            <p className="text-[11px] font-bold uppercase tracking-[0.3em] text-violet-500">Frontier</p>
+        <div className="podium rounded-3xl p-5 md:p-7">
+            <p className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.3em] text-ink-soft">
+              <Sparkles className="size-3.5 text-gold" aria-hidden /> Frontier
+            </p>
             <div className="mt-2 flex flex-wrap items-center gap-3">
-              <h2 className="text-2xl font-semibold tracking-tight md:text-3xl">AI in Medicine</h2>
+              <h2 className="font-display text-2xl font-semibold tracking-tight md:text-3xl">AI in Medicine</h2>
               {home && (
-                <span className="inline-flex items-center gap-1.5 rounded-full border border-violet-500/40 bg-violet-500/10 px-3 py-1 text-xs font-semibold text-violet-600 dark:text-violet-400">
+                <span className="inline-flex items-center gap-1.5 rounded-full border border-gold/45 bg-gold/15 px-3 py-1 text-xs font-semibold text-foreground">
                   <BrainCircuit className="size-3.5" aria-hidden /> {home.totals.aiConcepts} concepts · 14 topics
                 </span>
               )}
@@ -652,9 +660,11 @@ export function LearnView() {
                   {Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-16 w-full rounded-xl" />)}
                 </div>
               ) : papers.length === 0 ? (
-                <p className="mt-4 rounded-xl border border-line bg-surface-2 p-4 text-sm text-ink-soft">
-                  {papersNote ?? 'No research-paper explainers are stored yet — this list is deliberately empty.'}
-                </p>
+                <EmptyState
+                  className="mt-4"
+                  icon={ListChecks}
+                  title={papersNote ?? 'No research-paper explainers are stored yet — this list is deliberately empty.'}
+                />
               ) : (
                 <div className="mt-4 space-y-2.5">
                   {papers.map((p) => (
@@ -668,14 +678,13 @@ export function LearnView() {
                 </div>
               )}
             </div>
-          </div>
         </div>
       </section>
 
       {/* ── 8 · GLOBAL PERSPECTIVE ───────────────────────────────────────── */}
       <section aria-label="Explore the world">
         <SectionHeader icon={Globe2} title="Explore the world" />
-        <Card className="glass mt-4 rounded-2xl">
+        <Card className="clay mt-4 rounded-2xl">
           <CardContent className="p-5 md:p-6">
             <p className="max-w-2xl text-sm leading-relaxed text-ink-soft md:text-[15px]">
               Medicine is one science practiced many ways. Lessons that carry a global layer compare how the same
@@ -685,12 +694,12 @@ export function LearnView() {
             <p className="mt-3 text-sm font-medium">Compare India · US · UK · WHO practice differences inside lessons.</p>
             <div className="mt-4 grid gap-2.5 sm:grid-cols-2 lg:grid-cols-4">
               {[
-                { region: '🇮🇳 India', what: 'NMC CBME structure, Indian programmes & terminology' },
-                { region: '🇺🇸 United States', what: 'USMLE-style framing, US guideline names' },
-                { region: '🇬🇧 United Kingdom', what: 'GMC/NICE framing, UK terminology' },
-                { region: '🌐 WHO / Global', what: 'Global guidance & low-resource context' },
+                { region: 'India', what: 'NMC CBME structure, Indian programmes & terminology' },
+                { region: 'United States', what: 'USMLE-style framing, US guideline names' },
+                { region: 'United Kingdom', what: 'GMC/NICE framing, UK terminology' },
+                { region: 'WHO / Global', what: 'Global guidance & low-resource context' },
               ].map((r) => (
-                <div key={r.region} className="rounded-xl border border-line bg-surface-2 p-3.5">
+                <div key={r.region} className="clay-in rounded-xl p-3.5">
                   <p className="text-sm font-semibold">{r.region}</p>
                   <p className="mt-1 text-xs leading-relaxed text-ink-soft">{r.what}</p>
                 </div>
@@ -713,7 +722,7 @@ export function LearnView() {
                 key={`${r.conceptId}-${r.at}`}
                 type="button"
                 onClick={() => openConcept(r.conceptId)}
-                className="inline-flex min-h-9 items-center rounded-full border border-line bg-surface px-3 text-sm text-ink-soft transition-colors hover:border-primary/40 hover:text-foreground"
+                className="inline-flex min-h-9 items-center rounded-full clay-in px-3 text-sm text-ink-soft transition-colors clay-hover hover:text-foreground"
               >
                 {r.conceptName}
               </button>
@@ -742,7 +751,7 @@ const EVIDENCE_TINT: Record<PaperExplainer['evidenceLevel'], string> = {
   rct: 'text-sev-ok border-sev-ok/40 bg-sev-ok/10',
   cohort: 'text-sev-warn border-sev-warn/40 bg-sev-warn/10',
   'landmark-study': 'text-primary border-primary/40 bg-primary/10',
-  guideline: 'text-teal-600 border-teal-500/40 bg-teal-500/10 dark:text-teal-400',
+  guideline: 'text-primary border-primary/40 bg-primary/10',
   'emerging-research': 'text-sev-warn border-sev-warn/40 bg-sev-warn/10',
 }
 
@@ -775,38 +784,38 @@ function PaperRow({ paper, open, onToggle }: { paper: PaperExplainer; open: bool
             className="overflow-hidden"
           >
             <div className="space-y-2.5 border-t border-line p-4">
-              <div className="rounded-xl bg-primary/5 p-3.5">
-                <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-primary">Explain it simply</p>
+              <div className="callout callout-easy rounded-xl">
+                <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-sev-ok">Explain it simply</p>
                 <p className="mt-1.5 text-sm leading-relaxed">{paper.simpleExplain}</p>
               </div>
-              <div className="rounded-xl border border-line bg-surface-2 p-3.5">
+              <div className="clay-in rounded-xl p-3.5">
                 <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-ink-soft">The question</p>
                 <p className="mt-1 text-sm leading-relaxed">{paper.question}</p>
               </div>
               <div className="grid gap-2.5 md:grid-cols-2">
-                <div className="rounded-xl border border-line bg-surface-2 p-3.5">
+                <div className="clay-in rounded-xl p-3.5">
                   <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-ink-soft">Dataset</p>
                   <p className="mt-1 text-sm leading-relaxed">{paper.dataset}</p>
                 </div>
-                <div className="rounded-xl border border-line bg-surface-2 p-3.5">
+                <div className="clay-in rounded-xl p-3.5">
                   <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-ink-soft">Method</p>
                   <p className="mt-1 text-sm leading-relaxed">{paper.method}</p>
                 </div>
               </div>
-              <div className="rounded-xl border border-line bg-surface-2 p-3.5">
+              <div className="clay-in rounded-xl p-3.5">
                 <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-ink-soft">Result</p>
                 <p className="mt-1 text-sm leading-relaxed">{paper.result}</p>
               </div>
-              <div className="rounded-xl border border-line bg-surface-2 p-3.5">
+              <div className="clay-in rounded-xl p-3.5">
                 <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-ink-soft">What it means</p>
                 <p className="mt-1 text-sm leading-relaxed">{paper.meaning}</p>
               </div>
-              <div className="rounded-xl border border-line bg-surface-2 p-3.5">
+              <div className="clay-in rounded-xl p-3.5">
                 <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-ink-soft">Why it matters</p>
                 <p className="mt-1 text-sm leading-relaxed">{paper.whyMatters}</p>
               </div>
               {paper.limitations.length > 0 && (
-                <div className="rounded-xl border border-sev-warn/30 bg-sev-warn/5 p-3.5">
+                <div className="callout callout-warn rounded-xl">
                   <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-sev-warn">Limitations</p>
                   <ul className="mt-1.5 space-y-1">
                     {paper.limitations.map((l, i) => (

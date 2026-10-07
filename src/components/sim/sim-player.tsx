@@ -310,7 +310,7 @@ export function SimPlayer({ detail, resume, onComplete, onExit }: PlayerProps) {
           </Button>
           {attempt && (
             <span
-              className="glass inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-bold tabular-nums"
+              className="clay inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-bold tabular-nums"
               role="timer"
               aria-label={`Elapsed time ${fmtClock(elapsedMs)}`}
             >
@@ -413,14 +413,14 @@ export function SimPlayer({ detail, resume, onComplete, onExit }: PlayerProps) {
               </div>
             </>
           ) : startError ? (
-            <div className="glass flex flex-col items-start gap-3 rounded-2xl p-5">
+            <div className="clay flex flex-col items-start gap-3 rounded-2xl p-5">
               <Button className="min-h-12" onClick={() => void startAttempt('guided')} disabled={starting}>
                 {starting ? <Loader2 className="size-4 animate-spin" aria-hidden /> : <Stethoscope className="size-4" aria-hidden />}
                 Begin the case
               </Button>
             </div>
           ) : (
-            <div className="glass flex items-center gap-3 rounded-2xl p-5">
+            <div className="clay flex items-center gap-3 rounded-2xl p-5">
               <Loader2 className="size-5 animate-spin text-primary" aria-hidden />
               <p className="text-sm text-ink-soft">Preparing the encounter…</p>
             </div>
@@ -446,7 +446,7 @@ export function SimPlayer({ detail, resume, onComplete, onExit }: PlayerProps) {
           >
             {/* Stage intro as clinical narrative */}
             {stage.intro.length > 0 && (
-              <div className="glass space-y-2 rounded-2xl p-4 md:p-5" aria-label={`${STAGE_META[stage.kind].label} notes`}>
+              <div className="clay space-y-2 rounded-2xl p-4 md:p-5" aria-label={`${STAGE_META[stage.kind].label} notes`}>
                 <MicroLabel>{STAGE_META[stage.kind].label}</MicroLabel>
                 {stage.intro.map((line, i) => (
                   <p key={i} className="text-sm leading-relaxed text-ink-soft first:text-foreground first:font-medium">
@@ -499,7 +499,7 @@ export function SimPlayer({ detail, resume, onComplete, onExit }: PlayerProps) {
               />
             ) : (
               /* Defensive: stage finished without engine feedback (e.g. resume) */
-              <div className="glass flex flex-col items-start gap-3 rounded-2xl p-5">
+              <div className="clay flex flex-col items-start gap-3 rounded-2xl p-5">
                 <p className="text-sm text-ink-soft">This stage is complete.</p>
                 <Button className="min-h-12" onClick={() => void advance(attempt.stageIndex + 1)} disabled={advancing}>
                   Continue <ArrowRight className="size-4" aria-hidden />
@@ -566,7 +566,7 @@ function PatientOpening({ detail, ai }: { detail: SimCaseDetail; ai: boolean }) 
   const p = detail.patient
   const src = imgSrc(detail.summary.imageKey)
   return (
-    <section className="glass space-y-4 rounded-2xl p-5 md:p-6" aria-label="Patient opening">
+    <section className="clay space-y-4 rounded-2xl p-5 md:p-6" aria-label="Patient opening">
       <div className="flex flex-wrap gap-1.5">
         {[p.age && `${p.age} y`, p.sex, p.occupation].filter(Boolean).map((chip, i) => (
           <span key={i} className="inline-flex items-center gap-1 rounded-full border border-line bg-surface-2/60 px-2.5 py-1 text-[11px] font-semibold text-ink-soft">
@@ -791,7 +791,7 @@ function FeedbackPanel({
       initial={{ opacity: 0, y: 14 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.35, ease: EASE }}
-      className="glass space-y-4 rounded-2xl p-4 md:p-5"
+      className="clay space-y-4 rounded-2xl p-4 md:p-5"
       aria-label="Engine feedback"
     >
       <div className="flex flex-wrap items-center justify-between gap-2">
@@ -878,7 +878,7 @@ function AiChatPanel({
 }) {
   const chips = AI_QUICK_CHIPS[stage.kind] ?? []
   return (
-    <section className="glass space-y-3 rounded-2xl p-4 md:p-5" aria-label="AI patient consultation">
+    <section className="clay space-y-3 rounded-2xl p-4 md:p-5" aria-label="AI patient consultation">
       {/* Fixed prominent badge + disclaimer while chatting */}
       <div className="rounded-xl border border-sev-warn/30 bg-sev-warn/10 px-3.5 py-2.5">
         <p className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-sev-warn">

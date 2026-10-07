@@ -18,9 +18,9 @@ export function LogoMark({ size = 36, className }: { size?: number; className?: 
     >
       <defs>
         <linearGradient id={GRAD_ID} x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="#22d3ee" />
-          <stop offset="52%" stopColor="#0ea5e9" />
-          <stop offset="100%" stopColor="#34d399" />
+          <stop offset="0%" stopColor="#0e7f8f" />
+          <stop offset="52%" stopColor="#14919e" />
+          <stop offset="100%" stopColor="#2fae8f" />
         </linearGradient>
         <radialGradient id="medula-gloss" cx="28%" cy="20%" r="80%">
           <stop offset="0%" stopColor="#ffffff" stopOpacity="0.4" />
@@ -33,7 +33,7 @@ export function LogoMark({ size = 36, className }: { size?: number; className?: 
         </filter>
       </defs>
 
-      {/* clay tile */}
+      {/* porcelain tile */}
       <rect x="1.5" y="1.5" width="45" height="45" rx="12.5" fill={`url(#${GRAD_ID})`} />
       {/* glass gloss */}
       <rect x="1.5" y="1.5" width="45" height="45" rx="12.5" fill="url(#medula-gloss)" />
@@ -54,7 +54,7 @@ export function LogoMark({ size = 36, className }: { size?: number; className?: 
       <path
         d="M15.5 24.5 h3.2 l1.6 -2.6 l2.4 5.2 l1.8 -2.6 h3.4"
         fill="none"
-        stroke="#fde68a"
+        stroke="#f7e3bd"
         strokeWidth="1.7"
         strokeLinecap="round"
         strokeLinejoin="round"
@@ -62,8 +62,8 @@ export function LogoMark({ size = 36, className }: { size?: number; className?: 
       />
 
       {/* synapse spark on the apex */}
-      <circle cx="37" cy="15.5" r="2.6" fill="#fbbf24" filter="url(#medula-spark)" />
-      <circle cx="37" cy="15.5" r="4.6" fill="none" stroke="#fbbf24" strokeOpacity="0.5" strokeWidth="1" />
+      <circle cx="37" cy="15.5" r="2.6" fill="#f2cf8d" filter="url(#medula-spark)" />
+      <circle cx="37" cy="15.5" r="4.6" fill="none" stroke="#f2cf8d" strokeOpacity="0.5" strokeWidth="1" />
     </svg>
   )
 }
@@ -71,7 +71,7 @@ export function LogoMark({ size = 36, className }: { size?: number; className?: 
 export function LogoWordmark({ className }: { className?: string }) {
   return (
     <span className={className}>
-      <span className="block text-[15px] font-extrabold leading-none tracking-tight">MEDULA</span>
+      <span className="font-display block text-[15px] font-bold leading-none tracking-tight">MEDULA</span>
       <span className="mt-0.5 block text-[8.5px] font-semibold uppercase tracking-[0.24em] text-ink-soft">
         Medical Learning OS
       </span>

@@ -15,6 +15,7 @@ import {
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { FEATURES } from '@/lib/feature-flags'
+import { PageHeader } from '@/components/primitives/kit'
 import type { SourceRecord } from '@/lib/institutions-registry'
 import { cn } from '@/lib/utils'
 
@@ -199,18 +200,17 @@ function ExploreInner({ onNavigate }: { onNavigate?: (view: string, payload?: st
   return (
     <div className="mx-auto w-full max-w-3xl px-4 pb-16 pt-6 sm:px-6">
       {/* ── HERO ─────────────────────────────────────────────────────────── */}
-      <header className="text-center">
-        <p className="text-[10px] font-bold uppercase tracking-[0.32em] text-ink-soft">Knowledge OS</p>
-        <h1 className="mt-2 flex items-center justify-center gap-3 text-3xl font-black tracking-tight text-foreground sm:text-4xl">
-          <span className="clay grid h-11 w-11 shrink-0 place-items-center rounded-2xl" aria-hidden="true">
-            <Compass className="h-6 w-6 text-primary" />
-          </span>
-          Explore Medicine
-        </h1>
-        <p className="mx-auto mt-3 max-w-xl text-sm leading-relaxed text-ink-soft">
-          One search across your curriculum, real research, official institutions, and the open web —
-          every result linked to its original source.
-        </p>
+      <header>
+        <PageHeader
+          eyebrow={
+            <>
+              <Compass className="mr-1 inline size-3" />
+              Knowledge OS
+            </>
+          }
+          title="Explore Medicine"
+          intro="One search across your curriculum, real research, official institutions, and the open web — every result linked to its original source."
+        />
       </header>
 
       {/* ── SEARCH ───────────────────────────────────────────────────────── */}

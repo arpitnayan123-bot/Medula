@@ -111,8 +111,8 @@ function SummaryChip({ value, label, tone }: { value: number; label: string; ton
     <span
       className={cn(
         'inline-flex min-h-9 items-center gap-1.5 rounded-full border px-3 py-1.5 text-[11px]',
-        tone === 'high' && 'border-rose-500/40 bg-rose-500/12 text-rose-700',
-        tone === 'moderate' && 'border-amber-500/40 bg-amber-500/12 text-amber-700',
+        tone === 'high' && 'border-sev-crit/40 bg-sev-crit/12 text-sev-crit',
+        tone === 'moderate' && 'border-sev-warn/40 bg-sev-warn/12 text-sev-warn',
         tone === 'due' && 'border-primary/40 bg-primary/12 text-primary',
       )}
     >
@@ -157,7 +157,7 @@ function MemoryRow({ row }: { row: BrainMemoryRow }) {
         {row.wrongCount > 0 && (
           <>
             <span aria-hidden>·</span>
-            <span className="font-medium text-rose-600">{row.wrongCount} wrong</span>
+            <span className="font-medium text-sev-crit">{row.wrongCount} wrong</span>
           </>
         )}
       </div>

@@ -137,23 +137,12 @@ export function SignInView({ initialHash }: { initialHash?: string }) {
 
   return (
     <div className="relative flex min-h-svh flex-col bg-background text-foreground">
-      {/* ambient sky scene */}
+      {/* ambient warm scene — champagne dawn + mint canopy */}
       <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
-        <div className="absolute left-1/2 top-[-18%] h-[420px] w-[720px] -translate-x-1/2 rounded-full bg-sky-400/15 blur-3xl" />
-        <div className="scene-float absolute -left-16 top-1/3 size-72 rounded-full bg-amber-300/15 blur-3xl" />
-        <div className="scene-float absolute -right-20 bottom-10 size-80 rounded-full bg-emerald-300/15 blur-3xl" style={{ animationDelay: '3s' }} />
-        {['🌿', '☁️', '🦋', '🍃'].map((e, i) => (
-          <motion.span
-            key={i}
-            aria-hidden
-            className="absolute select-none text-xl opacity-40"
-            animate={reduce ? undefined : { y: [0, -16, 0, 12, 0], rotate: [0, 9, 0, -7, 0] }}
-            transition={reduce ? undefined : { duration: 10 + i * 2, repeat: Infinity, ease: 'easeInOut', delay: i * 1.4 }}
-            style={{ left: `${10 + i * 24}%`, top: `${12 + (i % 2) * 64}%` }}
-          >
-            {e}
-          </motion.span>
-        ))}
+        <div className="absolute left-1/2 top-[-18%] h-[420px] w-[720px] -translate-x-1/2 rounded-full bg-gold/[0.14] blur-3xl" />
+        <div className="scene-float absolute -left-16 top-1/3 size-72 rounded-full bg-mint/[0.18] blur-3xl" />
+        <div className="scene-float absolute -right-20 bottom-10 size-80 rounded-full bg-gold/[0.12] blur-3xl" style={{ animationDelay: '3s' }} />
+        <div className="scene-float absolute -left-24 bottom-1/4 size-64 rounded-full bg-mint/[0.12] blur-3xl" style={{ animationDelay: '6s' }} />
       </div>
 
       {/* top bar */}

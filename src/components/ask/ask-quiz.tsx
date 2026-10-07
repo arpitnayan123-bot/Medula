@@ -6,7 +6,7 @@
 // No negative marking — this is practice, not a graded test.
 
 import { useMemo, useState } from 'react'
-import { ArrowRight, CheckCircle2, ListChecks, Target, XCircle } from 'lucide-react'
+import { ArrowRight, CheckCircle2, Lightbulb, ListChecks, Target, XCircle } from 'lucide-react'
 import type { AskQuizItem } from '@/lib/types'
 import { Button } from '@/components/ui/button'
 import { Progress } from '@/components/ui/progress'
@@ -123,7 +123,10 @@ export function AskQuiz({
             </p>
             <p className="text-[13px] leading-relaxed text-ink-soft">{q.explanation}</p>
             {q.teaching && (
-              <p className="rounded-lg bg-primary/10 px-3 py-2 text-[13px] font-medium leading-relaxed">💡 {q.teaching}</p>
+              <p className="rounded-lg bg-primary/10 px-3 py-2 text-[13px] font-medium leading-relaxed">
+                <Lightbulb className="mr-1 inline size-3.5 text-gold" aria-hidden />
+                {q.teaching}
+              </p>
             )}
             {q.conceptName && <p className="text-[11px] text-ink-soft">Concept: {q.conceptName}</p>}
             <Button

@@ -76,17 +76,17 @@ export const BRAIN_TABS: { id: BrainTab; label: string; icon: LucideIcon }[] = [
 ]
 
 // ── StatusPill — the 7 published concept states, color-coded ─────────────────
-// Slate (not-started), amber (learning), cyan (familiar), teal (strong),
-// emerald (mastered), rose (at-risk), orange (needs-revision). No blue/indigo.
+// Ink-soft (not-started), warn (learning), teal (familiar/strong),
+// ok (mastered), crit (at-risk), gold (needs-revision). Tokens only.
 
 export const STATUS_META: Record<BrainConceptStatus, { label: string; chip: string; dot: string; bar: string }> = {
-  'not-started': { label: 'Not started', chip: 'bg-slate-500/12 text-slate-700 border-slate-500/40', dot: 'bg-slate-400', bar: 'bg-slate-400' },
-  learning: { label: 'Learning', chip: 'bg-amber-500/12 text-amber-700 border-amber-500/40', dot: 'bg-amber-500', bar: 'bg-amber-500' },
+  'not-started': { label: 'Not started', chip: 'bg-ink-soft/12 text-ink-soft border-ink-soft/40', dot: 'bg-ink-soft/40', bar: 'bg-ink-soft/40' },
+  learning: { label: 'Learning', chip: 'bg-sev-warn/12 text-sev-warn border-sev-warn/40', dot: 'bg-sev-warn', bar: 'bg-sev-warn' },
   familiar: { label: 'Familiar', chip: 'bg-primary/12 text-primary border-primary/40', dot: 'bg-primary', bar: 'bg-primary' },
-  strong: { label: 'Strong', chip: 'bg-teal-500/12 text-teal-700 border-teal-500/40', dot: 'bg-teal-500', bar: 'bg-teal-500' },
-  mastered: { label: 'Mastered', chip: 'bg-emerald-500/12 text-emerald-700 border-emerald-500/40', dot: 'bg-emerald-500', bar: 'bg-emerald-500' },
-  'at-risk': { label: 'At risk', chip: 'bg-rose-500/12 text-rose-700 border-rose-500/40', dot: 'bg-rose-500', bar: 'bg-rose-500' },
-  'needs-revision': { label: 'Needs revision', chip: 'bg-orange-500/12 text-orange-700 border-orange-500/40', dot: 'bg-orange-500', bar: 'bg-orange-500' },
+  strong: { label: 'Strong', chip: 'bg-primary/10 text-primary border-primary/40', dot: 'bg-primary', bar: 'bg-primary' },
+  mastered: { label: 'Mastered', chip: 'bg-sev-ok/12 text-sev-ok border-sev-ok/40', dot: 'bg-sev-ok', bar: 'bg-sev-ok' },
+  'at-risk': { label: 'At risk', chip: 'bg-sev-crit/10 text-sev-crit border-sev-crit/40', dot: 'bg-sev-crit', bar: 'bg-sev-crit' },
+  'needs-revision': { label: 'Needs revision', chip: 'bg-gold/12 text-gold border-gold/40', dot: 'bg-gold', bar: 'bg-gold' },
 }
 
 export const ALL_STATUSES = Object.keys(STATUS_META) as BrainConceptStatus[]
@@ -105,9 +105,9 @@ export function StatusPill({ status, className }: { status: BrainConceptStatus; 
 
 const RISK_META: Record<BrainForgetRisk, { label: string; chip: string }> = {
   none: { label: 'No risk', chip: 'border-line bg-surface-2/60 text-ink-soft' },
-  low: { label: 'Low risk', chip: 'bg-teal-500/12 text-teal-700 border-teal-500/40' },
-  moderate: { label: 'Moderate', chip: 'bg-amber-500/12 text-amber-700 border-amber-500/40' },
-  high: { label: 'High', chip: 'bg-rose-500/12 text-rose-700 border-rose-500/40' },
+  low: { label: 'Low risk', chip: 'bg-primary/12 text-primary border-primary/40' },
+  moderate: { label: 'Moderate', chip: 'bg-sev-warn/12 text-sev-warn border-sev-warn/40' },
+  high: { label: 'High', chip: 'bg-sev-crit/10 text-sev-crit border-sev-crit/40' },
 }
 
 export function RiskPill({ risk, className }: { risk: BrainForgetRisk; className?: string }) {
@@ -179,9 +179,9 @@ export function StateDistribution({ counts, onJump, className }: {
 
 export function recallColor(recall: number | null): string {
   if (recall == null) return 'bg-transparent'
-  if (recall >= 0.7) return 'bg-emerald-500'
-  if (recall >= 0.5) return 'bg-amber-500'
-  return 'bg-rose-500'
+  if (recall >= 0.7) return 'bg-sev-ok'
+  if (recall >= 0.5) return 'bg-sev-warn'
+  return 'bg-sev-crit'
 }
 
 export function RecallBar({ recall, className, label }: { recall: number | null; className?: string; label?: string }) {
@@ -332,7 +332,7 @@ export function ActionButton({ action, onOpen, variant = 'outline', size = 'sm',
   )
 }
 
-// ── SectionCard — the one glass card every tab builds on ─────────────────────
+// ── SectionCard — the one porcelain card every tab builds on ────────────────;
 
 export function SectionCard({ title, subtitle, icon: Icon, action, className, children }: {
   title?: string

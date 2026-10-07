@@ -11,18 +11,17 @@
 // no chain-of-thought anywhere).
 
 import { useCallback, useEffect, useState } from 'react'
-import { motion } from 'framer-motion'
 import { api } from '@/lib/api'
 import type { OsCommandCenter } from '@/lib/types'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { MicroLabel, FootNote } from '@/components/os/os-shared'
+import { Reveal } from '@/components/primitives/kit'
 import { OsHero } from '@/components/os/os-hero'
 import { OsTodaySections } from '@/components/os/os-sections'
 import { OsConnections } from '@/components/os/os-connections'
 import { Command, RefreshCcw, TriangleAlert } from 'lucide-react'
 
-const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1]
 
 function OsSkeleton() {
   return (
@@ -109,25 +108,28 @@ export function OsView() {
       )}
 
       {state === 'ready' && data && (
-        <motion.div
-          initial={{ opacity: 0, y: 8 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.3, ease: EASE }}
-          className="space-y-3"
-        >
-          <OsHero data={data} />
-          <OsTodaySections data={data} />
-          <OsConnections data={data} />
+        <div className="space-y-3">
+          <Reveal index={0}>
+            <OsHero data={data} />
+          </Reveal>
+          <Reveal index={1}>
+            <OsTodaySections data={data} />
+          </Reveal>
+          <Reveal index={2}>
+            <OsConnections data={data} />
+          </Reveal>
 
           {/* honesty footer */}
-          <div className="rounded-2xl border border-dashed border-border/70 bg-muted/30 p-3.5">
+          <Reveal index={3}>
+          <div className="rounded-2xl border border-dashed border-line bg-surface-2/50 p-3.5">
             <MicroLabel>Why you can trust this page</MicroLabel>
             <FootNote>
               {data.honestNote} Measured from {data.dataBasis.ledgers.length} ledger families ({data.dataBasis.ledgers.slice(0, 8).join(', ')}…) over {data.dataBasis.window}. Peers: {data.dataBasis.peers}.
               {data.insufficientData ? ' Right now there is not enough activity for full recommendations — start below and this page fills with measured guidance.' : ''}
             </FootNote>
           </div>
-        </motion.div>
+          </Reveal>
+        </div>
       )}
     </div>
   )

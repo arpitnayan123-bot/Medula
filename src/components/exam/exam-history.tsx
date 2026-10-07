@@ -46,7 +46,7 @@ export function ExamHistoryView({ onBack, onOpenAnalysis }: Props) {
   if (state === 'error' || !payload) {
     return (
       <div className="mx-auto max-w-3xl p-4 md:p-6">
-        <div className="glass flex flex-col items-center gap-3 rounded-2xl p-8 text-center md:p-12">
+        <div className="clay flex flex-col items-center gap-3 rounded-2xl p-8 text-center md:p-12">
           <span className="grid size-12 place-items-center rounded-full bg-sev-crit/10">
             <RefreshCw className="size-6 text-sev-crit" aria-hidden />
           </span>
@@ -80,7 +80,7 @@ export function ExamHistoryView({ onBack, onOpenAnalysis }: Props) {
 
       {payload.insufficientData ? (
         <Reveal index={1}>
-          <div className="glass flex flex-col items-center gap-3 rounded-2xl px-6 py-12 text-center">
+          <div className="clay flex flex-col items-center gap-3 rounded-2xl px-6 py-12 text-center">
             <span className="grid size-14 place-items-center rounded-full bg-primary/10">
               <Target className="size-7 text-primary" aria-hidden />
             </span>
@@ -108,7 +108,7 @@ export function ExamHistoryView({ onBack, onOpenAnalysis }: Props) {
           {trendTests.length > 0 && (
             <Reveal index={2} className="space-y-3">
               <SectionTitle>Score trend — last {trendTests.length} {trendTests.length === 1 ? 'test' : 'tests'}</SectionTitle>
-              <div className="glass rounded-2xl p-4 md:p-5">
+              <div className="clay rounded-2xl p-4 md:p-5">
                 <div
                   className={cn('flex min-w-max items-end gap-2 overflow-x-auto pb-1 pt-2', '[scrollbar-width:thin] [&::-webkit-scrollbar]:h-1.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-line')}
                   role="img"
@@ -164,7 +164,7 @@ export function ExamHistoryView({ onBack, onOpenAnalysis }: Props) {
           {payload.consistency && (
             <Reveal index={3} className="space-y-3">
               <SectionTitle>Consistency</SectionTitle>
-              <div className="glass space-y-2 rounded-2xl p-4 md:p-5">
+              <div className="clay space-y-2 rounded-2xl p-4 md:p-5">
                 <div className="flex flex-wrap items-center gap-2">
                   <span className="inline-flex items-center gap-1.5 rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-xs font-bold text-primary">
                     <Flame className="size-3.5" aria-hidden /> {payload.consistency.band}
@@ -182,7 +182,7 @@ export function ExamHistoryView({ onBack, onOpenAnalysis }: Props) {
           {payload.subjects.length > 0 && (
             <Reveal index={4} className="space-y-3">
               <SectionTitle>Subject performance</SectionTitle>
-              <div className="glass space-y-3.5 rounded-2xl p-4 md:p-5">
+              <div className="clay space-y-3.5 rounded-2xl p-4 md:p-5">
                 {payload.subjects.map((s) => {
                   const tone = accuracyTone(s.accuracy)
                   return (
@@ -215,7 +215,7 @@ export function ExamHistoryView({ onBack, onOpenAnalysis }: Props) {
           {payload.revisionImpact && (
             <Reveal index={5} className="space-y-3">
               <SectionTitle>Revision impact</SectionTitle>
-              <div className="glass space-y-3 rounded-2xl p-4 md:p-5">
+              <div className="clay space-y-3 rounded-2xl p-4 md:p-5">
                 <div className="grid grid-cols-2 gap-2.5 sm:max-w-sm">
                   <div className="rounded-xl border border-line bg-surface-2/40 px-3.5 py-3">
                     <p className="text-[10px] font-bold uppercase tracking-wider text-ink-soft">Revised topics</p>

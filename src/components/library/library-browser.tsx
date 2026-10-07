@@ -23,6 +23,7 @@ import {
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Skeleton } from '@/components/ui/skeleton'
+import { EmptyState as KitEmptyState } from '@/components/primitives/kit'
 import { cn } from '@/lib/utils'
 import {
   CardGrid, DisclaimerFootnote, LibraryCard, MicroLabel, Reveal,
@@ -561,22 +562,20 @@ function Pagination({
 
 function EmptyState({ onClear, clearLabel = 'Clear all filters' }: { onClear: () => void; clearLabel?: string }) {
   return (
-    <div className="glass flex flex-col items-center gap-3 rounded-2xl p-8 text-center">
-      <span className="clay-in grid size-12 place-items-center rounded-2xl" aria-hidden>
-        <Search className="size-5 text-ink-soft" />
-      </span>
-      <h3 className="text-base font-semibold tracking-tight">No resources match</h3>
-      <p className="max-w-sm text-sm leading-relaxed text-ink-soft">
-        Nothing in the catalog matches this combination — widen the filters or clear them to see everything.
-      </p>
-      <Button variant="outline" className="min-h-11" onClick={onClear}>{clearLabel}</Button>
-    </div>
+    <KitEmptyState
+      icon={Search}
+      title="No resources match"
+      hint="Nothing in the catalog matches this combination — widen the filters or clear them to see everything."
+      action={
+        <Button variant="outline" className="min-h-11" onClick={onClear}>{clearLabel}</Button>
+      }
+    />
   )
 }
 
 export function ErrorCard({ hint, onRetry, extraHint }: { hint: string; onRetry: () => void; extraHint?: string }) {
   return (
-    <div className={cn('glass flex flex-col items-center gap-3 rounded-2xl p-8 text-center')} role="alert">
+    <div className={cn('clay flex flex-col items-center gap-3 rounded-2xl p-8 text-center')} role="alert">
       <h3 className="text-base font-semibold tracking-tight">The library didn&apos;t load</h3>
       <p className="max-w-sm text-sm leading-relaxed text-ink-soft">{hint}</p>
       {extraHint && <p className="max-w-sm text-xs text-ink-soft">{extraHint}</p>}

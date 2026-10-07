@@ -82,7 +82,7 @@ function TimelineItem({ item, index }: { item: SimDebriefTimelineItem; index: nu
 
   return (
     <Reveal index={Math.min(index, 6)}>
-      <li className="glass min-w-0 space-y-2.5 rounded-2xl p-4">
+      <li className="clay min-w-0 space-y-2.5 rounded-2xl p-4">
         <div className="flex min-w-0 items-start gap-2.5">
           <ResultIcon className={cn('mt-0.5 size-4 shrink-0', verdictTone)} aria-hidden />
           <div className="min-w-0 flex-1">
@@ -227,7 +227,7 @@ export function SimDebriefView({
 
       {/* ── Diagnosis reveal ── */}
       <Reveal index={1}>
-        <section className="glass space-y-3 rounded-2xl p-5 md:p-6" aria-label="Diagnosis reveal">
+        <section className="clay space-y-3 rounded-2xl p-5 md:p-6" aria-label="Diagnosis reveal">
           <MicroLabel>The diagnosis was</MicroLabel>
           <p className="text-xl font-semibold leading-snug tracking-tight md:text-2xl">{debrief.diagnosis}</p>
           <div className="flex flex-wrap items-center gap-2 border-t border-line pt-3">
@@ -249,7 +249,7 @@ export function SimDebriefView({
 
       {/* ── Measured scores ── */}
       <Reveal index={2}>
-        <section className="glass flex flex-col items-center gap-6 rounded-2xl p-5 sm:flex-row sm:items-stretch md:p-6" aria-label="Score breakdown">
+        <section className="clay flex flex-col items-center gap-6 rounded-2xl p-5 sm:flex-row sm:items-stretch md:p-6" aria-label="Score breakdown">
           <div className="flex shrink-0 items-center justify-center">
             <ScoreRing pct={debrief.scores.total} />
           </div>
@@ -306,7 +306,7 @@ export function SimDebriefView({
       {debrief.learning.length > 0 && (
         <Reveal index={4} className="space-y-3">
           <MicroLabel className="text-primary">Learning points</MicroLabel>
-          <ul className="glass space-y-3 rounded-2xl p-4 md:p-5">
+          <ul className="clay space-y-3 rounded-2xl p-4 md:p-5">
             {debrief.learning.map((l, i) => (
               <li key={i} className="flex min-w-0 items-start gap-2.5">
                 <Lightbulb className="mt-0.5 size-4 shrink-0 text-sev-warn" aria-hidden />
@@ -363,7 +363,7 @@ export function SimDebriefView({
           <MicroLabel>Related Knowledge — from the graph</MicroLabel>
           <div className="grid gap-3 sm:grid-cols-2">
             {debrief.related.map((g) => (
-              <div key={g.kind} className="glass min-w-0 space-y-2.5 rounded-2xl p-4">
+              <div key={g.kind} className="clay min-w-0 space-y-2.5 rounded-2xl p-4">
                 <div>
                   <p className="text-xs font-bold uppercase tracking-wider">{g.label}</p>
                   <p className="mt-0.5 text-[11px] leading-relaxed text-ink-soft">{g.blurb}</p>

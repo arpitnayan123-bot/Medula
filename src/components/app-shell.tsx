@@ -80,7 +80,7 @@ const MOBILE_NAV: { id: View; label: string; icon: typeof Home }[] = [
 const MORE_NAV = NAV.filter((item) => !MOBILE_NAV.some((m) => m.id === item.id))
 
 // Brand logo comes from @/components/brand/logo (imported above)
-// Night mode removed by design — one signature sky-blue theme, zero theme chrome.
+// Night mode removed by design — one signature porcelain theme, zero theme chrome.
 
 const navItem = (id: View) => NAV.find((n) => n.id === id)!
 
@@ -155,68 +155,87 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     </button>
   )
 
+  // Sidebar / drawer item — one shared recipe so every surface feels identical.
+  const navRow = (id: View, onGo: (v: View) => void) => {
+    const item = navItem(id)
+    const active = sectionOf(view) === item.id
+    return (
+      <button
+        key={item.id}
+        onClick={() => onGo(item.id)}
+        aria-current={active ? 'page' : undefined}
+        className={cn(
+          'group flex min-h-11 w-full items-center gap-3 rounded-xl px-3 py-2 text-sm transition-all duration-200',
+          active
+            ? 'clay text-primary font-medium'
+            : 'text-ink-soft hover:bg-surface-2/70 hover:text-foreground hover:translate-x-0.5',
+        )}
+      >
+        <item.icon className={cn('size-4 shrink-0 transition-colors', active ? 'text-primary' : 'text-ink-soft/80 group-hover:text-foreground')} />
+        <span className="truncate">{item.label}</span>
+        {active && <span className="ml-auto size-1.5 shrink-0 rounded-full bg-primary" aria-hidden />}
+      </button>
+    )
+  }
+
+  const groupsBlock = (onGo: (v: View) => void) => (
+    <div className="space-y-0.5">
+      {NAV_GROUPS.map((group) => (
+        <div key={group.title} className="pb-1.5">
+          <p className="flex items-center gap-2 px-3 pb-1 pt-3.5 text-[10px] font-semibold uppercase tracking-[0.16em] text-ink-soft/75">
+            {group.title === 'Education OS' && <span className="size-1 rounded-full bg-gold" aria-hidden />}
+            {group.title}
+          </p>
+          {group.items.map((id) => navRow(id, onGo))}
+        </div>
+      ))}
+    </div>
+  )
+
+  const profileRow = (
+    <button
+      onClick={() => go('profile')}
+      className="clay-hover flex min-h-11 w-full items-center gap-3 rounded-xl p-2 text-left transition-colors hover:bg-surface-2/60"
+    >
+      <span className="grid size-9 shrink-0 place-items-center rounded-full bg-gradient-to-br from-primary/18 to-primary/8 text-sm font-semibold text-primary ring-1 ring-inset ring-white/60">
+        {(profile?.name ?? 'Dr').slice(0, 1).toUpperCase()}
+      </span>
+      <span className="min-w-0">
+        <span className="block truncate text-sm font-medium">Dr. {profile?.name ?? '…'}</span>
+        <span className="block text-[11px] text-ink-soft">
+          {profile ? (profile.year <= 4 ? `Year ${profile.year}` : profile.year === 5 ? 'Intern' : 'Dedicated') : ''}
+        </span>
+      </span>
+    </button>
+  )
+
   return (
     <div className="flex min-h-screen flex-col">
       {/* Skip-to-content — invisible until keyboard-focused (a11y) */}
       <a href="#main-content" className="skip-link">Skip to main content</a>
 
-      {/* ── Desktop sidebar ── */}
-      <aside className="fixed inset-y-0 left-0 z-40 hidden w-60 flex-col border-r border-line bg-sidebar/80 backdrop-blur-xl lg:flex">
-        <div className="p-5"><button onClick={() => setView('landing')} aria-label="MEDULA home" className="rounded-xl"><Logo /></button></div>
-        <nav className="flex-1 space-y-1 overflow-y-auto px-3" aria-label="Main navigation">
-          {NAV_GROUPS.map((group) => (
-            <div key={group.title} className="pb-1">
-              <p className="px-3 pb-1 pt-3 text-[10px] font-semibold uppercase tracking-[0.16em] text-ink-soft/80">
-                {group.title}
-              </p>
-              {group.items.map((id) => {
-                const item = navItem(id)
-                const active = sectionOf(view) === item.id
-                return (
-                  <button
-                    key={item.id}
-                    onClick={() => go(item.id)}
-                    aria-current={active ? 'page' : undefined}
-                    className={cn(
-                      'flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition-colors min-h-11',
-                      active
-                        ? 'bg-primary/12 font-medium text-primary'
-                        : 'text-ink-soft hover:bg-surface-2 hover:text-foreground',
-                    )}
-                  >
-                    <item.icon className="size-4" />
-                    {item.label}
-                    {active && <span className="ml-auto size-1.5 rounded-full bg-primary" />}
-                  </button>
-                )
-              })}
-            </div>
-          ))}
-        </nav>
-        <div className="border-t border-line p-4">
-          <button
-            onClick={() => go('profile')}
-            className="flex w-full items-center gap-3 rounded-xl p-2 text-left transition-colors hover:bg-surface-2 min-h-11"
-          >
-            <span className="flex size-9 items-center justify-center rounded-full bg-primary/15 text-sm font-semibold text-primary">
-              {(profile?.name ?? 'Dr').slice(0, 1).toUpperCase()}
-            </span>
-            <span className="min-w-0">
-              <span className="block truncate text-sm font-medium">Dr. {profile?.name ?? '…'}</span>
-              <span className="block text-[11px] text-ink-soft">
-                {profile ? (profile.year <= 4 ? `Year ${profile.year}` : profile.year === 5 ? 'Intern' : 'Dedicated') : ''}
-              </span>
-            </span>
-          </button>
+      {/* ── Desktop sidebar — floating porcelain panel ── */}
+      <aside className="fixed inset-y-0 left-0 z-40 hidden w-60 flex-col lg:flex">
+        <div className="flex h-full flex-col border-r border-line/80 bg-sidebar/85 shadow-[8px_0_32px_-24px_oklch(0.55_0.05_65/35%)] backdrop-blur-xl">
+          <div className="px-5 pb-4 pt-6">
+            <button onClick={() => setView('landing')} aria-label="MEDULA home" className="rounded-xl outline-none ring-primary/50 focus-visible:ring-2">
+              <Logo />
+            </button>
+          </div>
+          <div className="rule-soft mx-5" aria-hidden />
+          <nav className="flex-1 overflow-y-auto px-3 pb-3 pt-1" aria-label="Main navigation">
+            {groupsBlock(go)}
+          </nav>
+          <div className="p-4 pt-2">{profileRow}</div>
         </div>
       </aside>
 
       {/* ── Main column ── */}
       <div className="flex flex-1 flex-col lg:pl-60">
-        {/* Top bar */}
-        <header className="sticky top-0 z-30 flex h-14 items-center gap-2 border-b border-line bg-background/80 px-3 backdrop-blur-xl md:px-5">
+        {/* Top bar — warm glass */}
+        <header className="glass-strong sticky top-0 z-30 flex h-16 items-center gap-2 border-b border-line/70 px-3 shadow-[0_8px_24px_-20px_oklch(0.55_0.05_65/45%)] md:px-5">
           <button
-            className="flex size-10 items-center justify-center rounded-xl hover:bg-surface-2 lg:hidden"
+            className="press flex size-10 items-center justify-center rounded-xl text-ink-soft hover:bg-surface-2/70 hover:text-foreground lg:hidden"
             onClick={() => setMobileNavOpen(!mobileNavOpen)}
             aria-label="Open navigation"
           >
@@ -226,28 +245,35 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
           <button
             onClick={() => setSearchOpen(true)}
-            className="mx-auto hidden h-10 w-full max-w-md items-center gap-2.5 rounded-xl border border-line bg-surface-2 px-3.5 text-sm text-ink-soft transition-colors hover:border-primary/40 md:flex"
+            className="clay-field mx-auto hidden h-10 w-full max-w-md items-center gap-2.5 rounded-full px-4 text-sm text-ink-soft transition-colors hover:text-foreground md:flex"
           >
-            <Search className="size-4" />
+            <Search className="size-4 text-primary/70" />
             <span>Search medicine…</span>
-            <kbd className="ml-auto rounded-md border border-line px-1.5 py-0.5 font-mono text-[10px] text-ink-soft">⌘K</kbd>
+            <kbd className="ml-auto rounded-md border border-line bg-card/80 px-1.5 py-0.5 font-mono text-[10px] text-ink-soft shadow-sm">⌘K</kbd>
           </button>
 
           <div className="ml-auto flex items-center gap-1.5 lg:ml-0">
             <button
               onClick={() => setSearchOpen(true)}
-              className="flex size-10 items-center justify-center rounded-xl hover:bg-surface-2 md:hidden"
+              className="press flex size-10 items-center justify-center rounded-xl text-ink-soft hover:bg-surface-2/70 hover:text-foreground md:hidden"
               aria-label="Search"
             >
               <Search className="size-4" />
             </button>
             <button
               onClick={() => setShortcutsOpen(true)}
-              className="hidden size-10 items-center justify-center rounded-xl text-ink-soft transition-colors hover:bg-surface-2 hover:text-foreground sm:flex"
+              className="press hidden size-10 items-center justify-center rounded-xl text-ink-soft transition-colors hover:bg-surface-2/70 hover:text-foreground sm:flex"
               aria-label="Keyboard shortcuts (?)"
               title="Keyboard shortcuts (?)"
             >
               <Keyboard className="size-4" />
+            </button>
+            <button
+              onClick={() => go('profile')}
+              className="press hidden size-10 items-center justify-center rounded-full bg-gradient-to-br from-primary/18 to-primary/8 text-sm font-semibold text-primary ring-1 ring-inset ring-white/60 transition-shadow hover:shadow-raised sm:flex lg:hidden"
+              aria-label="Open profile"
+            >
+              {(profile?.name ?? 'Dr').slice(0, 1).toUpperCase()}
             </button>
           </div>
         </header>
@@ -255,48 +281,15 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         {/* Mobile drawer */}
         {mobileNavOpen && (
           <div className="fixed inset-0 z-40 lg:hidden" role="dialog" aria-modal="true">
-            <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setMobileNavOpen(false)} />
-            <nav className="absolute inset-y-0 left-0 w-72 border-r border-line bg-background p-4 pt-5 shadow-2xl">
-              <div className="mb-5"><button onClick={() => setMobileNavOpen(false)} aria-label="Close menu" className="rounded-xl"><Logo /></button></div>
-              <div className="space-y-1">
-                {NAV_GROUPS.map((group) => (
-                  <div key={group.title}>
-                    <p className="px-3 pb-1 pt-3 text-[10px] font-semibold uppercase tracking-[0.16em] text-ink-soft/80">
-                      {group.title}
-                    </p>
-                    {group.items.map((id) => {
-                      const item = navItem(id)
-                      return (
-                        <button
-                          key={item.id}
-                          onClick={() => go(item.id)}
-                          className={cn(
-                            'flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm min-h-11',
-                            sectionOf(view) === item.id ? 'bg-primary/12 font-medium text-primary' : 'text-ink-soft hover:bg-surface-2',
-                          )}
-                        >
-                          <item.icon className="size-4" /> {item.label}
-                        </button>
-                      )
-                    })}
-                  </div>
-                ))}
-                <div className="pt-2">
-                  {(() => {
-                    const item = navItem('profile')
-                    return (
-                      <button
-                        onClick={() => go(item.id)}
-                        className={cn(
-                          'flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm min-h-11',
-                          sectionOf(view) === 'profile' ? 'bg-primary/12 font-medium text-primary' : 'text-ink-soft hover:bg-surface-2',
-                        )}
-                      >
-                        <item.icon className="size-4" /> {item.label}
-                      </button>
-                    )
-                  })()}
-                </div>
+            <div className="absolute inset-0 bg-[oklch(0.35_0.04_60/45%)] backdrop-blur-sm" onClick={() => setMobileNavOpen(false)} />
+            <nav className="absolute inset-y-0 left-0 w-80 max-w-[86vw] border-r border-line bg-sidebar p-4 pt-6 shadow-[24px_0_60px_-30px_oklch(0.4_0.05_60/50%)]">
+              <div className="mb-4 flex items-center justify-between">
+                <button onClick={() => setMobileNavOpen(false)} aria-label="Close menu" className="rounded-xl"><Logo /></button>
+              </div>
+              <div className="rule-soft mb-2" aria-hidden />
+              <div className="h-[calc(100%-5.5rem)] overflow-y-auto pb-safe-inset pr-0.5">
+                {groupsBlock(go)}
+                <div className="border-t border-line/70 pt-3">{navRow('profile', go)}</div>
               </div>
             </nav>
           </div>
@@ -315,10 +308,10 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             >
               <div
                 role="status"
-                className="flex items-center justify-center gap-2 border-b border-sev-warn/30 bg-sev-warn/10 px-4 py-2 text-xs font-medium text-sev-warn"
+                className="callout callout-warn m-3 flex items-center justify-center gap-2 !rounded-xl px-4 py-2 text-xs font-medium"
               >
-                <WifiOff className="size-3.5 shrink-0" aria-hidden />
-                <span>
+                <WifiOff className="size-3.5 shrink-0 text-sev-warn" aria-hidden />
+                <span className="text-ink-soft">
                   You&apos;re offline — everything you&apos;ve already loaded keeps working. Progress
                   syncs when you&apos;re back.
                 </span>
@@ -328,14 +321,23 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         </AnimatePresence>
 
         {/* Content — id/aria give the skip link a target; pb-safe-nav clears
-            the fixed mobile bottom nav + device safe-area inset */}
+            the floating mobile dock + device safe-area inset. The keyed motion
+            wrapper gives every view a calm, physical entrance. */}
         <main id="main-content" aria-label="Main content" tabIndex={-1} className="flex-1 pb-safe-nav">
-          {children}
+          <motion.div
+            key={view}
+            initial={reduce ? false : { opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+          >
+            {children}
+          </motion.div>
         </main>
 
         {/* Sticky footer — mt-auto keeps it pinned when content is short;
-            pb-safe-nav lifts its text above the fixed mobile bottom nav */}
-        <footer className="mt-auto border-t border-line px-4 pb-safe-nav md:px-6">
+            pb-safe-nav lifts its text above the floating mobile dock */}
+        <footer className="mt-auto px-4 pb-safe-nav md:px-6">
+          <div className="rule-soft mx-auto max-w-6xl" aria-hidden />
           <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-2 py-4 text-[11px] text-ink-soft sm:flex-row">
             <span>MEDULA — the control centre of your medical mind.</span>
             <span>Educational platform · Not medical advice · Verify against official NMC / NBEMS sources</span>
@@ -343,28 +345,36 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         </footer>
       </div>
 
-      {/* ── Mobile bottom nav: daily loop + More ── */}
-      <nav className="pb-safe-inset fixed inset-x-0 bottom-0 z-40 border-t border-line bg-background/90 backdrop-blur-xl lg:hidden" aria-label="Primary">
-        <div className="grid grid-cols-5">
-          {MOBILE_NAV.map((item) => (
-            <button
-              key={item.id}
-              onClick={() => go(item.id)}
-              className={cn(
-                'flex min-h-14 flex-col items-center justify-center gap-0.5 py-1.5 text-[10px] transition-colors',
-                view === item.id ? 'text-primary' : 'text-ink-soft',
-              )}
-              aria-current={view === item.id ? 'page' : undefined}
-            >
-              <item.icon className="size-5" />
-              {item.label}
-            </button>
-          ))}
+      {/* ── Mobile dock: the daily loop + More — floating porcelain glass ── */}
+      <nav
+        className="fixed inset-x-3 z-40 lg:hidden"
+        style={{ bottom: 'calc(0.75rem + env(safe-area-inset-bottom, 0px))' }}
+        aria-label="Primary"
+      >
+        <div className="glass-strong grid grid-cols-5 rounded-2xl shadow-float">
+          {MOBILE_NAV.map((item) => {
+            const active = view === item.id
+            return (
+              <button
+                key={item.id}
+                onClick={() => go(item.id)}
+                className={cn(
+                  'relative flex min-h-14 flex-col items-center justify-center gap-0.5 rounded-2xl py-1.5 text-[10px] transition-colors',
+                  active ? 'text-primary' : 'text-ink-soft',
+                )}
+                aria-current={active ? 'page' : undefined}
+              >
+                {active && <span className="clay absolute inset-x-2 inset-y-1 -z-10 rounded-xl" aria-hidden />}
+                <item.icon className="size-5" />
+                {item.label}
+              </button>
+            )
+          })}
           <button
             ref={moreBtnRef}
             onClick={() => { setMobileNavOpen(false); setMoreOpen((o) => !o) }}
             className={cn(
-              'flex min-h-14 flex-col items-center justify-center gap-0.5 py-1.5 text-[10px] transition-colors',
+              'flex min-h-14 flex-col items-center justify-center gap-0.5 rounded-2xl py-1.5 text-[10px] transition-colors',
               moreOpen ? 'text-primary' : 'text-ink-soft',
             )}
             aria-expanded={moreOpen}
@@ -379,18 +389,18 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       {/* ── "More" bottom sheet — the remaining views, mobile only ── */}
       {moreOpen && (
         <div className="fixed inset-0 z-50 lg:hidden">
-          <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setMoreOpen(false)} aria-hidden />
+          <div className="absolute inset-0 bg-[oklch(0.35_0.04_60/45%)] backdrop-blur-sm" onClick={() => setMoreOpen(false)} aria-hidden />
           <div
             ref={moreSheetRef}
             role="dialog"
             aria-modal="true"
             aria-label="More sections"
             tabIndex={-1}
-            className="pb-safe-inset glass-strong absolute inset-x-0 bottom-0 max-h-[85dvh] overflow-y-auto rounded-t-3xl p-4 pt-3 shadow-2xl outline-none"
+            className="pb-safe-inset glass-strong absolute inset-x-0 bottom-0 max-h-[85dvh] overflow-y-auto rounded-t-3xl p-4 pt-3 shadow-float outline-none"
           >
             <div className="mx-auto mb-3 h-1 w-10 rounded-full bg-line" aria-hidden />
             <p className="mb-2 px-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-ink-soft">All sections</p>
-            <div className="space-y-1">
+            <div className="grid grid-cols-1 gap-0.5 sm:grid-cols-2">
               {MORE_NAV.map((item) => {
                 const active = sectionOf(view) === item.id
                 return (
@@ -401,13 +411,13 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                     className={cn(
                       'flex min-h-11 w-full items-center gap-3 rounded-xl px-3 text-sm transition-colors',
                       active
-                        ? 'bg-primary/12 font-medium text-primary'
-                        : 'text-ink-soft hover:bg-surface-2 hover:text-foreground',
+                        ? 'clay font-medium text-primary'
+                        : 'text-ink-soft hover:bg-surface-2/70 hover:text-foreground',
                     )}
                   >
-                    <item.icon className="size-4" />
+                    <item.icon className={cn('size-4', active ? 'text-primary' : 'text-ink-soft/80')} />
                     {item.label}
-                    {active && <span className="ml-auto size-1.5 rounded-full bg-primary" />}
+                    {active && <span className="ml-auto size-1.5 rounded-full bg-primary" aria-hidden />}
                   </button>
                 )
               })}

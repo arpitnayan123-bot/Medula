@@ -1,6 +1,6 @@
 'use client'
 
-import { CheckCircle2, CircleDot, Mic, RotateCcw, Sparkles, XCircle } from 'lucide-react'
+import { Check, CheckCircle2, CircleDot, Mic, RotateCcw, Sparkles, XCircle } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import type { VoiceDebrief, VoiceMode } from '@/lib/types'
@@ -33,11 +33,11 @@ export function VoiceDebriefCard({
   return (
     <div className="mx-auto w-full max-w-2xl px-4 pb-24 pt-6 sm:px-6">
       {/* headline */}
-      <div className="rounded-3xl border border-sky-200/70 bg-gradient-to-br from-sky-100 via-white to-emerald-50 p-6 text-center">
-        <p className="text-xs font-semibold uppercase tracking-wider text-sky-700">
+      <div className="podium rounded-3xl p-6 text-center">
+        <p className="text-xs font-semibold uppercase tracking-wider text-primary">
           {MODE_LABELS[debrief.mode]} voice session · complete
         </p>
-        <div className="mx-auto mt-4 flex size-28 items-center justify-center rounded-full border-[6px] border-sky-200 bg-white">
+        <div className="mx-auto mt-4 flex size-28 items-center justify-center rounded-full border-[6px] border-primary/25 bg-card">
           <div>
             <p className="text-2xl font-bold text-ink">{ring === null ? '—' : `${ring}%`}</p>
             <p className="text-[10px] font-medium uppercase tracking-wide text-ink-soft">
@@ -65,14 +65,14 @@ export function VoiceDebriefCard({
             {debrief.concepts.map((c, i) => (
               <div
                 key={`${c.name}-${i}`}
-                className="flex items-start gap-3 rounded-2xl border border-border bg-card p-3.5"
+                className="clay flex items-start gap-3 rounded-2xl p-3.5"
               >
                 {c.verdict === 'correct' ? (
-                  <CheckCircle2 className="mt-0.5 size-5 shrink-0 text-emerald-600" aria-label="correct" />
+                  <CheckCircle2 className="mt-0.5 size-5 shrink-0 text-sev-ok" aria-label="correct" />
                 ) : c.verdict === 'partial' ? (
-                  <CircleDot className="mt-0.5 size-5 shrink-0 text-amber-600" aria-label="partially correct" />
+                  <CircleDot className="mt-0.5 size-5 shrink-0 text-sev-warn" aria-label="partially correct" />
                 ) : (
-                  <XCircle className="mt-0.5 size-5 shrink-0 text-rose-600" aria-label="missed" />
+                  <XCircle className="mt-0.5 size-5 shrink-0 text-sev-crit" aria-label="missed" />
                 )}
                 <div className="min-w-0">
                   <p className="text-sm font-semibold text-ink">{c.name}</p>
@@ -81,9 +81,9 @@ export function VoiceDebriefCard({
                 <span
                   className={cn(
                     'ml-auto shrink-0 rounded-full px-2 py-0.5 text-[10px] font-bold uppercase',
-                    c.verdict === 'correct' && 'bg-emerald-100 text-emerald-700',
-                    c.verdict === 'partial' && 'bg-amber-100 text-amber-700',
-                    c.verdict === 'missed' && 'bg-rose-100 text-rose-700',
+                    c.verdict === 'correct' && 'bg-sev-ok/10 text-sev-ok',
+                    c.verdict === 'partial' && 'bg-sev-warn/10 text-sev-warn',
+                    c.verdict === 'missed' && 'bg-sev-crit/10 text-sev-crit',
                   )}
                 >
                   {c.verdict}
@@ -104,7 +104,7 @@ export function VoiceDebriefCard({
             {debrief.weakTouched.map((w) => (
               <span
                 key={w.name}
-                className="rounded-full border border-rose-200 bg-rose-50 px-3 py-1.5 text-xs font-medium text-rose-800"
+                className="warm-card rounded-full px-3 py-1.5 text-xs font-medium text-ink"
               >
                 {w.name} · {w.mastery}%
               </span>
@@ -114,22 +114,35 @@ export function VoiceDebriefCard({
       )}
 
       {/* honest feed report */}
-      <section className="mt-5 rounded-2xl border border-border bg-card/60 p-4" aria-label="Where these signals were fed">
+      <section className="clay-in mt-5 rounded-2xl p-4" aria-label="Where these signals were fed">
         <p className="flex items-center gap-1.5 text-xs font-bold text-ink">
-          <Sparkles className="size-3.5 text-sky-600" aria-hidden />
+          <Sparkles className="size-3.5 text-primary" aria-hidden />
           Where these signals went
         </p>
         <ul className="mt-2 space-y-1 text-xs text-ink-soft">
           <li>
-            {debrief.fed.studySession ? '✓' : '·'} {minutes} min logged to Performance Analytics
-            (Study Session)
+            {debrief.fed.studySession ? (
+              <Check className="mr-0.5 inline size-3 text-sev-ok" aria-hidden />
+            ) : (
+              '·'
+            )}{' '}
+            {minutes} min logged to Performance Analytics (Study Session)
           </li>
           <li>
-            {debrief.fed.errorPattern ? '✓' : '·'} Missed spoken answers → Mistake Intelligence
-            patterns
+            {debrief.fed.errorPattern ? (
+              <Check className="mr-0.5 inline size-3 text-sev-ok" aria-hidden />
+            ) : (
+              '·'
+            )}{' '}
+            Missed spoken answers → Mistake Intelligence patterns
           </li>
           <li>
-            {debrief.fed.revisionItem ? '✓' : '·'} Missed concepts → Smart Revision queue
+            {debrief.fed.revisionItem ? (
+              <Check className="mr-0.5 inline size-3 text-sev-ok" aria-hidden />
+            ) : (
+              '·'
+            )}{' '}
+            Missed concepts → Smart Revision queue
           </li>
           <li className="text-[11px] italic text-ink-soft/80">{debrief.fed.reason}</li>
         </ul>

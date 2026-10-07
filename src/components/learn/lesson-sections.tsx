@@ -39,19 +39,19 @@ function FieldRow({ label, children }: { label: string; children: ReactNode }) {
   return (
     <div className="rounded-xl border border-line bg-surface-2 p-3.5 md:p-4">
       <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-ink-soft">{label}</p>
-      <div className="mt-1.5 text-sm leading-relaxed">{children}</div>
+      <div className="medprose mt-1.5 text-sm leading-relaxed">{children}</div>
     </div>
   )
 }
 
 function DataTable({ headers, rows }: { headers: string[]; rows: string[][] }) {
   return (
-    <div className="overflow-x-auto rounded-xl border border-line">
+    <div className="shadow-well overflow-x-auto rounded-xl border border-line">
       <table className="w-full text-left text-xs md:text-sm">
         <thead>
           <tr className="bg-surface-2">
             {headers.map((h) => (
-              <th key={h} className="px-3 py-2 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+              <th key={h} className="px-3 py-2.5 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
                 {h}
               </th>
             ))}
@@ -61,7 +61,7 @@ function DataTable({ headers, rows }: { headers: string[]; rows: string[][] }) {
           {rows.map((row, ri) => (
             <tr key={ri} className="border-t border-line">
               {row.map((cell, ci) => (
-                <td key={ci} className={cn('px-3 py-2 align-top', ci === 0 && 'font-medium')}>{cell}</td>
+                <td key={ci} className={cn('px-3 py-2.5 align-top', ci === 0 && 'font-medium')}>{cell}</td>
               ))}
             </tr>
           ))}
@@ -84,7 +84,7 @@ function LessonSection({
 }) {
   const [open, setOpen] = useState(defaultOpen)
   return (
-    <div className={cn('overflow-hidden rounded-2xl border bg-card transition-colors', open ? 'border-primary/35' : 'border-line')}>
+    <div className={cn('overflow-hidden rounded-2xl', open ? 'clay' : 'clay')}>
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
@@ -140,7 +140,7 @@ function RegionBlock({ entry }: { entry: GlobalPerspectiveEntry }) {
     const v = entry[key]
     if (!v || (Array.isArray(v) && v.length === 0)) return null
     return (
-      <div key={key} className="rounded-xl border border-line bg-surface-2 p-3.5">
+      <div key={key} className="clay-in rounded-xl p-3.5">
         <Label>{label}</Label>
         {Array.isArray(v) ? (
           <ul className="mt-1.5 space-y-1">
@@ -208,7 +208,7 @@ export function LessonSections({
           </span>
         )}
         {lesson.clinicalUpdateRequired && (
-          <span className="inline-flex items-center gap-1.5 rounded-full border border-amber-400/40 bg-amber-400/10 px-2.5 py-1 text-[11px] font-medium text-amber-500">
+          <span className="inline-flex items-center gap-1.5 rounded-full border border-sev-warn/40 bg-sev-warn/10 px-2.5 py-1 text-[11px] font-medium text-sev-warn">
             <TriangleAlert className="size-3" aria-hidden />
             Clinical update recommended
           </span>
@@ -224,16 +224,16 @@ export function LessonSections({
           </FieldRow>
         )}
         {has(lesson.explain30s) && (
-          <div className="rounded-xl border border-primary/30 bg-primary/5 p-4">
+          <div className="callout callout-easy rounded-xl">
             <div className="flex items-center gap-2">
-              <Timer className="size-3.5 text-primary" aria-hidden />
+              <Timer className="size-3.5 text-sev-ok" aria-hidden />
               <Label>Explain it in 30 seconds</Label>
             </div>
             <p className="mt-2 text-sm leading-relaxed">{lesson.explain30s}</p>
           </div>
         )}
         {has(lesson.eli5) && (
-          <div className="clay-in rounded-xl p-4">
+          <div className="callout callout-easy">
             <Label>Simple version</Label>
             <p className="mt-1.5 text-sm leading-relaxed">{lesson.eli5}</p>
           </div>
@@ -288,9 +288,9 @@ export function LessonSections({
               <Label>Differentials — the distinguishing key</Label>
               <div className="mt-2 space-y-2">
                 {(lesson.differentials ?? []).map((d, i) => (
-                  <div key={i} className="rounded-xl border border-line bg-surface-2 p-3.5">
+                  <div key={i} className="clay-in rounded-xl p-3.5">
                     <p className="text-sm font-semibold">{d.name}</p>
-                    <p className="mt-1 text-sm leading-relaxed text-ink-soft">↳ {d.key}</p>
+                    <p className="medprose mt-1 text-sm leading-relaxed text-ink-soft">↳ {d.key}</p>
                   </div>
                 ))}
               </div>
@@ -298,7 +298,7 @@ export function LessonSections({
           )}
           {has(lesson.management) && (
             <div>
-              <div className="rounded-xl border border-sev-warn/40 bg-sev-warn/5 p-3.5">
+              <div className="callout callout-warn rounded-xl">
                 <div className="flex items-center gap-2">
                   <TriangleAlert className="size-3.5 text-sev-warn" aria-hidden />
                   <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-sev-warn">
@@ -351,9 +351,9 @@ export function LessonSections({
               </div>
               <div className="mt-2 space-y-2">
                 {(lesson.procedures ?? []).map((p, i) => (
-                  <div key={i} className="rounded-xl border border-line bg-surface-2 p-3.5">
+                  <div key={i} className="clay-in rounded-xl p-3.5">
                     <p className="text-sm font-semibold">{p.name}</p>
-                    <p className="mt-1 text-sm leading-relaxed text-ink-soft">{p.what}</p>
+                    <p className="medprose mt-1 text-sm leading-relaxed text-ink-soft">{p.what}</p>
                     {p.steps && p.steps.length > 0 && (
                       <ol className="mt-2 space-y-1.5">
                         {p.steps.map((s, j) => (
@@ -375,7 +375,7 @@ export function LessonSections({
                 <ScanLine className="size-3.5 text-primary" aria-hidden />
                 <Label>Imaging correlation</Label>
               </div>
-              <p className="mt-1.5 text-sm leading-relaxed">{lesson.imaging}</p>
+              <p className="medprose mt-1.5 text-sm leading-relaxed">{lesson.imaging}</p>
             </div>
           )}
           {has(lesson.pathologyCorrelation) && (
@@ -384,7 +384,7 @@ export function LessonSections({
                 <FlaskConical className="size-3.5 text-primary" aria-hidden />
                 <Label>Pathology correlation</Label>
               </div>
-              <p className="mt-1.5 text-sm leading-relaxed">{lesson.pathologyCorrelation}</p>
+              <p className="medprose mt-1.5 text-sm leading-relaxed">{lesson.pathologyCorrelation}</p>
             </div>
           )}
         </LessonSection>
@@ -417,15 +417,15 @@ export function LessonSections({
           {has(lesson.mnemonics) && (
             <div className="grid gap-2.5 sm:grid-cols-2">
               {(lesson.mnemonics ?? []).map((m, i) => (
-                <div key={i} className="rounded-xl border border-amber-400/30 bg-amber-400/10 p-3.5">
+                <div key={i} className="callout callout-pearl rounded-xl">
                   <p className="text-sm font-bold tracking-wide">{m.hook}</p>
-                  <p className="mt-1 text-sm leading-relaxed text-ink-soft">{m.expands}</p>
+                  <p className="medprose mt-1 text-sm leading-relaxed text-ink-soft">{m.expands}</p>
                 </div>
               ))}
             </div>
           )}
           {has(lesson.mistakes) && (
-            <div className="rounded-xl border border-sev-crit/30 bg-sev-crit/5 p-3.5">
+            <div className="callout callout-warn rounded-xl">
               <Label>Common mistakes</Label>
               <div className="mt-2"><Bullets items={lesson.mistakes ?? []} /></div>
             </div>
@@ -437,12 +437,12 @@ export function LessonSections({
             </div>
           )}
           {has(lesson.examRelevance) && (
-            <div>
+            <div className="callout callout-exam">
               <div className="flex items-center gap-2">
-                <Target className="size-3.5 text-primary" aria-hidden />
+                <Target className="size-3.5 text-sev-crit" aria-hidden />
                 <Label>How the exam asks it</Label>
               </div>
-              <p className="mt-1.5 text-sm leading-relaxed">{lesson.examRelevance}</p>
+              <p className="medprose mt-1.5 text-sm leading-relaxed">{lesson.examRelevance}</p>
             </div>
           )}
           {has(lesson.clinicalRelevance) && (
@@ -464,7 +464,7 @@ export function LessonSections({
         <LessonSection title="Global perspective" icon={Globe2} badge={`${lesson.global?.length} regions`}>
           <div className="space-y-4">
             {(lesson.global ?? []).map((g, i) => (
-              <div key={i} className="rounded-2xl border border-line bg-surface-2/60 p-4">
+              <div key={i} className="clay-in rounded-2xl p-4">
                 <div className="flex items-center gap-2">
                   <Landmark className="size-3.5 text-primary" aria-hidden />
                   <p className="text-sm font-semibold">{g.region}</p>
@@ -500,12 +500,12 @@ export function LessonSections({
                   key={i}
                   type="button"
                   onClick={() => onOpenConcept?.(link.conceptId!)}
-                  className="group min-h-11 rounded-xl border border-line bg-surface-2 p-3.5 text-left transition-all hover:border-primary/50 hover:bg-accent/40"
+                  className="clay clay-hover group min-h-11 rounded-xl p-3.5 text-left"
                 >
                   {inner}
                 </button>
               ) : (
-                <div key={i} className="rounded-xl border border-line bg-surface-2 p-3.5">{inner}</div>
+                <div key={i} className="clay-in rounded-xl p-3.5">{inner}</div>
               )
             })}
           </div>
@@ -520,7 +520,7 @@ export function LessonSections({
           </p>
           <div className="space-y-2.5">
             {(lesson.sources ?? []).map((s, i) => (
-              <div key={i} className="rounded-xl border border-line bg-surface-2 p-3.5">
+              <div key={i} className="clay-in rounded-xl p-3.5">
                 <div className="flex flex-wrap items-center gap-2">
                   <p className="text-sm font-semibold">{s.institution}</p>
                   <span className="rounded-full border border-line bg-background px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide text-muted-foreground">

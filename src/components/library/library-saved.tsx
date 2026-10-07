@@ -85,7 +85,7 @@ export function LibrarySavedScreen({
           </CardGrid>
         </div>
       ) : meta.state === 'error' || !payload ? (
-        <div className="glass flex flex-col items-center gap-3 rounded-2xl p-8 text-center" role="alert">
+        <div className="clay flex flex-col items-center gap-3 rounded-2xl p-8 text-center" role="alert">
           <h2 className="text-base font-semibold tracking-tight">Your saved list didn&apos;t load</h2>
           <p className="max-w-sm text-sm text-ink-soft">
             The catalog did not respond — nothing is lost. Saved resources stay saved.
@@ -95,7 +95,7 @@ export function LibrarySavedScreen({
           </Button>
         </div>
       ) : payload.resources.length === 0 ? (
-        <div className="glass flex flex-col items-center gap-3 rounded-2xl p-8 text-center">
+        <div className="clay flex flex-col items-center gap-3 rounded-2xl p-8 text-center">
           <span className="clay-in grid size-12 place-items-center rounded-2xl" aria-hidden>
             <Bookmark className="size-5 text-ink-soft" />
           </span>

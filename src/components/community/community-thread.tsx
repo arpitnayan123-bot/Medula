@@ -197,7 +197,7 @@ export function CommunityThreadScreen({
   // ── render ─────────────────────────────────────────────────────────────────
   if (state === 'error') {
     return (
-      <div className="glass flex flex-col items-center gap-3 rounded-2xl p-8 text-center" role="alert">
+      <div className="clay flex flex-col items-center gap-3 rounded-2xl p-8 text-center" role="alert">
         <ShieldAlert className="size-6 text-ink-soft" aria-hidden />
         <h1 className="text-lg font-semibold tracking-tight">This thread didn&apos;t load</h1>
         <p className="max-w-sm text-sm leading-relaxed text-ink-soft">
@@ -288,7 +288,7 @@ export function CommunityThreadScreen({
                 >
                   {busyAction
                     ? <Loader2 className="size-4 animate-spin" aria-hidden />
-                    : post.resolved ? <RotateCcw className="size-4" aria-hidden /> : <CheckCircle2 className="size-4 text-emerald-500" aria-hidden />}
+                    : post.resolved ? <RotateCcw className="size-4" aria-hidden /> : <CheckCircle2 className="size-4 text-sev-ok" aria-hidden />}
                   {post.resolved ? 'Reopen thread' : 'Mark resolved'}
                 </Button>
               )}
@@ -312,7 +312,7 @@ export function CommunityThreadScreen({
                 className={cn(
                   'inline-flex min-h-9 max-w-full items-center gap-1.5 rounded-full border px-3 text-xs font-semibold outline-none ring-primary/50 transition-colors focus-visible:ring-2',
                   s.resolved
-                    ? 'border-emerald-500/40 bg-emerald-500/10 text-emerald-700 dark:text-emerald-400'
+                    ? 'border-sev-ok/40 bg-sev-ok/10 text-sev-ok'
                     : 'border-line bg-surface-2 text-ink-soft hover:text-foreground',
                 )}
                 title={s.resolved ? 'Resolved thread' : 'Open thread'}
@@ -551,14 +551,14 @@ function AiResult({
       <div className="flex flex-wrap items-center gap-2">
         <AIBadge label={ai.aiBadge} />
         {ai.fallback && (
-          <span className="inline-flex items-center gap-1 rounded-full border border-amber-500/40 bg-amber-500/10 px-2 py-0.5 text-[10px] font-bold text-amber-600 dark:text-amber-400">
+          <span className="inline-flex items-center gap-1 rounded-full border border-sev-warn/40 bg-sev-warn/10 px-2 py-0.5 text-[10px] font-bold text-sev-warn">
             <ShieldAlert className="size-3" aria-hidden /> Fallback — not grounded right now
           </span>
         )}
       </div>
 
       {ai.fallback && (
-        <p className="text-[11px] leading-relaxed text-amber-700 dark:text-amber-400">
+        <p className="text-[11px] leading-relaxed text-sev-warn">
           The AI engine could not ground this response right now — treat it as a generic pointer, not an answer. Verify anything important against a standard source.
         </p>
       )}
@@ -596,7 +596,7 @@ function AiResult({
       {ai.explanation && (
         <div className="space-y-2.5">
           {!ai.explanation.grounded && (
-            <p className="rounded-xl border border-amber-500/40 bg-amber-500/10 px-3 py-2 text-[11px] leading-relaxed text-amber-700 dark:text-amber-400">
+            <p className="rounded-xl border border-sev-warn/40 bg-sev-warn/10 px-3 py-2 text-[11px] leading-relaxed text-sev-warn">
               Not grounded in platform lessons — this is a general explanation, not course material.
             </p>
           )}
@@ -611,7 +611,7 @@ function AiResult({
             </ul>
           )}
           {ai.explanation.uncertain && (
-            <p className="text-[11px] font-semibold leading-relaxed text-amber-600 dark:text-amber-400">
+            <p className="text-[11px] font-semibold leading-relaxed text-sev-warn">
               The AI flagged uncertainty here — verify against a standard source before you rely on it.
             </p>
           )}
@@ -681,8 +681,8 @@ function AiResult({
                       className={
                         'shrink-0 rounded-full border px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wide ' +
                         (r.urlVerified
-                          ? 'border-emerald-500/40 bg-emerald-500/10 text-emerald-700 dark:text-emerald-400'
-                          : 'border-amber-500/40 bg-amber-500/10 text-amber-600 dark:text-amber-400')
+                          ? 'border-sev-ok/40 bg-sev-ok/10 text-sev-ok'
+                          : 'border-sev-warn/40 bg-sev-warn/10 text-sev-warn')
                       }
                     >
                       {r.urlVerified ? 'link verified' : 'unverified link'}

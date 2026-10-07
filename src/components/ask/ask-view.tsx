@@ -9,8 +9,8 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import {
   ArrowLeft, ArrowUpRight, BookMarked, CircleHelp, Compass, FlaskConical,
-  Landmark, ListChecks, Loader2, Network, ScanSearch, Send, ShieldCheck,
-  Sparkles, Stethoscope, Undo2, Wrench,
+  Landmark, Lightbulb, ListChecks, Loader2, Network, ScanSearch, Send,
+  ShieldCheck, Sparkles, Stethoscope, Undo2, Wrench,
 } from 'lucide-react'
 import { api } from '@/lib/api'
 import { useAppStore } from '@/lib/store'
@@ -422,7 +422,12 @@ export function AskView() {
                                 <li key={mi.questionId} className="rounded-xl border border-sev-warn/30 bg-sev-warn/5 p-2.5 text-xs">
                                   <p className="line-clamp-2 font-medium">{mi.stem}</p>
                                   <p className="mt-1 text-ink-soft">missed {mi.wrongCount}×{mi.lastErrorType ? ` · ${mi.lastErrorType}` : ''}</p>
-                                  {mi.teaching && <p className="mt-1 text-foreground">💡 {mi.teaching}</p>}
+                                  {mi.teaching && (
+                                    <p className="mt-1 text-foreground">
+                                      <Lightbulb className="mr-1 inline size-3.5 text-gold" aria-hidden />
+                                      {mi.teaching}
+                                    </p>
+                                  )}
                                 </li>
                               ))}
                             </ul>

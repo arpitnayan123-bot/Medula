@@ -284,7 +284,7 @@ export function AdaptiveHome({ onStart, onResume, refreshKey, starting, startErr
       )}
 
       {status === 'error' && (
-        <div className="glass flex flex-col items-center gap-3 rounded-2xl p-8 text-center">
+        <div className="clay flex flex-col items-center gap-3 rounded-2xl p-8 text-center">
           <span className="grid size-12 place-items-center rounded-full bg-sev-crit/10">
             <AlertTriangle className="size-6 text-sev-crit" />
           </span>
@@ -330,7 +330,7 @@ export function AdaptiveHome({ onStart, onResume, refreshKey, starting, startErr
                     'flex min-h-36 flex-col rounded-2xl p-4 text-left transition-all disabled:opacity-60',
                     isPrimary
                       ? 'bg-primary text-primary-foreground shadow-md hover:shadow-lg'
-                      : 'glass hover:border-primary/50',
+                      : 'clay clay-hover',
                   )}
                 >
                   <span className={cn('flex items-center justify-between gap-2')}>
@@ -354,7 +354,7 @@ export function AdaptiveHome({ onStart, onResume, refreshKey, starting, startErr
       )}
 
       {/* ── Custom builder ── */}
-      <section className="glass rounded-2xl" aria-label="Custom run builder">
+      <section className="clay rounded-2xl" aria-label="Custom run builder">
         <button
           type="button"
           onClick={() => setBuilderOpen((o) => !o)}
@@ -427,7 +427,7 @@ export function AdaptiveHome({ onStart, onResume, refreshKey, starting, startErr
 
       {/* ── Recent runs ── */}
       {status === 'ready' && home && home.recent.length > 0 && (
-        <section className="glass space-y-3 rounded-2xl p-4" aria-label="Recent runs">
+        <section className="clay space-y-3 rounded-2xl p-4" aria-label="Recent runs">
           <h2 className="text-sm font-semibold uppercase tracking-[0.14em] text-ink-soft">Recent runs</h2>
           <ul className="space-y-2">
             {home.recent.slice(0, 5).map((r) => {
@@ -435,7 +435,7 @@ export function AdaptiveHome({ onStart, onResume, refreshKey, starting, startErr
               const accuracy = r.answered > 0 ? Math.round((r.correct / r.answered) * 100) : 0
               const row = (
                 <>
-                  <span className="grid size-8 shrink-0 place-items-center rounded-lg bg-primary/10">
+                  <span className="grid size-8 shrink-0 place-items-center rounded-lg bg-primary/10 shadow-well">
                     {(() => {
                       const Icon = MODE_ICONS[r.mode] ?? Target
                       return <Icon className="size-4 text-primary" />
@@ -482,7 +482,7 @@ export function AdaptiveHome({ onStart, onResume, refreshKey, starting, startErr
       )}
 
       {/* ── Bookmarks ── */}
-      <section className="glass space-y-3 rounded-2xl p-4" aria-label="Saved questions">
+      <section className="clay space-y-3 rounded-2xl p-4" aria-label="Saved questions">
         <div className="flex items-center justify-between gap-2">
           <h2 className="flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.14em] text-ink-soft">
             <BookOpenCheck className="size-4 text-primary" /> Saved questions

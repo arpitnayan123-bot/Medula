@@ -1,8 +1,8 @@
 'use client'
 
 // ─── CLINICAL CASE SIMULATOR · SHARED PRIMITIVES (PRODUCT 09) ───
-// Visual language matches the Adaptive / Mistakes / Revision / Graph sections:
-// glass + clay panels, sev tones, uppercase micro-labels, Reveal entrances.
+// Visual language matches the Porcelain Atlas system:
+// clay + podium panels, sev tones, uppercase micro-labels, Reveal entrances.
 // The API contract lives FROZEN in src/lib/types.ts — nothing here redefines it.
 
 import { useEffect, useState } from 'react'

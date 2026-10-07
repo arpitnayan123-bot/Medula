@@ -53,8 +53,8 @@ export function GamifyRewards({ accentId, onAccentChange }: {
                 <article
                   key={a.id}
                   className={cn(
-                    'rounded-2xl border p-4 transition-colors',
-                    isCurrent ? 'border-primary/40 bg-surface-2/60' : 'border-line bg-surface-2/30',
+                    'clay rounded-2xl p-4 transition-colors',
+                    isCurrent && 'border-primary/40',
                   )}
                 >
                   <div className="flex items-center gap-3">

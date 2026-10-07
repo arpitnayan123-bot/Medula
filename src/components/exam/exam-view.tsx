@@ -405,7 +405,7 @@ function StartingPaper() {
 function AnalysisSkeleton({ title }: { title?: string }) {
   return (
     <div className="mx-auto max-w-5xl space-y-6 p-4 md:p-6" aria-busy="true" role="status">
-      <div className="glass flex flex-col items-center gap-4 rounded-2xl p-6 md:flex-row md:p-8">
+      <div className="clay flex flex-col items-center gap-4 rounded-2xl p-6 md:flex-row md:p-8">
         <Skeleton className="shimmer size-32 rounded-full" />
         <div className="min-w-0 flex-1 space-y-3">
           <Skeleton className="shimmer h-4 w-40 rounded-md" />
@@ -427,7 +427,7 @@ function AnalysisSkeleton({ title }: { title?: string }) {
 function HomeError({ onRetry }: { onRetry: () => void }) {
   return (
     <div className="mx-auto max-w-5xl p-4 md:p-6">
-      <div className="glass flex flex-col items-center gap-3 rounded-2xl p-8 text-center md:p-12">
+      <div className="clay flex flex-col items-center gap-3 rounded-2xl p-8 text-center md:p-12">
         <span className="grid size-12 place-items-center rounded-full bg-sev-crit/10">
           <RefreshCw className="size-6 text-sev-crit" aria-hidden />
         </span>
@@ -452,7 +452,7 @@ function StartErrorCard({ kind, onBack, onRetry }: { kind: 'error' | 'conflict' 
       : 'Couldn\u2019t start the test'
   return (
     <div className="mx-auto max-w-3xl p-4 md:p-6">
-      <div className="glass flex flex-col items-center gap-3 rounded-2xl p-8 text-center md:p-12">
+      <div className="clay flex flex-col items-center gap-3 rounded-2xl p-8 text-center md:p-12">
         <span className="grid size-12 place-items-center rounded-full bg-sev-crit/10">
           {kind === 'conflict' ? <ClipboardList className="size-6 text-sev-crit" aria-hidden /> : <RefreshCw className="size-6 text-sev-crit" aria-hidden />}
         </span>
@@ -480,7 +480,7 @@ function StartErrorCard({ kind, onBack, onRetry }: { kind: 'error' | 'conflict' 
 function AnalysisErrorCard({ onBack, onRetry }: { onBack: () => void; onRetry: () => void }) {
   return (
     <div className="mx-auto max-w-3xl p-4 md:p-6">
-      <div className="glass flex flex-col items-center gap-3 rounded-2xl p-8 text-center md:p-12">
+      <div className="clay flex flex-col items-center gap-3 rounded-2xl p-8 text-center md:p-12">
         <span className="grid size-12 place-items-center rounded-full bg-sev-crit/10">
           <RefreshCw className="size-6 text-sev-crit" aria-hidden />
         </span>
@@ -504,7 +504,7 @@ function AnalysisErrorCard({ onBack, onRetry }: { onBack: () => void; onRetry: (
 function ReviewErrorCard({ onBack, onRetry }: { onBack: () => void; onRetry: () => void }) {
   return (
     <div className="mx-auto max-w-3xl p-4 md:p-6">
-      <div className="glass flex flex-col items-center gap-3 rounded-2xl p-8 text-center md:p-12">
+      <div className="clay flex flex-col items-center gap-3 rounded-2xl p-8 text-center md:p-12">
         <span className="grid size-12 place-items-center rounded-full bg-sev-crit/10">
           <RefreshCw className="size-6 text-sev-crit" aria-hidden />
         </span>

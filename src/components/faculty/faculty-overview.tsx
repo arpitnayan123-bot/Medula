@@ -349,7 +349,7 @@ function RecommendationsCard({ items }: { items: FacultyRecommendItem[] }) {
 
 function RecommendCard({ item }: { item: FacultyRecommendItem }) {
   return (
-    <section className="flex flex-col gap-2.5 rounded-2xl border border-line bg-surface-2/40 p-3.5" aria-label={`Recommended focus: ${item.conceptName}`}>
+    <section className="clay flex flex-col gap-2.5 rounded-2xl p-3.5" aria-label={`Recommended focus: ${item.conceptName}`}>
       <div className="flex flex-wrap items-start justify-between gap-2">
         <div className="min-w-0">
           <h4 className="text-sm font-semibold leading-snug tracking-tight">{item.conceptName}</h4>

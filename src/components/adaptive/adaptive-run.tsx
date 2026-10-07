@@ -10,7 +10,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
 import {
   AlertTriangle, ArrowLeft, ArrowRight, Bookmark, BookmarkCheck, Check, CheckCircle2,
-  ChevronLeft, Flag, Landmark, Loader2, ScanLine, Send, Sparkles, Target, Timer, XCircle,
+  ChevronLeft, Flag, Landmark, Lightbulb, Loader2, ScanLine, Send, Sparkles, Target, Timer, XCircle,
 } from 'lucide-react'
 
 import { api } from '@/lib/api'
@@ -437,7 +437,7 @@ export function AdaptiveRun({ session, startIndex, totalOverride, onComplete, on
   if (emptyQueue) {
     return (
       <div className="mx-auto max-w-3xl space-y-4 p-4 md:p-6">
-        <div className="glass flex flex-col items-center gap-3 rounded-2xl p-8 text-center">
+        <div className="clay flex flex-col items-center gap-3 rounded-2xl p-8 text-center">
           <span className="grid size-12 place-items-center rounded-full bg-sev-warn/10">
             <AlertTriangle className="size-6 text-sev-warn" />
           </span>
@@ -583,7 +583,7 @@ export function AdaptiveRun({ session, startIndex, totalOverride, onComplete, on
           transition={{ duration: 0.25, ease: EASE }}
         >
           {q && (
-            <section className="glass space-y-5 rounded-2xl p-5 md:p-7">
+            <section className="clay space-y-5 rounded-2xl p-5 md:p-7">
               {/* WHY THIS ONE — the engine's honest reason */}
               {q.whyThis && (
                 <p className="rounded-lg bg-surface-2/70 px-3.5 py-2.5 font-mono text-[10px] uppercase leading-relaxed tracking-[0.12em] text-ink-soft">
@@ -725,8 +725,9 @@ export function AdaptiveRun({ session, startIndex, totalOverride, onComplete, on
                         </p>
                         <p className="text-sm leading-relaxed">{attempt.explanation}</p>
                         {attempt.teaching && (
-                          <p className="rounded-lg border-l-2 border-primary bg-primary/5 px-3 py-2 text-sm italic leading-relaxed">
-                            💡 {attempt.teaching}
+                          <p className="flex items-start gap-2 rounded-lg border-l-2 border-primary bg-primary/5 px-3 py-2 text-sm italic leading-relaxed">
+                            <Lightbulb className="mt-0.5 size-3.5 shrink-0 text-gold" aria-hidden />
+                            <span>{attempt.teaching}</span>
                           </p>
                         )}
                         <div className="flex flex-wrap items-center gap-2 pt-1">

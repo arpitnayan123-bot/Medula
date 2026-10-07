@@ -132,7 +132,7 @@ export function TopicHub({ topicId, conceptId, onClose }: {
   if (error) {
     return (
       <div className="flex min-h-[60vh] flex-col items-center justify-center gap-3 p-8 text-center">
-        <TriangleAlert className="size-6 text-amber-500" />
+        <TriangleAlert className="size-6 text-gold" />
         <p className="text-sm text-ink-soft">{error}</p>
         <div className="flex gap-2">
           <Button size="sm" variant="outline" onClick={onClose}>Back to hub home</Button>
@@ -154,7 +154,7 @@ export function TopicHub({ topicId, conceptId, onClose }: {
           <button
             type="button"
             onClick={onClose}
-            className="inline-flex items-center gap-1 rounded-full border border-line bg-surface px-2.5 py-1 text-xs font-medium text-ink-soft transition-colors hover:border-primary/40 hover:text-primary"
+            className="inline-flex items-center gap-1 rounded-full border border-line bg-surface px-2.5 py-1 text-xs font-medium text-ink-soft transition-colors clay-hover hover:text-primary"
           >
             <ArrowLeft className="size-3" /> All topics
           </button>
@@ -220,7 +220,7 @@ export function TopicHub({ topicId, conceptId, onClose }: {
         </AnimatePresence>
 
         {/* sources & evidence — always present, quiet */}
-        <section aria-label="Sources and evidence" className="rounded-2xl border border-line bg-surface-2 p-4">
+        <section aria-label="Sources and evidence" className="rounded-2xl clay-in p-4">
           <h2 className="flex items-center gap-1.5 text-sm font-semibold"><ShieldCheck className="size-4 text-primary" /> Sources &amp; reliability</h2>
           <div className="mt-2.5 flex flex-wrap gap-1.5">
             {Object.entries(data.evidence.levels).map(([level, n]) => (
@@ -264,7 +264,7 @@ export function TopicHub({ topicId, conceptId, onClose }: {
                 <span className="font-semibold tabular-nums text-foreground">{n}</span>
                 <span className="hidden sm:inline">{label}</span>
                 {k === 'revise' && atGlance.dueCards > 0 && (
-                  <span className="rounded-full bg-amber-100 px-1.5 text-[9px] font-bold tabular-nums text-amber-700">{atGlance.dueCards} due</span>
+                  <span className="rounded-full bg-gold/15 px-1.5 text-[9px] font-bold tabular-nums text-sev-warn">{atGlance.dueCards} due</span>
                 )}
               </button>
             ))}
@@ -296,7 +296,7 @@ function OverviewSection({ data, onGo, onMark, onOpenConcept }: {
           <Badge variant="outline" className="text-[10px]">Importance {t.importance}/5</Badge>
         </div>
         <div className="flex flex-wrap items-start justify-between gap-3">
-          <h1 className="text-2xl font-semibold tracking-tight md:text-3xl">{t.name}</h1>
+          <h1 className="font-display text-2xl font-semibold tracking-tight md:text-3xl">{t.name}</h1>
           <ProgressMark
             status={data.progress.status}
             marked={data.progress.marked}
@@ -359,7 +359,7 @@ function StartCard({ icon: Icon, label, sub, enabled, onClick }: {
       disabled={!enabled}
       onClick={onClick}
       className={cn(
-        'flex min-w-0 items-center gap-3 rounded-2xl border border-line bg-card p-3.5 text-left transition-all',
+        'flex min-w-0 items-center gap-3 rounded-2xl clay p-3.5 text-left transition-all',
         enabled ? 'hover:border-primary/45 hover:shadow-md hover:shadow-primary/5' : 'opacity-55',
       )}
     >
@@ -379,18 +379,18 @@ function HighYieldTeaser({ data, onGo }: { data: HubTopicPayload; onGo: (k: Sect
   return (
     <section aria-label="High-yield preview" className="space-y-3">
       <div className="flex items-center gap-2">
-        <h2 className="flex items-center gap-1.5 text-sm font-semibold"><Zap className="size-4 text-amber-500" /> High-yield preview</h2>
+        <h2 className="flex items-center gap-1.5 text-sm font-semibold"><Zap className="size-4 text-gold" /> High-yield preview</h2>
         <button type="button" onClick={() => onGo('read')} className="ml-auto text-xs font-medium text-primary hover:underline">open Read <ChevronRight className="inline size-3" /></button>
       </div>
       <div className="grid gap-2 sm:grid-cols-2">
         {facts.numbers.slice(0, 4).map((n) => (
-          <div key={n.label} className="rounded-xl border border-line bg-card px-3.5 py-2.5 text-sm">
+          <div key={n.label} className="rounded-xl clay px-3.5 py-2.5 text-sm">
             <span className="text-ink-soft">{n.label}</span>
             <span className="float-right font-semibold tabular-nums">{n.value}</span>
           </div>
         ))}
         {facts.differentials.slice(0, 4).map((d) => (
-          <div key={d.name} className="rounded-xl border border-line bg-card px-3.5 py-2.5 text-sm">
+          <div key={d.name} className="rounded-xl clay px-3.5 py-2.5 text-sm">
             <span className="font-medium">{d.name}</span>
             <span className="text-ink-soft"> — {d.key}</span>
           </div>
@@ -449,7 +449,7 @@ function ConceptHubCard({ concept: c, isFocus, onOpen }: {
   return (
     <div
       className={cn(
-        'group min-w-0 rounded-xl border bg-card p-3.5 transition-all hover:border-primary/45 hover:shadow-md hover:shadow-primary/5',
+        'group min-w-0 rounded-xl border bg-card p-3.5 transition-all clay-hover',
         isFocus ? 'border-primary/50' : 'border-line',
       )}
     >
@@ -463,7 +463,7 @@ function ConceptHubCard({ concept: c, isFocus, onOpen }: {
           <span className="truncate text-sm font-medium group-hover:text-primary">{c.name}</span>
           {isFocus && <Badge className="ml-auto shrink-0 text-[9px]">your search</Badge>}
           {!isFocus && c.examWeight >= 4 && (
-            <span className="ml-auto inline-flex shrink-0 items-center gap-0.5 rounded-full bg-amber-100 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wide text-amber-700">
+            <span className="ml-auto inline-flex shrink-0 items-center gap-0.5 rounded-full bg-gold/15 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wide text-sev-warn">
               <Zap className="size-2.5" /> High yield
             </span>
           )}
@@ -546,7 +546,7 @@ function WatchSection({ data }: { data: HubTopicPayload }) {
             </div>
           )}
           {Scene && catalog ? (
-            <div className="overflow-hidden rounded-2xl border border-line bg-card">
+            <div className="overflow-hidden rounded-2xl clay">
               <div className="flex items-center justify-between gap-2 border-b border-line px-4 py-2.5">
                 <div className="min-w-0">
                   <p className="truncate text-sm font-semibold">{catalog.emoji} {catalog.title}</p>
@@ -576,13 +576,13 @@ function WatchSection({ data }: { data: HubTopicPayload }) {
               )}
             </div>
           ) : (
-            <p className="rounded-xl border border-line bg-surface-2 p-4 text-xs text-ink-soft">
+            <p className="rounded-xl clay-in p-4 text-xs text-ink-soft">
               This library topic has no living scene — use the external lectures below.
             </p>
           )}
         </div>
       ) : (
-        <p className="rounded-xl border border-line bg-surface-2 p-4 text-xs text-ink-soft">
+        <p className="rounded-xl clay-in p-4 text-xs text-ink-soft">
           No platform scene matches this topic yet — the external lecture libraries below cover it.
         </p>
       )}
@@ -607,7 +607,7 @@ function ReadSection({ data, onOpenConcept }: {
       <button
         type="button"
         onClick={() => openLibrary({ topicId: data.topic.id })}
-        className="group flex w-full items-center gap-3 rounded-2xl border border-primary/25 bg-primary/5 p-3.5 text-left transition-colors hover:border-primary/45 hover:bg-primary/10 min-h-11"
+        className="group flex w-full items-center gap-3 rounded-2xl border border-primary/25 bg-primary/5 p-3.5 text-left transition-colors clay-hover hover:bg-primary/10 min-h-11"
         aria-label="Open curated resources for this topic in the Resource Hub"
       >
         <span className="clay-in grid size-9 shrink-0 place-items-center rounded-xl" aria-hidden="true">
@@ -621,7 +621,7 @@ function ReadSection({ data, onOpenConcept }: {
       </button>
 
       {data.read.sections.length > 0 && (
-        <div className="rounded-2xl border border-line bg-card p-4">
+        <div className="rounded-2xl clay p-4">
           <h3 className="text-sm font-semibold">Lesson coverage</h3>
           <div className="mt-2 flex flex-wrap gap-1.5">
             {data.read.sections.map((s) => (
@@ -637,7 +637,7 @@ function ReadSection({ data, onOpenConcept }: {
       {data.read.notes.length > 0 ? (
         <div className="space-y-3">
           {data.read.notes.map((n) => (
-            <div key={`${n.conceptId}-${n.heading}`} className="rounded-2xl border border-line bg-card p-4">
+            <div key={`${n.conceptId}-${n.heading}`} className="rounded-2xl clay p-4">
               <div className="flex items-center justify-between gap-2">
                 <h3 className="text-sm font-semibold">{n.heading}</h3>
                 <button type="button" onClick={() => onOpenConcept(n.conceptId)} className="shrink-0 text-[11px] font-medium text-primary hover:underline">
@@ -670,7 +670,7 @@ function ReadSection({ data, onOpenConcept }: {
           ))}
         </div>
       ) : (
-        <p className="rounded-xl border border-line bg-surface-2 p-4 text-xs text-ink-soft">
+        <p className="rounded-xl clay-in p-4 text-xs text-ink-soft">
           Structured notes for this topic are being written. The key facts below and the reference links cover the essentials today.
         </p>
       )}
@@ -690,7 +690,7 @@ function KeyFactsBlock({ data }: { data: HubTopicPayload }) {
     <section aria-label="Key facts" className="space-y-3">
       <h2 className="text-xs font-semibold uppercase tracking-[0.18em] text-ink-soft">High-yield facts</h2>
       {facts.numbers.length > 0 && (
-        <div className="rounded-2xl border border-line bg-card p-4">
+        <div className="rounded-2xl clay p-4">
           <h3 className="flex items-center gap-1.5 text-sm font-semibold"><Scale className="size-3.5 text-primary" /> Numbers to remember</h3>
           <div className="mt-3 grid gap-x-6 gap-y-2 sm:grid-cols-2">
             {facts.numbers.map((n) => (
@@ -703,7 +703,7 @@ function KeyFactsBlock({ data }: { data: HubTopicPayload }) {
         </div>
       )}
       {facts.differentials.length > 0 && (
-        <div className="rounded-2xl border border-line bg-card p-4">
+        <div className="rounded-2xl clay p-4">
           <h3 className="flex items-center gap-1.5 text-sm font-semibold"><Scale className="size-3.5 text-primary" /> Don&apos;t confuse with</h3>
           <ul className="mt-2.5 space-y-1.5">
             {facts.differentials.map((d) => (
@@ -713,15 +713,15 @@ function KeyFactsBlock({ data }: { data: HubTopicPayload }) {
         </div>
       )}
       {facts.mistakes.length > 0 && (
-        <div className="rounded-2xl border border-amber-300/60 bg-amber-50/70 p-4">
-          <h3 className="flex items-center gap-1.5 text-sm font-semibold"><TriangleAlert className="size-3.5 text-amber-600" /> Common mistakes</h3>
+        <div className="rounded-2xl border border-gold/40 bg-gold/10 p-4">
+          <h3 className="flex items-center gap-1.5 text-sm font-semibold"><TriangleAlert className="size-3.5 text-sev-warn" /> Common mistakes</h3>
           <ul className="mt-2.5 space-y-1.5 text-sm leading-relaxed">
-            {facts.mistakes.map((m, i) => <li key={`${i}-${m.slice(0, 24)}`} className="flex gap-2"><span className="text-amber-600">•</span><span>{m}</span></li>)}
+            {facts.mistakes.map((m, i) => <li key={`${i}-${m.slice(0, 24)}`} className="flex gap-2"><span className="text-sev-warn">•</span><span>{m}</span></li>)}
           </ul>
         </div>
       )}
       {facts.mnemonics.length > 0 && (
-        <div className="rounded-2xl border border-line bg-card p-4">
+        <div className="rounded-2xl clay p-4">
           <h3 className="flex items-center gap-1.5 text-sm font-semibold"><Lightbulb className="size-3.5 text-primary" /> Mnemonics</h3>
           <ul className="mt-2.5 space-y-2 text-sm">
             {facts.mnemonics.map((m) => (
@@ -745,16 +745,16 @@ function PracticeSection({ data, onPractice }: {
       <SectionIntro title="Practice" sub="Every question tied to this topic, by type — with your history on them." />
 
       <div className="grid grid-cols-3 gap-2">
-        <div className="rounded-2xl border border-line bg-card p-4 text-center">
+        <div className="rounded-2xl clay p-4 text-center">
           <p className="text-2xl font-semibold tabular-nums">{p.questions}</p>
           <p className="text-[10px] text-ink-soft">questions in pool</p>
         </div>
-        <div className="rounded-2xl border border-line bg-card p-4 text-center">
+        <div className="rounded-2xl clay p-4 text-center">
           <p className="text-2xl font-semibold tabular-nums">{p.attempts.total}</p>
           <p className="text-[10px] text-ink-soft">attempted by you</p>
         </div>
-        <div className="rounded-2xl border border-line bg-card p-4 text-center">
-          <p className={cn('text-2xl font-semibold tabular-nums', p.attempts.accuracy !== null && p.attempts.accuracy < 60 && 'text-amber-600')}>
+        <div className="rounded-2xl clay p-4 text-center">
+          <p className={cn('text-2xl font-semibold tabular-nums', p.attempts.accuracy !== null && p.attempts.accuracy < 60 && 'text-sev-warn')}>
             {p.attempts.accuracy !== null ? `${p.attempts.accuracy}%` : '—'}
           </p>
           <p className="text-[10px] text-ink-soft">your accuracy</p>
@@ -780,7 +780,7 @@ function PracticeSection({ data, onPractice }: {
               key={bt.qtype}
               type="button"
               onClick={() => onPractice({ qtype: bt.qtype, count: Math.min(8, bt.count) })}
-              className="flex w-full items-center gap-3 rounded-2xl border border-line bg-card p-3.5 text-left transition-colors hover:border-primary/45"
+              className="flex w-full items-center gap-3 rounded-2xl clay p-3.5 text-left transition-colors clay-hover"
             >
               <span className="grid size-9 shrink-0 place-items-center rounded-xl bg-surface-2"><FlaskConical className="size-4 text-primary" /></span>
               <span className="min-w-0 flex-1">
@@ -797,7 +797,7 @@ function PracticeSection({ data, onPractice }: {
           </div>
         </div>
       ) : (
-        <p className="rounded-xl border border-line bg-surface-2 p-4 text-xs text-ink-soft">
+        <p className="rounded-xl clay-in p-4 text-xs text-ink-soft">
           No questions are tied to this topic yet. Practice the subject instead from the Question Lab.
         </p>
       )}
@@ -820,7 +820,7 @@ function CasesSection({ data, onOpenCases }: {
               key={c.id}
               type="button"
               onClick={onOpenCases}
-              className="flex w-full items-center gap-3 rounded-xl border border-line bg-card p-3.5 text-left transition-all hover:border-primary/45"
+              className="flex w-full items-center gap-3 rounded-xl clay p-3.5 text-left transition-all hover:border-primary/45"
             >
               <span className="grid size-9 shrink-0 place-items-center rounded-xl bg-primary/10"><Stethoscope className="size-4 text-primary" /></span>
               <span className="min-w-0 flex-1">
@@ -837,7 +837,7 @@ function CasesSection({ data, onOpenCases }: {
           ))}
         </div>
       ) : (
-        <p className="rounded-xl border border-line bg-surface-2 p-4 text-xs text-ink-soft">
+        <p className="rounded-xl clay-in p-4 text-xs text-ink-soft">
           No published cases for this system yet — the Case Simulator grows with the curriculum.
         </p>
       )}
@@ -872,8 +872,8 @@ function ReviseSection({ data, onDrillPair }: {
       )}
 
       {r.revisionItems.length > 0 && (
-        <div className="rounded-2xl border border-line bg-card p-4">
-          <h3 className="flex items-center gap-1.5 text-sm font-semibold"><CircleDashed className="size-4 text-amber-500" /> Revision queue</h3>
+        <div className="rounded-2xl clay p-4">
+          <h3 className="flex items-center gap-1.5 text-sm font-semibold"><CircleDashed className="size-4 text-gold" /> Revision queue</h3>
           <ul className="mt-2.5 space-y-2">
             {r.revisionItems.map((ri) => (
               <li key={ri.conceptId} className="flex items-start justify-between gap-2 text-sm">
@@ -889,13 +889,13 @@ function ReviseSection({ data, onDrillPair }: {
       )}
 
       {r.missedConcepts.length > 0 && (
-        <div className="rounded-2xl border border-amber-300/60 bg-amber-50/70 p-4">
-          <h3 className="flex items-center gap-1.5 text-sm font-semibold"><TriangleAlert className="size-4 text-amber-600" /> You missed these here</h3>
+        <div className="rounded-2xl border border-gold/40 bg-gold/10 p-4">
+          <h3 className="flex items-center gap-1.5 text-sm font-semibold"><TriangleAlert className="size-4 text-sev-warn" /> You missed these here</h3>
           <ul className="mt-2.5 space-y-1.5 text-sm">
             {r.missedConcepts.map((m) => (
               <li key={m.id} className="flex items-center justify-between gap-2">
                 <span className="min-w-0 truncate">{m.name}</span>
-                <span className="shrink-0 text-[11px] font-semibold tabular-nums text-amber-700">{m.misses} miss{m.misses > 1 ? 'es' : ''}</span>
+                <span className="shrink-0 text-[11px] font-semibold tabular-nums text-sev-warn">{m.misses} miss{m.misses > 1 ? 'es' : ''}</span>
               </li>
             ))}
           </ul>
@@ -903,7 +903,7 @@ function ReviseSection({ data, onDrillPair }: {
       )}
 
       {r.confusionPairs.length > 0 && (
-        <div className="rounded-2xl border border-line bg-card p-4">
+        <div className="rounded-2xl clay p-4">
           <h3 className="flex items-center gap-1.5 text-sm font-semibold"><Scale className="size-4 text-primary" /> Don&apos;t mix up</h3>
           <ul className="mt-2.5 space-y-2">
             {r.confusionPairs.map((p) => (
@@ -921,7 +921,7 @@ function ReviseSection({ data, onDrillPair }: {
       )}
 
       {r.flashcards === 0 && r.revisionItems.length === 0 && r.missedConcepts.length === 0 && r.confusionPairs.length === 0 && (
-        <p className="rounded-xl border border-line bg-surface-2 p-4 text-xs text-ink-soft">
+        <p className="rounded-xl clay-in p-4 text-xs text-ink-soft">
           No cards or revision items for this topic yet — as you practice, misses surface here automatically.
         </p>
       )}
@@ -948,12 +948,12 @@ function PerformanceSection({ data, onPractice, onGo }: {
       </div>
 
       {perf.weakConcepts.length > 0 ? (
-        <div className="rounded-2xl border border-line bg-card p-4">
-          <h3 className="flex items-center gap-1.5 text-sm font-semibold"><Target className="size-4 text-amber-500" /> Weak areas</h3>
+        <div className="rounded-2xl clay p-4">
+          <h3 className="flex items-center gap-1.5 text-sm font-semibold"><Target className="size-4 text-gold" /> Weak areas</h3>
           <ul className="mt-3 space-y-2.5">
             {perf.weakConcepts.map((w) => (
               <li key={w.id} className="flex items-center gap-2.5 text-sm">
-                <span className="w-8 shrink-0 text-right text-xs font-semibold tabular-nums text-amber-600">{w.mastery}%</span>
+                <span className="w-8 shrink-0 text-right text-xs font-semibold tabular-nums text-sev-warn">{w.mastery}%</span>
                 <Progress value={w.mastery} className="h-1.5 flex-1" aria-label={`${w.name} mastery ${w.mastery}%`} />
                 <span className="min-w-0 flex-1 truncate text-ink-soft">{w.name}</span>
               </li>
@@ -962,7 +962,7 @@ function PerformanceSection({ data, onPractice, onGo }: {
           <Button size="sm" variant="outline" className="mt-3" onClick={onPractice}>Fix them with a focused set</Button>
         </div>
       ) : (
-        <p className="rounded-xl border border-line bg-surface-2 p-4 text-xs text-ink-soft">
+        <p className="rounded-xl clay-in p-4 text-xs text-ink-soft">
           {perf.engagedConcepts > 0
             ? 'No weak areas flagged — keep the streak alive with a practice set.'
             : 'You haven\u2019t engaged with this topic yet. Start with Learn, then Practice.'}
@@ -970,7 +970,7 @@ function PerformanceSection({ data, onPractice, onGo }: {
       )}
 
       {perf.recentActivity.length > 0 && (
-        <div className="rounded-2xl border border-line bg-card p-4">
+        <div className="rounded-2xl clay p-4">
           <h3 className="flex items-center gap-1.5 text-sm font-semibold"><Activity className="size-4 text-primary" /> Recent activity</h3>
           <ul className="mt-2.5 space-y-2">
             {perf.recentActivity.map((a, i) => (
@@ -983,7 +983,7 @@ function PerformanceSection({ data, onPractice, onGo }: {
         </div>
       )}
 
-      <div className="rounded-2xl border border-line bg-surface-2 p-4">
+      <div className="rounded-2xl clay-in p-4">
         <h3 className="flex items-center gap-1.5 text-sm font-semibold"><CheckCircle2 className="size-4 text-primary" /> Progress marks</h3>
         <div className="mt-2.5 flex flex-wrap gap-1.5">
           {(Object.entries(data.statusCounts) as [LearnStatus, number][]).map(([status, n]) => (
@@ -1047,7 +1047,7 @@ function AiSection({ data, onAsk, onQuiz }: {
         </span>
         <ArrowRight className="ml-auto size-4 shrink-0 text-primary" />
       </button>
-      <p className="rounded-xl border border-line bg-surface-2 p-3 text-[11px] leading-relaxed text-muted-foreground">
+      <p className="rounded-xl clay-in p-3 text-[11px] leading-relaxed text-muted-foreground">
         The AI Tutor is a learning tool, not a clinical advisor — it can be wrong. Verify against standard textbooks. Every action above opens it with this topic as teaching context. (Voice learning and the knowledge graph plug into this section as they ship.)
       </p>
     </div>
@@ -1069,7 +1069,7 @@ function ConnectedSection({ data, onOpenHub }: {
               key={ct.id}
               type="button"
               onClick={() => onOpenHub(ct.id)}
-              className="group min-w-0 rounded-xl border border-line bg-card p-3.5 text-left transition-all hover:border-primary/45 hover:shadow-md hover:shadow-primary/5"
+              className="group min-w-0 rounded-xl clay p-3.5 text-left transition-all clay-hover"
             >
               <span className="flex items-center gap-2">
                 <span className="size-2 shrink-0 rounded-full" style={{ backgroundColor: ct.subjectColor }} aria-hidden />
@@ -1083,7 +1083,7 @@ function ConnectedSection({ data, onOpenHub }: {
           ))}
         </div>
       ) : (
-        <p className="rounded-xl border border-line bg-surface-2 p-4 text-xs text-ink-soft">
+        <p className="rounded-xl clay-in p-4 text-xs text-ink-soft">
           Cross-links appear here as this topic's concept edges grow.
         </p>
       )}
@@ -1111,7 +1111,7 @@ function ResourceGrid({ resources }: { resources: HubTopicPayload['watch']['exte
           href={r.url}
           target="_blank"
           rel="noreferrer noopener"
-          className="group min-w-0 rounded-xl border border-line bg-card p-3.5 transition-all hover:border-primary/45"
+          className="group min-w-0 rounded-xl clay p-3.5 transition-all hover:border-primary/45"
         >
           <span className="flex items-center gap-2">
             <span className="grid size-8 shrink-0 place-items-center rounded-lg bg-surface-2">
@@ -1131,8 +1131,8 @@ function ResourceGrid({ resources }: { resources: HubTopicPayload['watch']['exte
 
 function PerfTile({ value, label, warn }: { value: number | string; label: string; warn?: boolean }) {
   return (
-    <div className={cn('rounded-2xl border p-3.5 text-center', warn ? 'border-amber-300/60 bg-amber-50/60' : 'border-line bg-card')}>
-      <p className={cn('text-xl font-semibold tabular-nums', warn && 'text-amber-700')}>{value}</p>
+    <div className={cn('rounded-2xl border p-3.5 text-center', warn ? 'border-gold/40 bg-gold/10' : 'border-line bg-card')}>
+      <p className={cn('text-xl font-semibold tabular-nums', warn && 'text-sev-warn')}>{value}</p>
       <p className="text-[10px] text-ink-soft">{label}</p>
     </div>
   )

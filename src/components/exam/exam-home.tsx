@@ -195,7 +195,7 @@ export function ExamHomeScreen({ home, onStart, onResume, onOpenHistory, onOpenA
       {/* ── Recommended next test ── */}
       {home.recommended && (
         <Reveal index={4}>
-          <section className="glass space-y-3 rounded-2xl border-primary/25 p-4 md:p-5" aria-label="Recommended next test">
+          <section className="clay space-y-3 rounded-2xl border-primary/25 p-4 md:p-5" aria-label="Recommended next test">
             <div className="flex flex-wrap items-center gap-2">
               <span className="grid size-8 shrink-0 place-items-center rounded-lg bg-primary/12 text-primary">
                 <TrendingUp className="size-4" aria-hidden />
@@ -219,7 +219,7 @@ export function ExamHomeScreen({ home, onStart, onResume, onOpenHistory, onOpenA
         <Reveal index={5} className="space-y-3">
           <SectionTitle className="text-sev-warn">Measured weak areas — fix them under exam conditions</SectionTitle>
           {home.weakSubjects.length > 0 && (
-            <div className="glass flex flex-wrap gap-2 rounded-2xl p-4">
+            <div className="clay flex flex-wrap gap-2 rounded-2xl p-4">
               {home.weakSubjects.map((s) => (
                 <span
                   key={s.code}
@@ -240,7 +240,7 @@ export function ExamHomeScreen({ home, onStart, onResume, onOpenHistory, onOpenA
             </div>
           )}
           {home.weakConcepts.length > 0 && (
-            <div className="glass flex flex-wrap gap-2 rounded-2xl p-4">
+            <div className="clay flex flex-wrap gap-2 rounded-2xl p-4">
               {home.weakConcepts.map((c) => {
                 const mastery = asPct(c.mastery)
                 return (
@@ -270,7 +270,7 @@ export function ExamHomeScreen({ home, onStart, onResume, onOpenHistory, onOpenA
       {home.recent.length > 0 && (
         <Reveal index={6} className="space-y-3">
           <SectionTitle>Recent tests</SectionTitle>
-          <div className="glass divide-y divide-line/70 rounded-2xl p-2 md:p-3">
+          <div className="clay divide-y divide-line/70 rounded-2xl p-2 md:p-3">
             {home.recent.map((r, i) => (
               <button
                 key={`${r.attemptId}-${i}`}

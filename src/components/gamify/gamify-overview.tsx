@@ -23,9 +23,9 @@ import {
 
 const MOTIVATION_TONE: Record<GamifyMotivationCard['kind'], string> = {
   'close-topic': 'text-primary',
-  'accuracy-up': 'text-emerald-600',
+  'accuracy-up': 'text-sev-ok',
   blockers: 'text-primary',
-  'revision-backlog': 'text-amber-600',
+  'revision-backlog': 'text-sev-warn',
   streak: 'text-primary',
 }
 
@@ -64,7 +64,7 @@ function GamifyHero({ home }: { home: GamifyHomePayload }) {
   const delta = friendlyDelta(home.weekXp, home.lastWeekXp)
   const t = home.today
   return (
-    <section className="clay rounded-2xl p-5 md:p-6">
+    <section className="warm-card rounded-2xl p-5 md:p-6">
       <div className="flex flex-col items-center gap-6 sm:flex-row sm:items-center sm:gap-7">
         <div className="flex flex-col items-center">
           <XpRing
@@ -143,6 +143,7 @@ function GamifyStreaks({ home }: { home: GamifyHomePayload }) {
       title="Consistency"
       icon={Flame}
       description={`${s.activeDays14} active days in the last 14 — measured from real sessions, not logins.`}
+      className="warm-card"
     >
       <div className="flex flex-wrap gap-2">
         <StreakChip label="Learning" line={s.learning} />

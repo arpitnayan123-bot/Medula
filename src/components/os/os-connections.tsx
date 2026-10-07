@@ -8,7 +8,8 @@
 
 import { motion } from 'framer-motion'
 import type { OsCommandCenter } from '@/lib/types'
-import { MicroLabel, OS_CONNECTION_ICON, StatusDot, useOsNavigate } from '@/components/os/os-shared'
+import { OS_CONNECTION_ICON, StatusDot, useOsNavigate } from '@/components/os/os-shared'
+import { SectionTitle } from '@/components/primitives/kit'
 import { ChevronRight } from 'lucide-react'
 
 const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1]
@@ -23,17 +24,11 @@ export function OsConnections({ data }: { data: OsCommandCenter }) {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3, ease: EASE, delay: 0.05 }}
       aria-label="One connected system"
-      className="rounded-2xl border border-border/70 bg-card/80 p-4 shadow-sm backdrop-blur-sm"
+      className="clay rounded-2xl p-4"
     >
-      <div className="mb-3 flex items-center justify-between gap-2">
-        <div className="flex items-center gap-2">
-          <span className="flex size-7 items-center justify-center rounded-lg border border-border/70 bg-background">
-            <span className="text-[11px] font-bold text-ink-soft">{data.connections.length}</span>
-          </span>
-          <MicroLabel>One connected system — not {data.connections.length} separate features</MicroLabel>
-        </div>
-        <span className="text-[11px] tabular-nums text-ink-soft">{active} active</span>
-      </div>
+      <SectionTitle right={<span className="text-[11px] tabular-nums text-ink-soft">{active} active</span>}>
+        One connected system — not {data.connections.length} separate features
+      </SectionTitle>
 
       <div className="grid grid-cols-1 gap-1.5 sm:grid-cols-2 lg:grid-cols-3">
         {data.connections.map((c) => {
@@ -42,10 +37,10 @@ export function OsConnections({ data }: { data: OsCommandCenter }) {
             <button
               key={c.view}
               onClick={() => go(c.view)}
-              className="group flex items-center gap-2.5 rounded-xl border border-border/60 bg-background/60 px-2.5 py-2 text-left transition hover:border-primary/40 hover:bg-muted/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50"
+              className="clay-in group flex items-center gap-2.5 rounded-xl px-2.5 py-2 text-left transition hover:border-primary/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50"
               aria-label={`${c.label}: ${c.contribution}. Opens the feature.`}
             >
-              <span className="flex size-8 shrink-0 items-center justify-center rounded-lg border border-border/60 bg-card">
+              <span className="flex size-8 shrink-0 items-center justify-center rounded-lg border border-line bg-card">
                 {Icon ? <Icon className="size-4 text-ink-soft" aria-hidden /> : null}
               </span>
               <span className="min-w-0 flex-1">

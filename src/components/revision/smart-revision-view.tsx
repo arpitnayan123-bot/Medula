@@ -206,7 +206,7 @@ function QueueRow({ b }: { b: RevisionBlock }) {
 
 function StatChip({ icon: Icon, label }: { icon: LucideIcon; label: string }) {
   return (
-    <span className="glass inline-flex items-center gap-2 rounded-full px-3.5 py-2 text-xs font-medium text-ink-soft">
+    <span className="clay inline-flex items-center gap-2 rounded-full px-3.5 py-2 text-xs font-medium text-ink-soft">
       <Icon className="size-3.5 shrink-0 text-primary" aria-hidden />
       {label}
     </span>
@@ -272,7 +272,7 @@ function HomeSkeleton() {
 function HomeError({ onRetry }: { onRetry: () => void }) {
   return (
     <div className="mx-auto max-w-5xl p-4 md:p-6">
-      <div className="glass flex flex-col items-center gap-3 rounded-2xl p-8 text-center md:p-12">
+      <div className="clay flex flex-col items-center gap-3 rounded-2xl p-8 text-center md:p-12">
         <span className="grid size-12 place-items-center rounded-full bg-sev-crit/10">
           <RefreshCw className="size-6 text-sev-crit" />
         </span>
@@ -293,7 +293,7 @@ function InsufficientData() {
   const reduce = useReducedMotion()
   return (
     <Reveal index={1}>
-      <div className="glass flex flex-col items-center gap-3 rounded-2xl px-6 py-12 text-center">
+      <div className="clay flex flex-col items-center gap-3 rounded-2xl px-6 py-12 text-center">
         <motion.span
           className="grid size-14 place-items-center rounded-full bg-primary/10"
           initial={reduce ? false : { scale: 0.4, opacity: 0 }}
@@ -367,7 +367,7 @@ function SummaryView({
       </Reveal>
 
       <Reveal index={1}>
-        <section className="glass flex flex-col items-center gap-6 rounded-2xl p-6 sm:flex-row sm:justify-between">
+        <section className="clay flex flex-col items-center gap-6 rounded-2xl p-6 sm:flex-row sm:justify-between">
           <ProgressRing pct={pct} label={`${summary.done}/${summary.total}`} sub="blocks done" />
           <div className="space-y-2 text-center sm:text-right">
             <p className="text-3xl font-semibold tabular-nums leading-none">
@@ -394,10 +394,10 @@ function SummaryView({
 
       {summary.next && nextMeta && NextIcon && (
         <Reveal index={3}>
-          <section className="glass space-y-4 rounded-2xl p-5">
+          <section className="clay space-y-4 rounded-2xl p-5">
             <MicroLabel>Next</MicroLabel>
             <div className="flex items-start gap-3">
-              <span className={cn('grid size-9 shrink-0 place-items-center rounded-lg', nextMeta.tone)}>
+              <span className={cn('grid size-9 shrink-0 place-items-center rounded-lg shadow-well', nextMeta.tone)}>
                 <NextIcon className="size-4" aria-hidden />
               </span>
               <div className="min-w-0">
@@ -686,7 +686,7 @@ export function SmartRevisionView() {
             <>
               {/* Headline band */}
               <Reveal index={1}>
-                <section className="glass space-y-3 rounded-2xl p-5 md:p-6">
+                <section className="clay space-y-3 rounded-2xl p-5 md:p-6">
                   <HeadlineChips headline={home.today.headline} />
                   <p className="text-xs italic leading-relaxed text-ink-soft">{home.today.note}</p>
                 </section>
@@ -721,7 +721,7 @@ export function SmartRevisionView() {
 
               {/* Queue + budget */}
               <Reveal index={3}>
-                <section className="glass space-y-4 rounded-2xl p-5 md:p-6">
+                <section className="clay space-y-4 rounded-2xl p-5 md:p-6">
                   <div className="flex flex-wrap items-center justify-between gap-3">
                     <MicroLabel>Today&apos;s queue</MicroLabel>
                     <BudgetPills value={budget ?? 20} onChange={setBudget} />
@@ -789,7 +789,7 @@ export function SmartRevisionView() {
                         type="button"
                         onClick={() => setIntelOpen(c.key)}
                         aria-haspopup="dialog"
-                        className="glass flex items-center gap-3 rounded-xl p-3.5 text-left transition-colors hover:border-primary/40"
+                        className="clay flex items-center gap-3 rounded-xl p-3.5 text-left transition-colors hover:border-primary/40"
                       >
                         <span className={cn('grid size-9 shrink-0 place-items-center rounded-lg', c.tone)}>
                           <c.icon className="size-4" aria-hidden />
@@ -817,7 +817,7 @@ export function SmartRevisionView() {
                           type="button"
                           disabled={disabled}
                           onClick={() => (m.id === 'custom' ? openCustom() : void startSession(m.id))}
-                          className="glass flex flex-col rounded-xl p-4 text-left transition-colors hover:border-primary/40 disabled:cursor-not-allowed disabled:opacity-55"
+                          className="clay flex flex-col rounded-xl p-4 text-left transition-colors hover:border-primary/40 disabled:cursor-not-allowed disabled:opacity-55"
                         >
                           <span className="flex items-start justify-between gap-2">
                             <h3 className="text-sm font-semibold leading-tight">{m.label}</h3>
@@ -846,7 +846,7 @@ export function SmartRevisionView() {
               {/* Custom builder */}
               {customOpen && (
                 <Reveal index={7}>
-                  <section ref={builderRef} className="glass space-y-4 rounded-2xl p-5 md:p-6 scroll-mt-20">
+                  <section ref={builderRef} className="clay space-y-4 rounded-2xl p-5 md:p-6 scroll-mt-20">
                     <div className="flex items-center justify-between gap-2">
                       <MicroLabel className="text-primary">Custom builder</MicroLabel>
                       <button
@@ -963,7 +963,7 @@ export function SmartRevisionView() {
                     No sessions yet — your first one is one tap away.
                   </p>
                 ) : (
-                  <ul className="glass divide-y divide-line/60 rounded-2xl">
+                  <ul className="clay divide-y divide-line/60 rounded-2xl">
                     {home.recent.slice(0, 5).map((r) => (
                       <li key={r.id} className="flex flex-wrap items-center gap-x-3 gap-y-1 px-4 py-3 text-sm">
                         <span className="min-w-0 flex-1 truncate font-medium">{modeLabelOf(r.mode)}</span>

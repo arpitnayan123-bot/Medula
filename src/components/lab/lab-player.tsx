@@ -65,7 +65,7 @@ function FeedbackCard({ fb, onContinue, busy, continueLabel, children }: {
       initial={{ opacity: 0, y: 14 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.35, ease: EASE }}
-      className="glass space-y-3.5 rounded-2xl p-4 md:p-5"
+      className="clay space-y-3.5 rounded-2xl p-4 md:p-5"
       aria-label="Grader feedback"
     >
       <div className="flex flex-wrap items-center justify-between gap-2">
@@ -356,7 +356,7 @@ export function LabPlayer({ detail, mode, resume, rapidScope, onComplete, onExit
           </Button>
           {attempt && (
             <span
-              className="glass inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-bold tabular-nums"
+              className="clay inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-bold tabular-nums"
               role="timer"
               aria-label={`Elapsed time ${fmtClock(elapsedMs)}`}
             >
@@ -407,7 +407,7 @@ export function LabPlayer({ detail, mode, resume, rapidScope, onComplete, onExit
       {!attempt && (
         <section aria-label="Starting the attempt" className="space-y-3">
           {startError && (
-            <div className="glass flex flex-col items-start gap-3 rounded-2xl p-5">
+            <div className="clay flex flex-col items-start gap-3 rounded-2xl p-5">
               <p role="alert" className="text-sm text-sev-crit">{startError}</p>
               <Button className="min-h-12" onClick={() => setStartKey((k) => k + 1)} disabled={starting}>
                 {starting ? <Loader2 className="size-4 animate-spin" aria-hidden /> : <Zap className="size-4" aria-hidden />}
@@ -416,7 +416,7 @@ export function LabPlayer({ detail, mode, resume, rapidScope, onComplete, onExit
             </div>
           )}
           {!startError && (
-            <div className="glass flex items-center gap-3 rounded-2xl p-5">
+            <div className="clay flex items-center gap-3 rounded-2xl p-5">
               <Loader2 className="size-5 animate-spin text-primary" aria-hidden />
               <p className="text-sm text-ink-soft">Preparing the attempt…</p>
             </div>
@@ -474,7 +474,7 @@ export function LabPlayer({ detail, mode, resume, rapidScope, onComplete, onExit
 
             {/* Diagnose vignette */}
             {mode === 'diagnose' && detail && (
-              <section className="glass space-y-2 rounded-2xl p-4 md:p-5" aria-label="Clinical context">
+              <section className="clay space-y-2 rounded-2xl p-4 md:p-5" aria-label="Clinical context">
                 <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-ink-soft">Clinical context</p>
                 <p className="text-sm leading-relaxed">{detail.diagnoseContext}</p>
               </section>

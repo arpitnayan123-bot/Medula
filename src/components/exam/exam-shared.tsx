@@ -2,7 +2,7 @@
 
 // ─── EXAM LAB · SHARED PRIMITIVES (PRODUCT 12) ───
 // Small building blocks reused across the Exam Lab screens. Visual language
-// matches the Sim / Adaptive / Lab sections: glass + clay panels, sev tones,
+// follows Porcelain Atlas: clay panels, shadow-well icon tiles, sev tones,
 // uppercase micro-labels, Reveal entrances. All data comes from payloads.
 
 import { useEffect, useState } from 'react'
@@ -68,8 +68,8 @@ export function SectionTitle({ children, right, className }: { children: React.R
 
 export function StatTile({ icon: Icon, value, label, accent }: { icon: LucideIcon; value: string; label: string; accent?: boolean }) {
   return (
-    <div className="glass flex min-h-16 min-w-0 flex-1 basis-36 items-center gap-3 rounded-2xl px-4 py-3">
-      <span className={cn('grid size-9 shrink-0 place-items-center rounded-xl', accent ? 'bg-primary/12 text-primary' : 'bg-surface-2 text-ink-soft')}>
+    <div className="clay flex min-h-16 min-w-0 flex-1 basis-36 items-center gap-3 rounded-2xl px-4 py-3">
+      <span className={cn('grid size-9 shrink-0 place-items-center rounded-xl shadow-well', accent ? 'bg-primary/12 text-primary' : 'bg-surface-2 text-ink-soft')}>
         <Icon className="size-4" aria-hidden />
       </span>
       <span className="min-w-0">
@@ -98,7 +98,13 @@ export function BarRow({
   const reduce = useReducedMotion()
   const clamped = Math.max(0, Math.min(100, pct))
   const barTone =
-    tone === 'ok' ? 'bg-sev-ok' : tone === 'warn' ? 'bg-sev-warn' : tone === 'crit' ? 'bg-sev-crit' : 'bg-primary'
+    tone === 'ok'
+      ? 'bg-sev-ok'
+      : tone === 'warn'
+        ? 'bg-sev-warn'
+        : tone === 'crit'
+          ? 'bg-sev-crit'
+          : 'bg-gradient-to-r from-primary to-[oklch(0.62_0.105_158)]'
   const textTone =
     tone === 'ok' ? 'text-sev-ok' : tone === 'warn' ? 'text-sev-warn' : tone === 'crit' ? 'text-sev-crit' : 'text-foreground'
   return (

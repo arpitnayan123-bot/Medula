@@ -2,8 +2,8 @@
 
 // ─── SMART REVISION · SHARED PRIMITIVES (PRODUCT 06) ───
 // Small pieces reused by the home screen and the block runner. Visual
-// language matches the Adaptive / Mistakes sections (glass panels, sev
-// tones, uppercase micro-labels, Reveal-style entrances). No indigo/blue.
+// language follows Porcelain Atlas (clay panels, sev tones, uppercase
+// micro-labels, Reveal-style entrances). No raw palette colors.
 
 import { useEffect, useState } from 'react'
 import { animate, motion, useReducedMotion } from 'framer-motion'
@@ -72,11 +72,11 @@ export function MicroLabel({ children, className }: { children: React.ReactNode;
 export const KIND_META: Record<RevisionBlockKind, { icon: LucideIcon; tone: string; dot: string }> = {
   concept: { icon: Lightbulb, tone: 'bg-primary/10 text-primary', dot: 'bg-primary' },
   flashcards: { icon: Layers, tone: 'bg-sev-ok/10 text-sev-ok', dot: 'bg-sev-ok' },
-  mcq: { icon: CircleHelp, tone: 'bg-amber-500/10 text-amber-600 dark:text-amber-300', dot: 'bg-amber-500' },
+  mcq: { icon: CircleHelp, tone: 'bg-primary/10 text-primary', dot: 'bg-primary' },
   pyq: { icon: Landmark, tone: 'bg-sev-warn/15 text-sev-warn', dot: 'bg-sev-warn' },
   mistake: { icon: Bandage, tone: 'bg-sev-crit/10 text-sev-crit', dot: 'bg-sev-crit' },
-  compare: { icon: GitCompareArrows, tone: 'bg-fuchsia-500/10 text-fuchsia-600 dark:text-fuchsia-300', dot: 'bg-fuchsia-500' },
-  case: { icon: Stethoscope, tone: 'bg-teal-500/10 text-teal-600 dark:text-teal-300', dot: 'bg-teal-500' },
+  compare: { icon: GitCompareArrows, tone: 'bg-info/10 text-info', dot: 'bg-info' },
+  case: { icon: Stethoscope, tone: 'bg-mint/20 text-sev-ok', dot: 'bg-mint' },
 }
 
 // ─── Difficulty dots (same convention as adaptive-run) ────────────────────────

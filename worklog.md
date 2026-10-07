@@ -1909,3 +1909,138 @@ Work Log:
 
 Stage Summary:
 - P20 verified end-to-end on desktop + mobile. DoD met: «One intelligent medical education OS — not 20 separate features.» Ready to commit + push.
+
+---
+Task ID: 29-audit
+Agent: main
+Task: SUPREME MBBS UI/UX REDESIGN — Phase 1 audit (no functionality changes allowed; visual-only transformation).
+
+Work Log:
+- Inventoried repo: single-route SPA (src/app/page.tsx) rendering ~35 views inside AppShell; 37 view folders ≈ 58,150 LOC; shadcn ui layer customized (button/input/tabs/select bake clay classes).
+- Read core files: globals.css (573 LOC sky-blue claymorphism token system), layout.tsx (Geist fonts, forced light), app-shell.tsx (28-view NAV, 7 groups, sidebar+topbar+mobile dock+More sheet), dashboard-view.tsx, page.tsx.
+- Explore-agent audit of all 37 folders: 3 competing card systems (.clay ×264 hits/60 files, .glass ×250/59, hand-rolled bg-card), 7× duplicated primitives (Reveal/EASE/AnimatedNumber/MicroLabel), 4-6× duplicated EmptyState, 54 hand-rolled h1 variants, 79 dead dark: classes, 269 inline hex (222 in understand scenes — data art, keep), worst palette offenders: voice/ ×42, landing/ ×13, community/ ×23 amber, graph/ ×15 hex legend, onboarding/ ×12. Emoji-as-icon: questions ×13, learn SYSTEM_EMOJI (subject identity), auth ×4 ambient.
+- Key architectural insight: ~95% of views consume semantic tokens (ink-soft/surface-2/line/sev-*/primary/card) + the clay/glass/warm utility classes → redefining tokens + utility class definitions (SAME class names) re-skins the whole app with zero functional risk.
+- Dev server running on :3000; git clean at 5f67036 (P20).
+
+Stage Summary:
+- Phase 1 audit complete. Strategy locked: keep ALL utility class names (clay, glass, warm-scene, clay-field/tray/tab/btn...) and token names, transform their definitions to the new warm ivory/porcelain/teal design language; then redesign shell/dashboard/logo/primitives; then agent wave for per-view polish; then QA (tsc/lint/browser) + commit as Arpit Nayan + push + PAT revoke reminder.
+
+---
+Task ID: 29-b
+Agent: retheme-wave-a
+Task: voice/landing/auth/onboarding → Porcelain Atlas
+
+Work Log:
+- Read worklog tail + DESIGN_LANGUAGE.md; confirmed token/utility inventory in globals.css (clay/clay-hover/clay-in/clay-field/clay-btn, podium, warm-card, glass-strong, ink-gradient, scene-float, sev-*/primary/info/gold/mint tokens) and verified Button base already bakes clay-btn / outline bakes clay-btn-soft, cn() uses twMerge.
+- voice/voice-view.tsx (757 LOC): MODE_META accents → bg-<tok>/10 text-<tok> (rapid=sev-warn, revision=sev-ok, clinical+listen=primary, doubt=info, viva=sev-crit); sky/amber gradient hero → podium rounded-3xl; step chips → clay-in; no-mic chip → sev-warn tint; stats error box → clay-in; Stat/cards (resume, suggestions, six modes, transcript, session header) → clay + clay-hover; weak-spot chips → warm-card (documented struggle-zone pattern); honest-boundaries panel + tutor-line + speed tray → clay-in; orb phase colors rose/sky/amber/emerald → sev-crit/primary/sev-warn/sev-ok (+token shadows, ping/pulse, spinner, text-primary-foreground); hands-free toggle + verdict chips → sev tokens; typed input → clay-field; end-confirm modal card → glass-strong shadow-float (scrim bg-black/40 kept); end-session buttons → sev-crit. Zero logic/handler/state changes.
+- voice/voice-debrief.tsx (156 LOC): sky→emerald gradient headline → podium; accuracy ring → border-primary/25 bg-card; verdict rows → clay, icons+chips → sev-ok/sev-warn/sev-crit; weak chips → warm-card; feed report → clay-in; '✓' glyphs → lucide Check (icon swap only).
+- landing/landing-page.tsx (573 LOC): cyan/emerald headline + philosophy caption gradients → ink-gradient; constellation SVG hexes remapped to new palette (Anatomy/Pathology #c97e59, Physiology #16788c, Pharmacology #5cb491, Medicine #4a7fae, NEET-PG #d9ad6e; edges #16788c/#5cb491; ECG stroke #16788c) — 9 new-palette hexes remain, 0 old ones; deleted ALL 9 dead dark: classes (eyebrows, caption gradient, HUES, chevrons, persona tags); feature cards glass+cyan glow → clay clay-hover, icon tiles → bg-<tok>/10 text-<tok> border-<tok>/20 (primary/info/sev-ok/sev-warn) with rgba glow shadows removed; chain chips glass → clay-in, chevrons → text-primary; persona cards → clay clay-hover; final CTA glass-strong → podium; hero blob → bg-gold/[0.12], badge dot → bg-primary, CTA buttons → baked clay-btn (cyan rgba glows + hover:scale removed); HeroAnatomy imported and placed in hero (mt-10 motion wrapper, w-full max-w-md mx-auto).
+- auth/signin-view.tsx (355 LOC): ambient scene sky/amber/emerald blobs → champagne/mint token tints (bg-gold/[0.14], bg-mint/[0.18], + third scene-float blob); 4 ambient emojis (🌿☁️🦋🍃) deleted entirely; card was already clay rounded-3xl; form/auth flow, handlers, stored-session gate untouched.
+- onboarding/onboarding-wizard.tsx (758 LOC): step-header tile cyan+dark: → border-primary/20 bg-primary/10 text-primary; Segmented/Chip/PREP-option selected states cyan → primary tints (cyan rgba glow shadows dropped); wizard card glass-strong → clay shadow-float; ambient blob → bg-gold/[0.10]; welcome bullets → text-primary; capacity estimate → clay-in; Progress → well track (bg-surface-2 shadow-well) + sanctioned teal→mint gradient fill via [data-slot=progress-indicator] class override; every step/validation/handler/keydown path unchanged.
+
+Stage Summary:
+- Files changed: src/components/voice/voice-view.tsx, src/components/voice/voice-debrief.tsx, src/components/landing/landing-page.tsx, src/components/auth/signin-view.tsx, src/components/onboarding/onboarding-wizard.tsx (voice-audio.ts needed nothing — no classes). ~2,599 LOC in scope, ~90 class-level edits, all presentation-only.
+- Counts before→after: raw palette classes 147→0 (voice 66+18, landing 42, signin 3, onboarding 18); dead dark: classes 14→0 (landing 9, onboarding 1 counted as 10 class sites; rg tokens 13+1); ambient emojis 4→0; ✓ glyphs 3→lucide Check; landing old hexes 9→0, now exactly the 5 sanctioned new-palette hexes (#16788c/#5cb491/#d9ad6e/#c97e59/#4a7fae); cyan rgba glow shadows 4→0.
+- Verify: bunx tsc --noEmit → 0 errors in scope files (only pre-existing/parallel-agent error: roadmap-view.tsx PageHeader, out of scope); bun run lint → 0 errors, 3 pre-existing warnings, none in scope files.
+
+---
+Task ID: 29-e
+Agent: retheme-wave-d
+Task: questions/exam/adaptive/revision/mistakes → Porcelain Atlas
+
+Work Log:
+- Read worklog/DESIGN_LANGUAGE/kit.tsx; audited the practice quartet for emojis, raw palette, hex, dark:, glass usage (grep counts before edits).
+- questions/mock-test-view: MIXES ⭐🎯🎲🧪 + QUICK_STARTS 🏛️👑⚡🎯 → lucide (Star/Target/Dices/FlaskConical/Landmark/Crown/Zap) in size-6 bg-surface-2 shadow-well icon tiles (kept `as const` arrays so startTest literal types stay intact); rules list ⏱️🙈🔖🧠 → Timer/EyeOff/Bookmark/Brain tiles; verdict strings de-emojied; 🎯 teaching → Target icon row; 🩺/🎓 bundle chips → Stethoscope/GraduationCap; glass cards → clay (config/run/results), sticky timer bar kept glass.
+- questions/quiz-view: ScoreRing SVG hex #22d3ee/#0284c7 → #5cb491/#16788c (spec); 10 glass surfaces → clay; questions-index tab tray glass → clay-tray; mistake-book 7 glass → clay (sev tokens already correct).
+- exam/: 41 of 43 glass → clay via per-file sed (exam-runner sticky RunnerBar + shared comment excluded); exam-shared StatTile glass→clay + shadow-well icon tile, BarRow primary tone → sanctioned teal→mint gradient fill (sev tones flat); all export signatures untouched; runner layout/logic untouched.
+- adaptive/: report ScoreRing hex → #5cb491/#16788c, 6 glass → clay, difficulty bar → gradient fill; home 5 glass → clay + clay-hover mode cards + shadow-well recent-run tile; run/ai 💡 → Lightbulb text-gold inline (run sticky bar kept glass); adaptive-view is logic-only — untouched.
+- revision/: KIND_META raw fuchsia/teal/amber+dark: → tokens (mcq→primary, compare→info, case→bg-mint/20 text-sev-ok + bg-mint dot), map shape unchanged; GRADES AGAIN/HARD/EASY rose/amber/emerald+dark: → sev-crit/sev-warn/sev-ok; stray text-amber-600/text-teal-600 dark: MicroLabels → text-primary/text-info; 💡 → Lightbulb gold; FlipCard + 5 more glass → clay; summary Next tile gets shadow-well.
+- mistakes/: detail 🎉 → PartyPopper (gold), 🧠 Anchor → Brain in bg-gold/20 shadow-well tile, 💡 → Lightbulb; 4 hand-rolled cards → clay (warn/primary tinted panels kept as tints); intelligence-view mode cards glass → clay clay-hover.
+
+Stage Summary:
+- 21 files re-skinned across questions/ exam/ adaptive/ revision/ mistakes/ — presentation only (className + icon swaps; no handler/state/props/API/route/aria changes; exam-runner + quiz/mock/adaptive run flows pixel-safe).
+- Emoji-as-icon in scope: 15 → 0. Raw hex in scope: 4 → 2 (only the sanctioned #5cb491/#16788c ring gradient). Raw palette + dark: classes: 12 → 0. Glass in questions/exam/adaptive/revision/mistakes: 62 → 3 (only intentional runner sticky bars).
+- Verify: bunx tsc --noEmit → 0 errors in scope (1 pre-existing/parallel error in roadmap-view.tsx, not mine); bun run lint → 0 errors/warnings from scope (3 pre-existing prisma seed warnings; 1 parallel learn-view parse error outside scope).
+
+---
+Task ID: 29-f
+Agent: retheme-wave-e
+Task: sim/lab/cases/graph/understand/concept → Porcelain Atlas
+
+Work Log:
+- Read worklog tail + DESIGN_LANGUAGE.md + primitives/kit.tsx; applied the locked strategy (same utility names, clay for content cards, glass only for floating/modal surfaces).
+- sim/ (5 files): 23 glass → clay content cards (error cards, stat chips, stage panels, patient opening, AI chat panel, engine feedback, debrief cards); sim-home hero rebuilt as `podium rounded-3xl` with font-display serif title + sanctioned champagne/mint blur blobs; timer pill → clay; verdict/difficulty chips verified already on sev tokens; zero player-logic changes.
+- lab/ (7 files): 24 glass → clay (stat chips, rapid-fire panel, guided explanation, ask-tutor panel, feedback card, debrief, viewer-adjacent cards, error/empty states); lab-home hero → podium treatment with serif h1 + learning-loop line kept intact; shared-module comment updated; image-viewer logic untouched.
+- cases-view.tsx: 9 glass → clay; logbook tag hexes #22d3ee/#a78bfa → #16788c/#9a7fc0; ScoreRing SVG gradient → var(--chart-1)/var(--chart-2) tokens; ALL-CAPS h1 header → kit PageHeader (serif title + eyebrow); tab switcher → clay-tray/clay-tab with presentational data-state only; browse/detail handlers untouched.
+- graph: graph-parts.tsx KIND_COLORS remapped to the new muted family (concept #16788c, disease #c4535e, drug #9a7fc0, investigation #d9ad6e, physiology #5cb491, anatomy #c97e59, pathology #c4718c, pharmacology #8f7fc4, microbiology #c4b453, clinical_skill #6aae7f) and GROUP_COLORS edge palette softened to the same temperature (12 distinct hues); graph-view.tsx 9 glass panels → clay; Minimap SVG already token-driven, canvas stays light.
+- understand/: scene SVG internals untouched (data art); understand-view chrome → PageHeader-in-clay header (🧠 → lucide Brain, 💡 → Lightbulb, 🎬 → Clapperboard), understood-progress fill → sanctioned teal→mint gradient, topic rail tiles + clay-hover, narration step chips → clay-tray/clay-tab with data-state; lock/check glyphs kept per scope; medos-scene data-playing behavior untouched.
+- concept-explorer.tsx: 🧊 emoji tile → lucide Box in clay-in tile; EdgeList/3D-visual/question-bank sections → clay; amber mnemonic callout → gold tokens; scrim kept bg-black/40. concept-3d.tsx: stage gradient sky/amber → sanctioned #c9e8d4/#f3d5a4 scene tints; stage3d/layer3d + TINT_FALLBACK kept.
+- Shared legend source src/lib/types.ts KIND_META remapped to the same 10 muted values so concept-explorer KindBadge chips match the graph legend everywhere.
+- Verified: `bunx tsc --noEmit` → zero errors in scope files (only pre-existing/parallel learn-view.tsx parse error outside scope); `bun run lint` → no errors from scope files (3 pre-existing prisma seed warnings + parallel learn-view error outside scope); diff scan confirms className/style/import/comment-only changes — no logic, handler, state, props, aria or route changes.
+
+Stage Summary:
+- Files changed (18): sim/{sim-view,sim-home,sim-player,sim-debrief,sim-shared}, lab/{lab-home,lab-debrief,lab-player,lab-study,lab-view,lab-shared}, cases/cases-view.tsx, graph/{graph-parts,graph-view}.tsx, understand/understand-view.tsx, concept/{concept-explorer,concept-3d}.tsx, + src/lib/types.ts (KIND_META palette constant only).
+- What transformed: all sim/lab/cases/graph/concept content chrome from glass → clay porcelain; sim + lab heroes → podium serif treatment; graph node/edge legend + logbook tags → muted Porcelain Atlas palette; cases + understand headers → PageHeader serif; tab strips → clay-tray/clay-tab; emoji-as-icon removed (🧠/💡/🎬/🧊 → lucide Brain/Lightbulb/Clapperboard/Box); raw sky/amber/emerald gradients → token or sanctioned-tint equivalents. All case-player, image-viewer, graph-interaction and scene data-playing logic bit-identical.
+
+---
+Task ID: 29-d
+Agent: retheme-wave-c
+Task: community/gamify/brain/faculty → Porcelain Atlas
+
+Work Log:
+- Read worklog tail, DESIGN_LANGUAGE.md and primitives/kit.tsx; inventoried scope (31 files, ~11.5k LOC): 30 dark: classes (all community), ~293 raw palette class instances, 1 text ★ glyph, 0 hex, 0 emoji-as-icon.
+- community/ (8 files): deleted all 30 dark: variants; POST_KIND_META (pyq→gold, mcq→sev-ok, case→sev-crit), StatusBadges/Resolved/Answered→sev-ok, Held-for-review→sev-warn, StatChip/SpaceStat warn tone→sev-warn, KIND_DOT dots→tokens, StreakFlame active→gold, ProgressMeter fills→sev-ok/gold (tone prop keys untouched), unresolved chips→sev-warn, ReplyCard answer highlight + Marked answer→sev-ok, Mark-as-answer star→gold, guidelines CTA→sev-warn, resolved search hits→sev-ok; aligned community-shared EmptyState to the kit look (dashed border-line + bg-card/50 card, bg-surface-2 shadow-well icon tile) keeping its export signature; clay-hover added to GroupCard + guidelines CTA (clickable); 6 glass error panels → clay.
+- gamify/ (8 files): retinted the 4 medal/ring ACCENTS swatch gradients to the champagne/teal/mint family (clinical-cyan keeps primary; mint-rounds→sev-ok+mint; amber-clinical→gold; slate-attending→ink-soft) — GamifyAccentId keys and accentForLevel logic untouched; STREAK_DOT recovered→gold; journey STATUS_CLASS→sev-warn/sev-ok; MOTIVATION_TONE→sev-ok/sev-warn; featured star→gold (text+fill); completed-challenge BadgeCheck→sev-ok; boards ConsentPanel hand-rolled card→clay; rewards accent-theme cards→clay; celebratory surfaces→warm-card (overview hero, Consistency card, Milestones card). XP table/ledger/hand-off logic untouched.
+- brain/ (8 files): STATUS_META tone map re-valued to tokens with keys/shape identical (learning→sev-warn/12, strong→primary/10 per spec, mastered→sev-ok/12, at-risk→sev-crit/10, not-started→ink-soft/12, familiar→primary, needs-revision→gold); RISK_META→primary/sev-warn/sev-crit; recallColor thresholds → sev-ok/sev-warn/sev-crit (0.7/0.5 thresholds unchanged); brain-view MiniStat dots→tokens; path/strategy/knowledge/memory raw chips + highlights→tokens; privacy/reset logic untouched. SectionCard stays clay.
+- faculty/ (8 files): SEVERITY_META + STATUS_META tone maps → ink-soft/sev-warn/sev-crit/sev-ok (keys identical); AiAssistedBadge→sev-warn, VerifiedBadge→sev-ok; PriorityBar fills→sev-crit/sev-warn/ink-soft (thresholds 70/40 unchanged); studio answer highlights + accepted/rejected lines→sev-ok/sev-crit; view MiniStat dots→tokens; RecommendCard→clay; reviewer-gate/quality-control logic untouched; ★ glyph→lucide Star icon (aria/role preserved).
+- Verify: bunx tsc --noEmit → 0 errors in scope (one transient error from parallel agent's learn-view.tsx, outside scope); eslint scoped to the 4 folders → clean; repo lint shows only the 3 pre-existing prisma/seed warnings.
+
+Stage Summary:
+- 27 files re-skinned to Porcelain Atlas across community/gamify/brain/faculty: dark: 30→0, raw palette classes ~293→0, text glyph/emoji 1→0, hex 0→0; presentation-only (class strings + 1 aria-hidden ★→Star icon swap); no logic/props/store/API/aria changes; cards unified on clay (+clay-hover where clickable), celebratory gamify surfaces on warm-card, all tone chips on sev-*/gold/ink-soft tokens, EmptyState aligned to kit canon.
+
+---
+Task ID: 29-g
+Agent: retheme-wave-f
+Task: long-tail views → Porcelain Atlas
+
+Work Log:
+- Read worklog + DESIGN_LANGUAGE.md + primitives/kit.tsx; baseline tsc 0 src errors, lint 0 errors (3 pre-existing seed warnings). Scanned all 28 scope files for palette/emoji/dark: strays before touching anything.
+- planner/ (2 files): 9 hand-rolled `border bg-card` cards → `clay` (today board, slots, plan overview, feasibility details, subjects, intelligence, progress, AI coach, plan notes, PlannerSetup shell); header rebuilt on kit PageHeader (exam label as serif title, days-left/streak/consistency into intro, Edit-plan into right slot); TaskRow pending state + MiniStat + SubjectBar track → `clay-in` wells. All plan/task/hand-off logic untouched.
+- performance-view: 13 glass surfaces → clay (error card, FocusRow, WeakCard, StrengthCard, InsightCard, readiness sections, DimensionCard, TrendCard, rising/slipping, ExamReadinessCard, IndicatorTile → clay + clay-hover); 5 bare empty-state <p>s → kit EmptyState with honest copy preserved verbatim as title/hint ("Nothing flagged right now", "No measured risers yet", "Nothing slipping", "No measured weaknesses yet", "No marked strengths yet"); priority + dimension bar tracks → clay-in wells; header → PageHeader (kept "measured, explained, actionable." + not-a-rank intro). AI Analyst card + sticky tab bar keep glass (sanctioned).
+- progress-view: ProgressRing hex stops #22d3ee/#0284c7 → #16788c/#5cb491; 10 glass cards → clay (stat tiles, heatmap, weekly report, subject cards, error intelligence); error/confusion empty notes → kit EmptyState (copy verbatim); bar tracks → clay-in; header → PageHeader ("Progress" + benchmark intro).
+- roadmap-view: weekend amber glow gradient → champagne gold tint; amber day-panel border + Weekend badge → gold tokens, dark: variant deleted; 🗓️ → CalendarDays lucide; stray 🌿 dropped; 5 glass cards → clay; header → PageHeader ("Roadmap"). Milestone/phase logic untouched.
+- profile-view: ProfileSection glass shell + no-profile card → clay; Chip/Segmented cyan selects → primary (cyan glow rgba(34,211,238,…) → var(--primary) glow); UserRound tile cyan → primary. Form/save/onboarding flows untouched. (No header-art gradient existed — already tokenized.)
+- research-view: header → PageHeader serif ("Research", flask eyebrow); Paper of the Day card gets clay-hover (Discover/Saved cards already clay clay-hover); ⚠️ disclaimer kept per "integrity notes fine".
+- explore-view: hero → PageHeader ("Explore Medicine", Compass eyebrow); legend tiles already clay (non-clickable → no hover); result rows already clay-hover.
+- library/ (7 files): library-browser local EmptyState re-anchored on kit EmptyState (icon tile + dashed well visuals, copy verbatim); 5 glass error/empty cards → clay across browser/saved/detail/view; clay cards + LibraryCard clay-hover kept; lightbox scrim kept.
+- ask/ (3 files): SectionCard → clay; LevelChips active chip → clay-in pressed state; 💡 → Lightbulb lucide (gold) in mistake-teaching lines and quiz teaching box.
+- tutor-view: user bubbles → bg-primary/10 rounded-2xl; tutor bubbles + ThinkingDots → clay; inner MCQ/flashcard/PlatformQuiz cards → clay-in wells; 💡 → Lightbulb (gold); 🏁 drill-complete → content-composed message now renders as gold-tile card with Flag lucide (legacy persisted messages with the emoji still strip it via unicode-escape regex); emerald/cyan strays → sev-ok/primary (incl. header tile + mode-chip glow rgba → var(--primary)); dark:bg-transparent removed. Chat/thread/send/Sheet/drill logic identical.
+- revise-view: local EmptyState aligned to kit visuals (dashed well, shadow-well tile, title/hint scale — copy verbatim); AGAIN/HARD/EASY grade buttons rose/amber/emerald → sev-crit/sev-warn/sev-ok; flip-card faces + error card + debt band → clay; TabsList/TabsTrigger → clay-tray/clay-tab; header → PageHeader ("Revise").
+- search: command-palette glass-strong kept, scrim kept; all 8 CommandItem result rows + 2 tutor rows get data-[selected=true]:bg-surface-2 hover; kbd chips kept; doubt-search header → PageHeader ("What's your doubt?").
+- audit + shortcuts: overlay panels → glass-strong (scrims untouched); audit intro note/result summary/subject rows → clay-in, option rows → clay-in with primary selected state preserved; Loader2 untouched.
+- os (3 files): os-sections Section + os-connections shell → clay; hand-rolled icon+MicroLabel headers → kit SectionTitle; connection tiles → clay-in; os-view top-level sections (hero/today/connections/footer) wrapped in kit Reveal at 0.05 stagger (outer one-shot motion.div replaced; dead motion/EASE import removed); honesty footer border-line/bg-surface-2.
+- dashboard/internship-panel: rotation chip active/hover amber → gold; scene orbs amber/emerald → gold/mint; 🌅 → animated Sunrise lucide; 🏥🌙/📒 glyphs dropped; posting + template cards glass → clay; Ward-day GraduationCap → gold.
+
+Stage Summary:
+- 28 files rethemeed across planner, performance, progress, roadmap, profile, research, explore, library, ask, tutor, revise, search, audit, shortcuts, os, dashboard/internship — presentation only: hand-rolled/glass cards → clay (+ clay-hover on clickable, clay-in for wells/inner rows/chips/active toggles), headers → kit PageHeader/SectionTitle, empty states → kit EmptyState (copy verbatim), bars → well tracks, overlays → glass-strong.
+- Strays eliminated in scope: raw palette classes 26 → 0 (amber→gold/sev-warn, emerald/rose→sev-ok/sev-crit, cyan→primary incl. 2 rgba glows → var(--primary)); dark: classes 7 → 0; emoji-as-icon ~10 → 1 (research ⚠️ disclaimer kept by scope instruction); chart hex now only the sanctioned #16788c/#5cb491.
+- Logic unchanged: no handler/state/props/store/API/route/aria edits; planner, tutor, profile, roadmap, os flows byte-identical apart from className/copy-neutral JSX wrappers.
+- Verify: `bunx tsc --noEmit | grep ^src/` → 0 errors; `bun run lint` → 0 errors, 3 pre-existing prisma/seed warnings (not from this task's files).
+
+---
+Task ID: 29-done
+Agent: main (orchestrator + waves)
+Task: SUPREME MBBS UI/UX REDESIGN — complete visual transformation to the «Porcelain Atlas» design language. Same product, new visual soul. Zero functionality changes.
+
+Work Log:
+- PHASE 1 audit: inventoried 37 view folders ≈58k LOC, 3 competing card systems (.clay ×264 / .glass ×250 / hand-rolled), 7× duplicated primitives, 4-6× EmptyState, 54 hand-rolled h1s, 79 dead dark: classes, worst offenders voice/landing/community/graph/onboarding. Key insight: 95% of views consume semantic tokens + utility classes → redefining token/utility definitions (same names) re-skins everything with zero functional risk.
+- PHASE 2 design system: globals.css fully rewritten — warm ivory canvas (oklch 0.968 0.011 85), surgical-teal primary, champagne/mint/peach accents, warm-tinted neumorphic shadow tokens (--_shadow-raised/lift/well/float → shadow-raised/lift/well/float utilities), porcelain .clay/.clay-in/.clay-field/.clay-tray/.clay-tab/.clay-btn redefinitions, warm .glass/.glass-strong, ivory-dawn body::before ambient, editorial callouts (.callout-pearl/key/exam/easy/warn), subject-identity tokens (--subj-* ×10), rise-in stagger reveals, podium + glyph-float hero primitives, serif display voice (Source Serif 4 via layout.tsx --font-source-serif; h1/h2 serif base + font-display utility), ink-gradient sanctioned text gradient, ::selection, ring-focus. ALL legacy class/token names preserved → 60 consuming files re-skinned automatically.
+- Brand: logo re-tinted (teal→mint tile, champagne ECG/spark, serif wordmark); NEW brand/hero-anatomy.tsx — original pure-SVG anatomical hero (beating heart with coronary detail, drifting lungs/brain/molecule, knowledge orbits, live ECG trace, reduced-motion safe).
+- PHASE 3 shell: app-shell.tsx rebuilt visually — floating porcelain sidebar (clay active pills, hover translate, warm glass header with clay-field search well, serif logo), floating glass mobile dock (raised active pill, safe-area aware), More sheet in glass-strong with clay active rows, keyed motion view transitions (reduced-motion guarded), warm scrims (oklch not black), avatar gradient chips. All logic byte-preserved (focus trap, Cmd+K, offline banner, skip link, aria-current, go() focus return).
+- PHASE 4 core: dashboard-view porch — time-aware human greeting (Good morning/afternoon/evening + first name, hydration-safe), HeroAnatomy on podium, mission card with well progress + teal→mint fill, clay stat tiles with shadow-well icon tiles, hooks-before-returns fix; subject-index — SubjectGlyph identities (terracotta anatomy, teal physiology…), identity-tinted mastery bars, clay cards; os-hero podium treatment + clay stat chips; os-shared primitives (OsCard→clay, MiniBar wells, StatusDot sev-ok).
+- PHASE 5 all products via 6 parallel agent waves + orchestrator completion of the timed-out learn/hub wave: primitives/kit.tsx (Reveal/AnimatedNumber/MicroLabel/PageHeader/SectionTitle/EmptyState/Callout/SubjectGlyph/subjectIdentity/EASE) as the canonical shared kit; DESIGN_LANGUAGE.md codifies the system. Waves: 29-b voice/landing/auth/onboarding (147 raw palette → 0, HeroAnatomy on landing, emoji floats removed); 29-d community/gamify/brain/faculty (293 palette + 30 dark: → 0, STATUS_META/SEVERITY_META re-valued class-strings-only, medal SVGs re-tinted); 29-e questions/exam/adaptive/revision/mistakes (15 emoji → lucide tiles, 62 glass → 3 sanctioned sticky runner bars, ring hex re-tinted); 29-f sim/lab/cases/graph/understand/concept (graph legend → 12-hue muted family, scenes' 222 data-art hex preserved, podium heroes); 29-g long-tail ×15 folders (PageHeaders, EmptyStates with verbatim copy, clay cards, hex → tokens); orchestrator finished learn/hub (ink-gradient LEARN hero, callout classes in lesson content, 21 amber → 0, clay cards via precise replacements, SectionTitle headers).
+- PHASE 6 QA: tsc 0 src errors; lint 0 errors (3 pre-existing warnings); agent-browser E2E — landing + 20 views toured on desktop 1440 (OS/Today/Learn/Questions/Mock/Exam/Motivation/Brain/Voice/Community/Revise/Performance/Graph/Understand/Tutor/Research/Explore/Library/Ask/Planner…) with zero page errors and zero console errors; mobile 390 — OS + Today + More sheet + dock verified, scrollWidth check true (no overflow); sticky footer verified pinned; API regression 13 families → 200 (dashboard/os/home/learn/home/questions/revision/mistakes/gamify/home/community/home/brain/home/faculty/home/performance/home/readiness/progress).
+- Final state: raw palette classes in views 0 outside stock-shadcn destructive-toast variants; dark: 0; hex only in sanctioned scene data-art/graph legend/brand art. Dev server restarted once (connection refused after wave); no other incidents.
+
+Stage Summary:
+- «Same product. Completely new visual soul.» — one warm, bright, tactile, dimensional medical design language across all 20 products: ivory canvas, surgical teal, champagne warmth, porcelain neumorphism, selective warm glass, serif editorial voice, original anatomical hero art, canonical primitives kit, unified headers/cards/empty-states/motion. Zero logic/API/route/schema/auth changes; all 20 products verified working end-to-end. DESIGN_LANGUAGE.md committed as the living system doc.

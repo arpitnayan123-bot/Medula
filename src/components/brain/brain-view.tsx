@@ -130,9 +130,9 @@ export function BrainView() {
         {/* profile mini-strip — measured counts, honest dashes when unmeasured */}
         {homeReady ? (
           <div className="mt-2.5 flex flex-wrap items-center gap-1.5" data-testid="brain-mini-strip">
-            <MiniStat value={counts?.mastered ?? 0} label="mastered" dot="bg-emerald-500" />
-            <MiniStat value={counts?.strong ?? 0} label="strong" dot="bg-teal-500" />
-            <MiniStat value={needsAttention ?? 0} label="need attention" dot="bg-rose-500" />
+            <MiniStat value={counts?.mastered ?? 0} label="mastered" dot="bg-sev-ok" />
+            <MiniStat value={counts?.strong ?? 0} label="strong" dot="bg-primary" />
+            <MiniStat value={needsAttention ?? 0} label="need attention" dot="bg-sev-crit" />
             <MiniStat
               value={home.profile.questionAccuracy == null ? '—' : `${Math.round(home.profile.questionAccuracy)}%`}
               label="accuracy"

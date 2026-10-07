@@ -93,7 +93,7 @@ export function ShortcutsOverlay() {
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={reduce ? { opacity: 0 } : { opacity: 0, scale: 0.96, y: 10 }}
             transition={{ duration: reduce ? 0 : 0.22, ease: EASE }}
-            className="w-full max-w-lg rounded-2xl border border-line bg-background p-5 shadow-2xl md:p-6"
+            className="glass-strong w-full max-w-lg rounded-2xl border border-line p-5 shadow-2xl md:p-6"
             role="dialog"
             aria-modal="true"
             aria-label="Keyboard shortcuts"

@@ -26,8 +26,8 @@ const STATUS_LABEL: Record<GamifyJourneySubject['status'], string> = {
 
 const STATUS_CLASS: Record<GamifyJourneySubject['status'], string> = {
   new: 'border-line bg-surface-2/60 text-ink-soft',
-  developing: 'border-amber-500/40 bg-amber-500/10 text-amber-700',
-  strong: 'border-emerald-500/40 bg-emerald-500/10 text-emerald-700',
+  developing: 'border-sev-warn/40 bg-sev-warn/10 text-sev-warn',
+  strong: 'border-sev-ok/40 bg-sev-ok/10 text-sev-ok',
 }
 
 export function GamifyJourney() {
@@ -122,6 +122,7 @@ export function GamifyJourney() {
           title="Milestones"
           icon={Award}
           description={data.milestones.total > 0 ? `${data.milestones.unlocked} of ${data.milestones.total} unlocked — measured, one-time.` : 'Measured, one-time unlocks.'}
+          className="warm-card"
         >
           {data.milestones.recent.length === 0 ? (
             <p className="text-xs leading-relaxed text-ink-soft">

@@ -99,7 +99,7 @@ function MistakeBookSkeleton() {
 function MistakeBookError({ onRetry }: { onRetry: () => void }) {
   return (
     <div className="mx-auto max-w-3xl px-4 py-6 md:px-6">
-      <div className="glass flex flex-col items-center gap-3 rounded-2xl p-8 text-center md:p-12">
+      <div className="clay flex flex-col items-center gap-3 rounded-2xl p-8 text-center md:p-12">
         <span className="grid size-12 place-items-center rounded-full bg-sev-crit/10">
           <RefreshCw className="size-6 text-sev-crit" />
         </span>
@@ -117,7 +117,7 @@ function MistakeBookError({ onRetry }: { onRetry: () => void }) {
 
 function NoMistakesState({ attempts, onPractice }: { attempts: number; onPractice: () => void }) {
   return (
-    <div className="glass flex flex-col items-center gap-3 rounded-2xl px-6 py-12 text-center">
+    <div className="clay flex flex-col items-center gap-3 rounded-2xl px-6 py-12 text-center">
       <span className="grid size-14 place-items-center rounded-full bg-sev-ok/15">
         <CheckCircle2 className="size-7 text-sev-ok" />
       </span>
@@ -142,7 +142,7 @@ function InsightList({ insights }: { insights: string[] }) {
   return (
     <ul className="space-y-2.5">
       {insights.map((line, i) => (
-        <li key={i} className="glass flex items-start gap-3 rounded-xl p-4">
+        <li key={i} className="clay flex items-start gap-3 rounded-xl p-4">
           <span className="mt-0.5 grid size-7 shrink-0 place-items-center rounded-full bg-accent">
             <Sparkles className="size-3.5 text-sev-warn" aria-hidden="true" />
           </span>
@@ -157,7 +157,7 @@ const BAR_COLORS = ['bg-sev-crit', 'bg-sev-warn', 'bg-ink-soft/40']
 
 function ErrorTypeBars({ data }: { data: MistakesPayload['errorTypeBreakdown'] }) {
   return (
-    <ul className="glass space-y-3 rounded-2xl p-4 md:p-5" aria-label="Error type distribution">
+    <ul className="clay space-y-3 rounded-2xl p-4 md:p-5" aria-label="Error type distribution">
       {data.map((row, i) => (
         <li key={row.errorType}>
           <div className="mb-1.5 flex items-baseline justify-between gap-3 text-xs">
@@ -186,7 +186,7 @@ function ConfusionCard({
 }) {
   return (
     <Reveal index={index}>
-      <li className="glass rounded-2xl p-4 md:p-5">
+      <li className="clay rounded-2xl p-4 md:p-5">
         <div className="flex items-center justify-between gap-2">
           <span className="rounded-md border border-line bg-surface-2 px-2 py-0.5 text-[10px] font-semibold tracking-wide text-ink-soft">
             {pair.subjectCode}
@@ -249,7 +249,7 @@ function WrongQuestionRow({ q, index, onRedrill }: { q: MistakeWrongQuestionRow;
 
   return (
     <Reveal index={index}>
-      <li className="glass rounded-xl p-4">
+      <li className="clay rounded-xl p-4">
         <div className="flex flex-wrap items-center gap-2 text-[10px] font-semibold tracking-wide">
           <span className="rounded-md border border-line bg-surface-2 px-2 py-0.5 text-ink-soft">{q.subjectCode}</span>
           <span className="rounded-full border border-sev-warn/40 bg-sev-warn/10 px-2 py-0.5 text-sev-warn">{errorLabel}</span>
@@ -424,7 +424,7 @@ export function MistakeBook({ onGoPractice }: { onGoPractice: () => void }) {
                   </p>
                 </>
               ) : (
-                <p className="glass rounded-xl p-4 text-sm text-ink-soft">
+                <p className="clay rounded-xl p-4 text-sm text-ink-soft">
                   {insufficientData
                     ? `Not enough data yet — insights unlock after 5 attempts (${totals.totalAttempts}/5 so far).`
                     : 'No tagged patterns in these mistakes yet — tag your error types after practice to unlock insights.'}

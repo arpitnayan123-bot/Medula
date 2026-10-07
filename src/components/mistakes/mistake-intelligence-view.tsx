@@ -344,7 +344,7 @@ function MistakeHome(props: {
                     key={m.id}
                     type="button"
                     onClick={() => onOpenReview(m.id)}
-                    className="glass group flex min-h-11 flex-col gap-1 rounded-xl border border-line p-3 text-left transition-colors hover:border-primary/50"
+                    className="clay clay-hover group flex min-h-11 flex-col gap-1 rounded-xl border border-line p-3 text-left transition-colors hover:border-primary/50"
                   >
                     <span className="flex items-center gap-2">
                       <Icon className="size-4 text-primary" />

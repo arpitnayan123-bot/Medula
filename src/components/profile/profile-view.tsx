@@ -121,7 +121,7 @@ function Card({
   className?: string
 }) {
   return (
-    <section id={id} className={cn('glass scroll-mt-20 rounded-2xl p-5', className)}>
+    <section id={id} className={cn('clay scroll-mt-20 rounded-2xl p-5', className)}>
       <header className="mb-4 flex items-center justify-between gap-3">
         <h2 className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.14em] text-ink-soft">
           {index && (
@@ -165,7 +165,7 @@ function Segmented({
           className={cn(
             'min-h-11 rounded-xl border px-3 text-sm font-medium transition-all',
             value === o.value
-              ? 'border-primary/60 bg-primary/10 text-foreground shadow-[0_0_20px_-8px_rgba(34,211,238,0.55)]'
+              ? 'border-primary/60 bg-primary/10 text-foreground shadow-[0_0_20px_-8px_var(--primary)]'
               : 'border-line bg-surface-2 text-ink-soft hover:border-primary/40 hover:text-foreground',
           )}
         >
@@ -185,11 +185,11 @@ function Chip({ label, selected, onToggle }: { label: string; selected: boolean;
       className={cn(
         'inline-flex min-h-11 items-center gap-1.5 rounded-full border px-4 text-sm font-medium transition-all',
         selected
-          ? 'border-cyan-400/60 bg-cyan-400/10 text-foreground'
-          : 'border-line bg-surface-2 text-ink-soft hover:border-cyan-400/40 hover:text-foreground',
+          ? 'border-primary/60 bg-primary/10 text-foreground'
+          : 'border-line bg-surface-2 text-ink-soft hover:border-primary/40 hover:text-foreground',
       )}
     >
-      {selected && <Check className="size-3.5 text-cyan-400" aria-hidden />}
+      {selected && <Check className="size-3.5 text-primary" aria-hidden />}
       {label}
     </button>
   )
@@ -973,9 +973,9 @@ export function ProfileView() {
     const noneYet = !loadError
     return (
       <div className="mx-auto max-w-5xl px-4 py-16 md:px-6">
-        <div className="glass mx-auto max-w-md rounded-2xl p-8 text-center">
-          <div className="mx-auto grid size-12 place-items-center rounded-xl border border-cyan-500/20 bg-cyan-500/10">
-            <UserRound className="size-6 text-cyan-500 dark:text-cyan-300" aria-hidden />
+        <div className="clay mx-auto max-w-md rounded-2xl p-8 text-center">
+          <div className="mx-auto grid size-12 place-items-center rounded-xl border border-primary/20 bg-primary/10">
+            <UserRound className="size-6 text-primary" aria-hidden />
           </div>
           <h1 className="mt-4 text-lg font-semibold tracking-tight">
             {noneYet ? 'No profile yet' : 'Could not load your profile'}

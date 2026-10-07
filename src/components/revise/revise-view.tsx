@@ -11,6 +11,7 @@ import type { RevisionPayload } from '@/lib/types'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { PageHeader } from '@/components/primitives/kit'
 import { cn } from '@/lib/utils'
 
 const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1]
@@ -87,17 +88,17 @@ function EmptyState({
 }) {
   const reduce = useReducedMotion()
   return (
-    <div className="glass flex flex-col items-center gap-3 rounded-2xl px-6 py-12 text-center">
+    <div className="flex flex-col items-center gap-2 rounded-2xl border border-dashed border-line bg-card/50 px-5 py-7 text-center">
       <motion.span
-        className="grid size-14 place-items-center rounded-full bg-sev-ok/15"
+        className="mb-0.5 grid size-10 place-items-center rounded-2xl bg-surface-2 text-ink-soft shadow-well"
         initial={reduce || !pop ? false : { scale: 0.4, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         transition={{ type: 'spring', stiffness: 260, damping: 16 }}
       >
-        <Icon className="size-7 text-sev-ok" />
+        <Icon className="size-5 text-sev-ok" />
       </motion.span>
-      <h3 className="text-lg font-semibold tracking-tight">{title}</h3>
-      <p className="max-w-sm text-sm text-ink-soft">{body}</p>
+      <p className="text-sm font-medium text-foreground">{title}</p>
+      <p className="max-w-sm text-xs leading-relaxed text-ink-soft text-pretty">{body}</p>
     </div>
   )
 }
@@ -109,13 +110,13 @@ const GRADES: { label: string; sub: string; grade: number; classes: string }[] =
     label: 'AGAIN',
     sub: 'seen again today',
     grade: 0,
-    classes: 'border-rose-500/40 bg-rose-500/10 text-rose-600 hover:bg-rose-500/20 dark:text-rose-300',
+    classes: 'border-sev-crit/40 bg-sev-crit/10 text-sev-crit hover:bg-sev-crit/20',
   },
   {
     label: 'HARD',
     sub: 'short interval',
     grade: 1,
-    classes: 'border-amber-500/40 bg-amber-500/10 text-amber-700 hover:bg-amber-500/20 dark:text-amber-300',
+    classes: 'border-sev-warn/40 bg-sev-warn/10 text-sev-warn hover:bg-sev-warn/20',
   },
   {
     label: 'GOOD',
@@ -127,7 +128,7 @@ const GRADES: { label: string; sub: string; grade: number; classes: string }[] =
     label: 'EASY',
     sub: 'long interval',
     grade: 3,
-    classes: 'border-emerald-500/40 bg-emerald-500/10 text-emerald-700 hover:bg-emerald-500/20 dark:text-emerald-300',
+    classes: 'border-sev-ok/40 bg-sev-ok/10 text-sev-ok hover:bg-sev-ok/20',
   },
 ]
 
@@ -159,7 +160,7 @@ function FlipCard({ card, flipped, onFlip }: { card: DueFlashcard; flipped: bool
       >
         {/* front — question */}
         <div
-          className="glass absolute inset-0 flex flex-col overflow-y-auto rounded-2xl p-5 md:p-6"
+          className="clay absolute inset-0 flex flex-col overflow-y-auto rounded-2xl p-5 md:p-6"
           style={{ backfaceVisibility: 'hidden' }}
         >
           <div className="flex items-center justify-between text-[10px] font-semibold uppercase tracking-[0.18em] text-ink-soft">
@@ -172,7 +173,7 @@ function FlipCard({ card, flipped, onFlip }: { card: DueFlashcard; flipped: bool
         </div>
         {/* back — answer + subject badge */}
         <div
-          className="glass absolute inset-0 flex flex-col overflow-y-auto rounded-2xl border-primary/30 p-5 md:p-6"
+          className="clay absolute inset-0 flex flex-col overflow-y-auto rounded-2xl border-primary/30 p-5 md:p-6"
           style={{ backfaceVisibility: 'hidden', transform: 'rotateY(180deg)' }}
         >
           <div className="flex items-center justify-between text-[10px] font-semibold uppercase tracking-[0.18em] text-ink-soft">
@@ -214,7 +215,7 @@ function ReviseSkeleton() {
 function ReviseError({ onRetry }: { onRetry: () => void }) {
   return (
     <div className="mx-auto max-w-5xl p-4 md:p-6">
-      <div className="glass flex flex-col items-center gap-3 rounded-2xl p-8 text-center md:p-12">
+      <div className="clay flex flex-col items-center gap-3 rounded-2xl p-8 text-center md:p-12">
         <span className="grid size-12 place-items-center rounded-full bg-sev-crit/10">
           <RefreshCw className="size-6 text-sev-crit" />
         </span>
@@ -409,16 +410,22 @@ export function ReviseView() {
   return (
     <div className="mx-auto max-w-5xl space-y-6 p-4 md:p-6">
       {/* Header */}
-      <Reveal index={0} className="space-y-2">
-        <h1 className="text-3xl font-semibold tracking-tight md:text-4xl">REVISE</h1>
-        <p className="max-w-2xl text-sm text-ink-soft md:text-base">
-          Spaced repetition protects what you&apos;ve learned. Model estimates — never claims of permanent mastery.
-        </p>
+      <Reveal index={0}>
+        <PageHeader
+          eyebrow={
+            <>
+              <Timer className="mr-1 inline size-3" />
+              Spaced repetition
+            </>
+          }
+          title="Revise"
+          intro="Spaced repetition protects what you've learned. Model estimates — never claims of permanent mastery."
+        />
       </Reveal>
 
       {/* Revision debt summary band */}
       <Reveal index={1}>
-        <section className="glass rounded-2xl p-5 md:p-6">
+        <section className="clay rounded-2xl p-5 md:p-6">
           <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
             <div className="min-w-0">
               <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-ink-soft">Revision debt</p>
@@ -453,10 +460,10 @@ export function ReviseView() {
       {/* Tabs */}
       <Reveal index={2}>
         <Tabs value={tab} onValueChange={(v) => setTab(v as 'flashcards' | 'concepts')} className="gap-4">
-          <TabsList className="h-11 w-full justify-start rounded-xl bg-surface-2/70 p-1 sm:w-fit">
+          <TabsList className="clay-tray h-11 w-full justify-start rounded-xl p-1 sm:w-fit">
             <TabsTrigger
               value="flashcards"
-              className="min-h-9 gap-2 rounded-lg px-4 text-xs font-semibold uppercase tracking-[0.12em]"
+              className="clay-tab min-h-9 gap-2 rounded-lg px-4 text-xs font-semibold uppercase tracking-[0.12em]"
             >
               Flashcards
               <span className="rounded-full bg-primary/15 px-1.5 text-[10px] font-bold tabular-nums text-primary">
@@ -465,7 +472,7 @@ export function ReviseView() {
             </TabsTrigger>
             <TabsTrigger
               value="concepts"
-              className="min-h-9 gap-2 rounded-lg px-4 text-xs font-semibold uppercase tracking-[0.12em]"
+              className="clay-tab min-h-9 gap-2 rounded-lg px-4 text-xs font-semibold uppercase tracking-[0.12em]"
             >
               Concepts due
               <span className="rounded-full bg-sev-warn/20 px-1.5 text-[10px] font-bold tabular-nums text-sev-warn">

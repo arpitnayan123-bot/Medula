@@ -9,7 +9,7 @@
 import { useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import {
-  AlertTriangle, Brain, CheckCircle2, ChevronDown, GraduationCap, Loader2, Send, Sparkles, XCircle,
+  AlertTriangle, Brain, CheckCircle2, ChevronDown, GraduationCap, Lightbulb, Loader2, Send, Sparkles, XCircle,
 } from 'lucide-react'
 
 import { api } from '@/lib/api'
@@ -106,8 +106,9 @@ function AiQuestionCard({ q }: { q: AdaptiveAiQuestionResult }) {
           </p>
           {q.explanation && <p className="text-xs leading-relaxed text-ink-soft">{q.explanation}</p>}
           {q.teaching && (
-            <p className="rounded-lg border-l-2 border-sev-warn bg-sev-warn/10 px-3 py-2 text-xs italic leading-relaxed text-ink-soft">
-              💡 {q.teaching}
+            <p className="flex items-start gap-2 rounded-lg border-l-2 border-sev-warn bg-sev-warn/10 px-3 py-2 text-xs italic leading-relaxed text-ink-soft">
+              <Lightbulb className="mt-0.5 size-3.5 shrink-0 text-gold" aria-hidden />
+              <span>{q.teaching}</span>
             </p>
           )}
         </motion.div>

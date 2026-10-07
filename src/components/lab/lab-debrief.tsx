@@ -77,7 +77,7 @@ function StepItem({ step, index }: { step: LabDebrief['steps'][number]; index: n
 
   return (
     <Reveal index={Math.min(index, 6)}>
-      <li className="glass min-w-0 space-y-2.5 rounded-2xl p-4">
+      <li className="clay min-w-0 space-y-2.5 rounded-2xl p-4">
         <div className="flex min-w-0 items-start gap-2.5">
           <StepIcon className={cn('mt-0.5 size-4 shrink-0', stepTone)} aria-hidden />
           <div className="min-w-0 flex-1">
@@ -202,7 +202,7 @@ export function LabDebriefScreen({ debrief, onReplay, onBackHome, onOpenImage }:
 
       {/* ── Diagnosis reveal — celebrate learning, never shame ── */}
       <Reveal index={1}>
-        <section className="glass space-y-3 rounded-2xl p-5 md:p-6" aria-label="Diagnosis reveal">
+        <section className="clay space-y-3 rounded-2xl p-5 md:p-6" aria-label="Diagnosis reveal">
           <MicroLabel>What this image shows</MicroLabel>
           <p className="text-xl font-semibold leading-snug tracking-tight md:text-2xl">{debrief.diagnosis}</p>
           <p className="border-t border-line pt-3 text-xs leading-relaxed text-ink-soft">
@@ -215,7 +215,7 @@ export function LabDebriefScreen({ debrief, onReplay, onBackHome, onOpenImage }:
 
       {/* ── Measured scores ── */}
       <Reveal index={2}>
-        <section className="glass flex flex-col items-center gap-6 rounded-2xl p-5 sm:flex-row sm:items-stretch md:p-6" aria-label="Score breakdown">
+        <section className="clay flex flex-col items-center gap-6 rounded-2xl p-5 sm:flex-row sm:items-stretch md:p-6" aria-label="Score breakdown">
           <div className="flex shrink-0 items-center justify-center">
             <ScoreRing pct={debrief.scores.total} />
           </div>
@@ -272,7 +272,7 @@ export function LabDebriefScreen({ debrief, onReplay, onBackHome, onOpenImage }:
       {debrief.teaching.length > 0 && (
         <Reveal index={4} className="space-y-3">
           <MicroLabel className="text-primary">Teaching pearls</MicroLabel>
-          <ul className="glass space-y-3 rounded-2xl p-4 md:p-5">
+          <ul className="clay space-y-3 rounded-2xl p-4 md:p-5">
             {debrief.teaching.map((t, i) => (
               <li key={i} className="flex min-w-0 items-start gap-2.5">
                 <Lightbulb className="mt-0.5 size-4 shrink-0 text-sev-warn" aria-hidden />
@@ -328,7 +328,7 @@ export function LabDebriefScreen({ debrief, onReplay, onBackHome, onOpenImage }:
           <MicroLabel>Related Knowledge — from the graph</MicroLabel>
           <div className="grid gap-3 sm:grid-cols-2">
             {debrief.related.map((g) => (
-              <div key={g.kind} className="glass min-w-0 space-y-2.5 rounded-2xl p-4">
+              <div key={g.kind} className="clay min-w-0 space-y-2.5 rounded-2xl p-4">
                 <div>
                   <p className="text-xs font-bold uppercase tracking-wider">{g.label}</p>
                   <p className="mt-0.5 text-[11px] leading-relaxed text-ink-soft">{g.blurb}</p>
@@ -363,7 +363,7 @@ export function LabDebriefScreen({ debrief, onReplay, onBackHome, onOpenImage }:
                 key={img.id}
                 type="button"
                 onClick={() => onOpenImage(img.id)}
-                className="glass flex w-40 shrink-0 flex-col gap-1.5 rounded-2xl p-2.5 text-left transition-colors hover:border-primary/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                className="clay flex w-40 shrink-0 flex-col gap-1.5 rounded-2xl p-2.5 text-left transition-colors hover:border-primary/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 aria-label={`Open image: ${img.title} — ${img.modality}, difficulty ${img.difficulty} of 3`}
               >
                 <span className="block h-16 w-full rounded-lg border border-line/70 bg-surface-2/30 p-1">

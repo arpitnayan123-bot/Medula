@@ -7,7 +7,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import type { ReactNode } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import {
-  Activity, ArrowLeft, Biohazard, Bone, Bug, ChevronDown, GraduationCap, Hand,
+  Activity, ArrowLeft, Biohazard, Bone, Box, Bug, ChevronDown, GraduationCap, Hand,
   Lightbulb, MessageCircle, Microscope, Pill, RotateCcw, Stethoscope, Syringe,
   Timer, TriangleAlert, X, Zap, type LucideIcon,
 } from 'lucide-react'
@@ -161,7 +161,7 @@ function EdgeList({
   emptyText: string
 }) {
   return (
-    <div className="rounded-2xl border border-line bg-surface-2 p-3 md:p-4">
+    <div className="clay rounded-2xl p-3 md:p-4">
       <h4 className="text-[11px] font-semibold uppercase tracking-[0.16em] text-ink-soft">{title}</h4>
       <div className="mt-2 space-y-2">
         {edges.length === 0 && <p className="text-xs text-muted-foreground">{emptyText}</p>}
@@ -521,14 +521,16 @@ export function ConceptExplorer() {
                   )}
 
                   {/* 2b · 3D VISUAL — every topic as a layered 3D diagram */}
-                  <section className="overflow-hidden rounded-2xl border border-line bg-surface-2/60">
+                  <section className="clay overflow-hidden rounded-2xl">
                     <button
                       type="button"
                       onClick={() => setShow3d(v => !v)}
                       aria-expanded={show3d}
                       className="flex w-full items-center gap-3 p-4 text-left transition-colors hover:bg-accent/40 md:p-5"
                     >
-                      <span aria-hidden className="clay-in grid size-11 shrink-0 place-items-center rounded-2xl text-xl">🧊</span>
+                      <span aria-hidden className="clay-in grid size-11 shrink-0 place-items-center rounded-2xl text-primary">
+                        <Box className="size-5" />
+                      </span>
                       <span className="min-w-0 flex-1">
                         <span className="block text-[11px] font-bold uppercase tracking-[0.2em] text-primary">3D visual</span>
                         <span className="mt-0.5 block text-sm font-semibold">
@@ -665,7 +667,7 @@ export function ConceptExplorer() {
                   )}
 
                   {/* 7 · QUESTION BANK */}
-                  <section className="flex flex-col gap-3 rounded-2xl border border-line bg-surface-2 p-4 md:flex-row md:items-center md:justify-between md:p-5">
+                  <section className="clay flex flex-col gap-3 rounded-2xl p-4 md:flex-row md:items-center md:justify-between md:p-5">
                     <div>
                       <h3 className="text-sm font-semibold">Question bank</h3>
                       <p className="mt-0.5 text-xs text-ink-soft">
@@ -677,10 +679,10 @@ export function ConceptExplorer() {
 
                   {/* 8 · MNEMONIC — legacy rendering, kept when no lesson */}
                   {!detail.lesson && detail.mnemonic && (
-                    <section className="flex gap-3 rounded-2xl border border-amber-400/30 bg-amber-400/10 p-4">
-                      <Lightbulb className="mt-0.5 size-4 shrink-0 text-amber-400" />
+                    <section className="flex gap-3 rounded-2xl border border-gold/30 bg-gold/10 p-4">
+                      <Lightbulb className="mt-0.5 size-4 shrink-0 text-gold" />
                       <div>
-                        <h3 className="text-[11px] font-semibold uppercase tracking-[0.16em] text-amber-400">Mnemonic</h3>
+                        <h3 className="text-[11px] font-semibold uppercase tracking-[0.16em] text-gold">Mnemonic</h3>
                         <p className="mt-1 text-sm leading-relaxed">{detail.mnemonic}</p>
                       </div>
                     </section>

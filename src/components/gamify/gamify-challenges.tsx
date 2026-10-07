@@ -195,7 +195,7 @@ function CompletedBadgeCard({ c }: { c: GamifyChallengeView }) {
           {' '}· bonus +{c.bonusXp} XP
         </p>
       </div>
-      <BadgeCheck className="size-5 shrink-0 text-emerald-600" aria-label="Completed" />
+      <BadgeCheck className="size-5 shrink-0 text-sev-ok" aria-label="Completed" />
     </div>
   )
 }

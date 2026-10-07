@@ -233,7 +233,7 @@ function TutorSeesCard({ tutorContextOn }: { tutorContextOn: boolean }) {
                   </div>
                 ))}
                 {pack.data.masteredNotToRepeat.length > 0 && (
-                  <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/[0.06] p-3">
+                  <div className="rounded-xl border border-sev-ok/30 bg-sev-ok/[0.06] p-3">
                     <p className="text-xs font-semibold">Told NOT to re-teach (mastered)</p>
                     <p className="mt-1 text-[11px] leading-relaxed text-ink-soft">{pack.data.masteredNotToRepeat.join(' · ')}</p>
                   </div>

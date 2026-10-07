@@ -67,10 +67,10 @@ export function CommunityHomeScreen({
           <button
             type="button"
             onClick={onOpenGuidelines}
-            className="clay flex w-full items-start gap-3 rounded-2xl border border-amber-500/40 bg-amber-500/10 p-4 text-left outline-none ring-primary/50 transition-shadow focus-visible:ring-2"
+            className="clay clay-hover flex w-full items-start gap-3 rounded-2xl border border-sev-warn/40 bg-sev-warn/10 p-4 text-left outline-none ring-primary/50 transition-shadow focus-visible:ring-2"
           >
             <span className="clay-in grid size-9 shrink-0 place-items-center rounded-xl" aria-hidden>
-              <ScrollText className="size-4 text-amber-600 dark:text-amber-400" />
+              <ScrollText className="size-4 text-sev-warn" />
             </span>
             <span className="min-w-0 flex-1">
               <span className="block text-sm font-semibold">Read the community guidelines first</span>
@@ -78,7 +78,7 @@ export function CommunityHomeScreen({
                 De-identification, AI labelling and privacy-by-default — the five rules that keep this space safe and useful.
               </span>
             </span>
-            <ArrowUpRight className="mt-1 size-4 shrink-0 text-amber-600 dark:text-amber-400" aria-hidden />
+            <ArrowUpRight className="mt-1 size-4 shrink-0 text-sev-warn" aria-hidden />
           </button>
         </Reveal>
       )}
@@ -311,8 +311,8 @@ function StatChip({ value, label, tone }: { value: number; label: string; tone?:
     <span
       className={cn(
         'inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[11px] font-semibold',
-        tone === 'ok' ? 'border-emerald-500/40 bg-emerald-500/10 text-emerald-700 dark:text-emerald-400'
-          : tone === 'warn' ? 'border-amber-500/40 bg-amber-500/10 text-amber-600 dark:text-amber-400'
+        tone === 'ok' ? 'border-sev-ok/40 bg-sev-ok/10 text-sev-ok'
+          : tone === 'warn' ? 'border-sev-warn/40 bg-sev-warn/10 text-sev-warn'
             : 'border-line bg-surface-2 text-ink-soft',
       )}
     >

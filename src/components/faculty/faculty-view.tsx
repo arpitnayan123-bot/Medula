@@ -118,10 +118,10 @@ export function FacultyView() {
         {homeReady ? (
           <div className="mt-2.5 flex flex-wrap items-center gap-1.5" data-testid="faculty-mini-strip">
             <MiniStat value={inv?.concepts ?? 0} label="concepts" dot="bg-primary" />
-            <MiniStat value={inv?.lessons ?? 0} label="lessons" dot="bg-teal-500" />
-            <MiniStat value={inv?.questions ?? 0} label="questions" dot="bg-emerald-500" />
-            <MiniStat value={gaps?.all ?? 0} label="gaps open" dot="bg-amber-500" />
-            <MiniStat value={quality?.open ?? 0} label="findings open" dot="bg-rose-500" />
+            <MiniStat value={inv?.lessons ?? 0} label="lessons" dot="bg-primary" />
+            <MiniStat value={inv?.questions ?? 0} label="questions" dot="bg-sev-ok" />
+            <MiniStat value={gaps?.all ?? 0} label="gaps open" dot="bg-sev-warn" />
+            <MiniStat value={quality?.open ?? 0} label="findings open" dot="bg-sev-crit" />
           </div>
         ) : homeHook.state === 'error' ? (
           <div className="mt-2.5 flex items-center justify-between gap-3">

@@ -43,7 +43,7 @@ export function SectionCard({ title, icon, children, className, action }: {
   action?: React.ReactNode
 }) {
   return (
-    <section className={cn('rounded-2xl border border-line bg-surface-1 p-4 sm:p-5', className)} aria-label={title}>
+    <section className={cn('clay rounded-2xl p-4 sm:p-5', className)} aria-label={title}>
       <header className="mb-3 flex items-center justify-between gap-2">
         <h3 className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-ink-soft">
           {icon}
@@ -70,8 +70,8 @@ export function LevelChips({ active, busy, onPick }: { active: AskLevel; busy?: 
           className={cn(
             'min-h-9 rounded-full border px-3.5 text-xs font-medium transition-colors disabled:opacity-50',
             active === l
-              ? 'border-primary/60 bg-primary/15 text-primary'
-              : 'border-line bg-surface-1 text-ink-soft hover:border-primary/40 hover:text-foreground',
+              ? 'clay-in border-primary/60 font-semibold text-primary'
+              : 'border-line bg-surface-2 text-ink-soft hover:border-primary/40 hover:text-foreground',
           )}
         >
           {ASK_LEVEL_LABEL[l]}

@@ -1,8 +1,8 @@
 'use client'
 
 // ─── MEDICAL IMAGE LEARNING LAB · SHARED PRIMITIVES (PRODUCT 10) ───
-// Visual language matches the Case Simulator / Adaptive / Revision sections:
-// glass + clay panels, sev tones, uppercase micro-labels, Reveal entrances.
+// Visual language matches the Porcelain Atlas system:
+// clay + podium panels, sev tones, uppercase micro-labels, Reveal entrances.
 // The API contract lives FROZEN in src/lib/types.ts — nothing here redefines
 // it. This module must stay dependency-free (no viewer libs, no charts).
 

@@ -204,7 +204,7 @@ function PlayerSkeleton({ caseTitle }: { caseTitle?: string }) {
 function HomeError({ onRetry }: { onRetry: () => void }) {
   return (
     <div className="mx-auto max-w-5xl p-4 md:p-6">
-      <div className="glass flex flex-col items-center gap-3 rounded-2xl p-8 text-center md:p-12">
+      <div className="clay flex flex-col items-center gap-3 rounded-2xl p-8 text-center md:p-12">
         <span className="grid size-12 place-items-center rounded-full bg-sev-crit/10">
           <RefreshCw className="size-6 text-sev-crit" />
         </span>
@@ -224,7 +224,7 @@ function HomeError({ onRetry }: { onRetry: () => void }) {
 function CaseErrorCard({ onBack, onRetry }: { onBack: () => void; onRetry: () => void }) {
   return (
     <div className="mx-auto max-w-3xl p-4 md:p-6">
-      <div className="glass flex flex-col items-center gap-3 rounded-2xl p-8 text-center md:p-12">
+      <div className="clay flex flex-col items-center gap-3 rounded-2xl p-8 text-center md:p-12">
         <span className="grid size-12 place-items-center rounded-full bg-sev-crit/10">
           <RefreshCw className="size-6 text-sev-crit" />
         </span>

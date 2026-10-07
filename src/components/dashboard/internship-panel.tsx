@@ -47,8 +47,8 @@ function RotationChip({
       className={cn(
         'group flex w-[104px] shrink-0 flex-col items-center gap-1 rounded-2xl border px-2 py-3 text-center transition-colors sm:w-[118px]',
         selected
-          ? 'border-amber-400/60 bg-amber-400/10 shadow-md shadow-amber-500/10'
-          : 'border-line bg-surface-2/60 hover:border-amber-400/40',
+          ? 'border-gold/60 bg-gold/10 shadow-md shadow-gold/10'
+          : 'border-line bg-surface-2/60 hover:border-gold/40',
       )}
     >
       <span aria-hidden className="text-2xl transition-transform group-hover:scale-110">{r.emoji}</span>
@@ -124,15 +124,15 @@ export function InternshipPanel() {
       {/* scenic layers */}
       <div aria-hidden className="pointer-events-none absolute inset-0">
         <div className="scene-canopy absolute inset-0" />
-        <div className="scene-float absolute -right-12 top-10 size-56 rounded-full bg-amber-300/20 blur-3xl" />
-        <div className="scene-float absolute -left-16 bottom-0 size-64 rounded-full bg-emerald-300/15 blur-3xl" style={{ animationDelay: '3s' }} />
+        <div className="scene-float absolute -right-12 top-10 size-56 rounded-full bg-gold/20 blur-3xl" />
+        <div className="scene-float absolute -left-16 bottom-0 size-64 rounded-full bg-mint/15 blur-3xl" style={{ animationDelay: '3s' }} />
         <motion.span
           aria-hidden
-          className="absolute right-6 top-4 select-none text-2xl opacity-60"
+          className="absolute right-6 top-4 select-none text-gold opacity-60"
           animate={reduce ? undefined : { y: [0, -8, 0], rotate: [0, 6, 0] }}
           transition={reduce ? undefined : { duration: 6, repeat: Infinity, ease: 'easeInOut' }}
         >
-          🌅
+          <Sunrise className="size-6" />
         </motion.span>
       </div>
 
@@ -141,11 +141,11 @@ export function InternshipPanel() {
         <div className="flex flex-wrap items-end justify-between gap-2">
           <div>
             <p className="inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-ink-soft">
-              <Sunrise className="size-4 text-amber-500" />
+              <Sunrise className="size-4 text-gold" />
               Internship mode · your CRMI year
             </p>
             <h2 className="mt-1 flex items-center gap-2 text-xl font-semibold tracking-tight md:text-2xl">
-              Ward by day, NEET-PG by night <span aria-hidden>🏥🌙</span>
+              Ward by day, NEET-PG by night
             </h2>
             <p className="mt-0.5 max-w-xl text-xs text-ink-soft md:text-sm">
               {data.totals.postings} postings across {data.totals.months} months, mapped to real CRMI rotations — each one with its study plan.
@@ -177,7 +177,7 @@ export function InternshipPanel() {
             transition={{ duration: 0.3, ease: EASE }}
             className="mt-3 grid gap-3 lg:grid-cols-[1fr_340px]"
           >
-            <div className="glass rounded-2xl p-4 md:p-5">
+            <div className="clay rounded-2xl p-4 md:p-5">
               <div className="flex flex-wrap items-center gap-2">
                 <span aria-hidden className="text-xl">{sel.emoji}</span>
                 <h3 className="text-base font-semibold tracking-tight">{sel.name}</h3>
@@ -202,7 +202,7 @@ export function InternshipPanel() {
                 <p className="mt-1 text-xs leading-relaxed text-ink-soft">{sel.neetTip}</p>
               </div>
               <p className="mt-2 text-[11px] leading-relaxed text-muted-foreground">
-                📒 Logbook: {sel.logbookHint} <span className="text-ink-soft">De-identified entries only.</span>
+                Logbook: {sel.logbookHint} <span className="text-ink-soft">De-identified entries only.</span>
               </p>
               <div className="mt-3 flex flex-wrap gap-2">
                 {sel.subjectCode && sel.questionCount > 0 && (
@@ -217,9 +217,9 @@ export function InternshipPanel() {
             </div>
 
             {/* weekly template */}
-            <div className="glass rounded-2xl p-4 md:p-5">
+            <div className="clay rounded-2xl p-4 md:p-5">
               <h3 className="flex items-center gap-1.5 text-sm font-semibold tracking-tight">
-                <GraduationCap className="size-4 text-amber-500" /> Ward-day template
+                <GraduationCap className="size-4 text-gold" /> Ward-day template
               </h3>
               <ul className="mt-3 space-y-2.5">
                 {data.weekTemplate.weekday.map((b, i) => <BlockRow key={`${b.label}-${i}`} b={b} />)}

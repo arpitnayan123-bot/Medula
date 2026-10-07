@@ -60,7 +60,7 @@ function ReviewCard({
 
   return (
     <Reveal index={Math.min(index, 8)} className="min-w-0">
-      <article className="glass space-y-4 rounded-2xl p-4 md:p-5">
+      <article className="clay space-y-4 rounded-2xl p-4 md:p-5">
         {/* Header row */}
         <div className="flex flex-wrap items-center gap-2 text-xs">
           <span className="grid size-7 shrink-0 place-items-center rounded-full bg-surface-2 text-[11px] font-bold tabular-nums">
@@ -344,7 +344,7 @@ export function ExamReviewView({ payload, onBack }: Props) {
         <Button variant="ghost" size="sm" className="min-h-9 gap-1 text-xs text-ink-soft" onClick={onBack}>
           <ArrowLeft className="size-4" aria-hidden /> Back to analysis
         </Button>
-        <div className="glass flex flex-wrap items-center gap-x-4 gap-y-2 rounded-2xl px-4 py-3.5">
+        <div className="clay flex flex-wrap items-center gap-x-4 gap-y-2 rounded-2xl px-4 py-3.5">
           <p className="text-sm font-semibold">{payload.label}</p>
           <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-sev-ok">
             <CheckCircle2 className="size-3.5" aria-hidden /> {summary.correct} correct
@@ -389,7 +389,7 @@ export function ExamReviewView({ payload, onBack }: Props) {
 
       {/* ── Question cards ── */}
       {filtered.length === 0 ? (
-        <div className="glass flex flex-col items-center gap-2 rounded-2xl px-6 py-10 text-center">
+        <div className="clay flex flex-col items-center gap-2 rounded-2xl px-6 py-10 text-center">
           <ImageIcon className="size-6 text-ink-soft" aria-hidden />
           <p className="text-sm font-medium">Nothing in this bucket.</p>
           <p className="text-xs text-ink-soft">Try another filter — every paper question stays reviewable here.</p>

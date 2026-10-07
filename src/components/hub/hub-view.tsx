@@ -121,12 +121,12 @@ function HubHome({ onOpen }: { onOpen: (topicId: string, conceptId?: string | nu
   return (
     <div className="pb-safe-nav">
       {/* hero */}
-      <div className="rounded-3xl border border-line bg-gradient-to-br from-primary/10 via-background to-background p-5 md:p-8">
+      <div className="podium relative overflow-hidden rounded-3xl p-5 md:p-8">
         <div className="mx-auto max-w-2xl space-y-4 text-center">
           <span className="inline-flex items-center gap-1.5 rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-primary">
             <BookMarked className="size-3.5" /> Topic Hub
           </span>
-          <h1 className="text-2xl font-semibold tracking-tight md:text-4xl">
+          <h1 className="font-display text-2xl font-semibold tracking-tight md:text-4xl">
             One topic. Everything.
           </h1>
           <p className="mx-auto max-w-xl text-sm leading-relaxed text-ink-soft md:text-[15px]">
@@ -201,7 +201,7 @@ function HubHome({ onOpen }: { onOpen: (topicId: string, conceptId?: string | nu
                     key={tp.id}
                     type="button"
                     onClick={() => open(tp.id, tp.name)}
-                    className="flex min-w-0 items-center gap-2.5 rounded-xl border border-line bg-card p-3 text-left transition-colors hover:border-primary/45"
+                    className="flex min-w-0 items-center gap-2.5 rounded-xl clay p-3 text-left transition-colors clay-hover"
                   >
                     <BookMarked className="size-4 shrink-0 text-primary" />
                     <span className="min-w-0 flex-1 truncate text-sm font-medium">{tp.name}</span>
@@ -224,7 +224,7 @@ function HubHome({ onOpen }: { onOpen: (topicId: string, conceptId?: string | nu
                   key={ct.id}
                   type="button"
                   onClick={() => open(ct.id, ct.name)}
-                  className="w-52 shrink-0 rounded-2xl border border-line bg-card p-3.5 text-left transition-colors hover:border-primary/45"
+                  className="w-52 shrink-0 rounded-2xl clay p-3.5 text-left transition-colors clay-hover"
                 >
                   <span className="flex items-center gap-2">
                     <span className="size-2 rounded-full" style={{ backgroundColor: ct.subjectColor }} aria-hidden />
@@ -241,7 +241,7 @@ function HubHome({ onOpen }: { onOpen: (topicId: string, conceptId?: string | nu
                   key={`recent-${r.id}`}
                   type="button"
                   onClick={() => open(r.id, r.name)}
-                  className="w-52 shrink-0 rounded-2xl border border-line bg-surface-2 p-3.5 text-left transition-colors hover:border-primary/45"
+                  className="w-52 shrink-0 rounded-2xl clay-in p-3.5 text-left transition-colors clay-hover"
                 >
                   <span className="text-[10px] uppercase tracking-wide text-muted-foreground">recent</span>
                   <span className="mt-1 block truncate text-sm font-semibold">{r.name}</span>
@@ -270,7 +270,7 @@ function HubHome({ onOpen }: { onOpen: (topicId: string, conceptId?: string | nu
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.25, ease: EASE, delay: i * 0.03 }}
                   onClick={() => open(s.id, s.name)}
-                  className="group flex min-w-0 items-center gap-3 rounded-2xl border border-line bg-card p-3.5 text-left transition-all hover:border-primary/45 hover:shadow-md hover:shadow-primary/5"
+                  className="group flex min-w-0 items-center gap-3 rounded-2xl clay p-3.5 text-left transition-all clay-hover"
                 >
                   <span className="grid size-10 shrink-0 place-items-center rounded-xl text-sm font-bold text-white" style={{ backgroundColor: s.subjectColor }}>
                     {s.importance}

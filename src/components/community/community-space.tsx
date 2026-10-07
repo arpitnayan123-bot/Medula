@@ -217,7 +217,7 @@ export function CommunitySpaceScreen({
   // ── render ─────────────────────────────────────────────────────────────────
   if (state === 'error') {
     return (
-      <div className="glass flex flex-col items-center gap-3 rounded-2xl p-8 text-center" role="alert">
+      <div className="clay flex flex-col items-center gap-3 rounded-2xl p-8 text-center" role="alert">
         <ShieldAlert className="size-6 text-ink-soft" aria-hidden />
         <h1 className="text-lg font-semibold tracking-tight">This space didn&apos;t load</h1>
         <p className="max-w-sm text-sm leading-relaxed text-ink-soft">
@@ -454,7 +454,7 @@ function SpaceStat({ value, label, tone }: { value: number; label: string; tone?
     <span
       className={cn(
         'inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-[11px] font-semibold',
-        tone === 'warn' ? 'border-amber-500/40 bg-amber-500/10 text-amber-600 dark:text-amber-400' : 'border-line bg-surface-2 text-ink-soft',
+        tone === 'warn' ? 'border-sev-warn/40 bg-sev-warn/10 text-sev-warn' : 'border-line bg-surface-2 text-ink-soft',
       )}
     >
       <span className="tabular-nums">{value}</span> {label}

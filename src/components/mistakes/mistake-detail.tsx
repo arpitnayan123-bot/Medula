@@ -9,8 +9,8 @@
 
 import { useState } from 'react'
 import {
-  AlertTriangle, ArrowRight, BadgeCheck, BookOpen, Check, ChevronRight, Clock,
-  GraduationCap, HeartCrack, Layers, Loader2, RefreshCcw, RotateCcw, Scale, Sparkles, X,
+  AlertTriangle, ArrowRight, BadgeCheck, BookOpen, Brain, Check, ChevronRight, Clock,
+  GraduationCap, HeartCrack, Layers, Lightbulb, Loader2, PartyPopper, RefreshCcw, RotateCcw, Scale, Sparkles, X,
 } from 'lucide-react'
 
 import { api } from '@/lib/api'
@@ -127,7 +127,7 @@ export function MistakeDetail({ detail, onChanged, onBackToList }: {
       </header>
 
       {/* ── the mistake itself ── */}
-      <section className="rounded-2xl border border-line bg-surface-2/30 p-4 md:p-5" aria-label="Question">
+      <section className="clay rounded-2xl p-4 md:p-5" aria-label="Question">
         {record.imageUrl && (
           <img src={record.imageUrl} alt="Question illustration" className="mb-3 w-full rounded-lg border border-line" loading="lazy" />
         )}
@@ -165,13 +165,16 @@ export function MistakeDetail({ detail, onChanged, onBackToList }: {
           <p className="text-[11px] font-bold uppercase tracking-widest text-ink-soft">Why the right answer is right</p>
           <p className="text-[13px] leading-relaxed text-ink-soft">{detail.explanation}</p>
           {detail.teaching && (
-            <p className="rounded-lg bg-primary/5 px-3 py-2 text-[13px] font-medium leading-snug">💡 {detail.teaching}</p>
+            <p className="flex items-start gap-2 rounded-lg bg-primary/5 px-3 py-2 text-[13px] font-medium leading-snug">
+              <Lightbulb className="mt-0.5 size-3.5 shrink-0 text-gold" aria-hidden />
+              <span>{detail.teaching}</span>
+            </p>
           )}
         </div>
       </section>
 
       {/* ── why it ranks here ── */}
-      <section aria-label="Priority breakdown" className="rounded-2xl border border-line p-4">
+      <section aria-label="Priority breakdown" className="clay rounded-2xl p-4">
         <p className="mb-2.5 text-[11px] font-bold uppercase tracking-widest text-ink-soft">Why this ranks {record.priority} — measured factors</p>
         <div className="grid grid-cols-1 gap-1.5 sm:grid-cols-2">
           {record.factors.map((f) => (
@@ -210,8 +213,11 @@ export function MistakeDetail({ detail, onChanged, onBackToList }: {
             </div>
           </div>
           {detail.confusionPair.mnemonic && (
-            <p className="mt-2.5 rounded-lg bg-surface-2/60 px-3 py-2 text-[12px] italic leading-snug text-ink-soft">
-              🧠 Anchor: {detail.confusionPair.mnemonic}
+            <p className="mt-2.5 flex items-start gap-2 rounded-lg bg-surface-2/60 px-3 py-2 text-[12px] italic leading-snug text-ink-soft">
+              <span className="grid size-5 shrink-0 place-items-center rounded-md bg-gold/20 text-gold shadow-well" aria-hidden>
+                <Brain className="size-3" />
+              </span>
+              <span>Anchor: {detail.confusionPair.mnemonic}</span>
             </p>
           )}
         </section>
@@ -219,7 +225,7 @@ export function MistakeDetail({ detail, onChanged, onBackToList }: {
 
       {/* ── attempt history ── */}
       {detail.attempts.length > 1 && (
-        <section aria-label="Attempt history" className="rounded-2xl border border-line p-4">
+        <section aria-label="Attempt history" className="clay rounded-2xl p-4">
           <p className="mb-2.5 text-[11px] font-bold uppercase tracking-widest text-ink-soft">Previous attempts ({detail.attempts.length})</p>
           <ul className="space-y-1.5">
             {detail.attempts.map((a, i) => (
@@ -304,7 +310,14 @@ export function MistakeDetail({ detail, onChanged, onBackToList }: {
               <div className={cn('space-y-2 rounded-xl border p-3', retestResult.correct ? 'border-sev-ok/40 bg-sev-ok/5' : 'border-sev-crit/40 bg-sev-crit/5')}>
                 <p className="flex items-center gap-2 text-sm font-bold">
                   {retestResult.correct ? (
-                    <><BadgeCheck className="size-4 text-sev-ok" /> Correct — {retestResult.resolvedNow ? 'mistake resolved 🎉' : 'one more correct retest resolves it'}</>
+                    <>
+                      <BadgeCheck className="size-4 text-sev-ok" /> Correct —{' '}
+                      {retestResult.resolvedNow ? (
+                        <span className="inline-flex items-center gap-1">mistake resolved <PartyPopper className="size-4 text-gold" aria-hidden /></span>
+                      ) : (
+                        'one more correct retest resolves it'
+                      )}
+                    </>
                   ) : (
                     <><HeartCrack className="size-4 text-sev-crit" /> Missed again — back on the list</>
                   )}

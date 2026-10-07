@@ -14,6 +14,7 @@ import {
   Eraser,
   GraduationCap,
   History,
+  Flag,
   Languages,
   Layers,
   Lightbulb,
@@ -204,10 +205,10 @@ function ThinkingDots({ hint }: { hint?: string }) {
       aria-live="polite"
       role="status"
     >
-      <span className="glass grid size-8 shrink-0 place-items-center rounded-xl" aria-hidden>
+      <span className="clay-in grid size-8 shrink-0 place-items-center rounded-xl" aria-hidden>
         <Brain className="size-4 text-primary" />
       </span>
-      <span className="glass inline-flex items-center gap-2.5 rounded-2xl rounded-tl-sm px-3.5 py-2.5">
+      <span className="clay inline-flex items-center gap-2.5 rounded-2xl rounded-tl-sm px-3.5 py-2.5">
         <span className="flex items-end gap-1" aria-hidden>
           {[0, 1, 2].map((i) => (
             <motion.span
@@ -230,7 +231,7 @@ function McqCard({ data, onAnswered }: { data: MedqData; onAnswered: (correct: b
   const [chosen, setChosen] = useState<string | null>(null)
   const correct = chosen === data.answer
   return (
-    <div className="my-2 rounded-xl border border-line bg-card p-3.5 shadow-sm">
+    <div className="clay-in my-2 rounded-xl p-3.5">
       <p className="text-sm font-medium leading-snug">{data.q}</p>
       <div className="mt-2.5 grid gap-1.5">
         {data.options.map((o) => {
@@ -249,7 +250,7 @@ function McqCard({ data, onAnswered }: { data: MedqData; onAnswered: (correct: b
               className={cn(
                 'flex min-h-10 items-center gap-2.5 rounded-lg border px-3 py-2 text-left text-sm transition-all',
                 !revealed && 'border-line bg-surface-2 hover:border-primary/50 hover:bg-primary/5',
-                revealed && isAnswer && 'border-emerald-500/50 bg-emerald-500/10 text-foreground',
+                revealed && isAnswer && 'border-sev-ok/50 bg-sev-ok/10 text-foreground',
                 revealed && isChosen && !isAnswer && 'border-sev-crit/50 bg-sev-crit/10',
                 revealed && !isAnswer && !isChosen && 'border-line/60 bg-surface-2 opacity-60',
               )}
@@ -257,7 +258,7 @@ function McqCard({ data, onAnswered }: { data: MedqData; onAnswered: (correct: b
               <span
                 className={cn(
                   'grid size-6 shrink-0 place-items-center rounded-md border text-[11px] font-semibold uppercase',
-                  revealed && isAnswer ? 'border-emerald-500/60 bg-emerald-500/15 text-emerald-600' : 'border-line bg-card text-ink-soft',
+                  revealed && isAnswer ? 'border-sev-ok/60 bg-sev-ok/15 text-sev-ok' : 'border-line bg-card text-ink-soft',
                 )}
               >
                 {o.id}
@@ -269,7 +270,7 @@ function McqCard({ data, onAnswered }: { data: MedqData; onAnswered: (correct: b
       </div>
       {chosen !== null && (
         <motion.div initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} className="mt-2.5">
-          <p className={cn('text-xs font-semibold', correct ? 'text-emerald-600' : 'text-sev-crit')}>
+          <p className={cn('text-xs font-semibold', correct ? 'text-sev-ok' : 'text-sev-crit')}>
             {correct ? '✓ Correct' : `✗ Not quite — the answer is ${data.answer.toUpperCase()}`}
           </p>
           {data.explain && <div className="mt-1 text-xs leading-relaxed text-ink-soft"><Markdown components={MD_COMPONENTS}>{data.explain}</Markdown></div>}
@@ -314,7 +315,7 @@ function FlashcardDeck({
   }
 
   return (
-    <div className="my-2 rounded-xl border border-line bg-card p-3.5 shadow-sm">
+    <div className="clay-in my-2 rounded-xl p-3.5">
       <div className="flex items-center justify-between gap-2">
         <p className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-ink-soft">
           <Layers className="size-3.5" aria-hidden /> Flashcards · {idx + 1}/{cards.length}
@@ -325,7 +326,7 @@ function FlashcardDeck({
             Save to Revise
           </Button>
         )}
-        {saved && <span className="text-[11px] font-medium text-emerald-600">✓ Saved to Revise</span>}
+        {saved && <span className="text-[11px] font-medium text-sev-ok">✓ Saved to Revise</span>}
       </div>
       <button
         type="button"
@@ -411,7 +412,7 @@ function PlatformQuiz({
 
   if (loading) {
     return (
-      <div className="flex items-center gap-2.5 rounded-2xl border border-line bg-card px-4 py-3.5 text-sm text-ink-soft">
+      <div className="clay-in flex items-center gap-2.5 rounded-2xl px-4 py-3.5 text-sm text-ink-soft">
         <Loader2 className="size-4 animate-spin text-primary" aria-hidden /> Pulling platform MCQs…
       </div>
     )
@@ -450,7 +451,7 @@ function PlatformQuiz({
   }
 
   return (
-    <div className="my-1 rounded-2xl border border-primary/25 bg-card p-3.5 shadow-sm">
+    <div className="clay-in my-1 rounded-2xl p-3.5">
       <div className="flex items-center justify-between gap-2">
         <p className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-primary">
           <ListChecks className="size-3.5" aria-hidden /> Platform MCQ {idx + 1}/{questions.length}
@@ -472,7 +473,7 @@ function PlatformQuiz({
               className={cn(
                 'flex min-h-10 items-center gap-2.5 rounded-lg border px-3 py-2 text-left text-sm transition-all',
                 !revealed && 'border-line bg-surface-2 hover:border-primary/50 hover:bg-primary/5',
-                revealed && isAnswer && 'border-emerald-500/50 bg-emerald-500/10',
+                revealed && isAnswer && 'border-sev-ok/50 bg-sev-ok/10',
                 revealed && isChosen && !isAnswer && 'border-sev-crit/50 bg-sev-crit/10',
                 revealed && !isAnswer && !isChosen && 'border-line/60 bg-surface-2 opacity-60',
               )}
@@ -487,14 +488,19 @@ function PlatformQuiz({
       </div>
       {result && (
         <motion.div initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} className="mt-3 space-y-1.5">
-          <p className={cn('text-xs font-semibold', result.correct ? 'text-emerald-600' : 'text-sev-crit')}>
+          <p className={cn('text-xs font-semibold', result.correct ? 'text-sev-ok' : 'text-sev-crit')}>
             {result.correct ? '✓ Correct' : '✗ Incorrect'}
             {result.knowledgeUpdated && result.mastery != null && (
               <span className="ml-2 font-normal text-ink-soft">mastery ~{result.mastery}% · engine updated</span>
             )}
           </p>
           {result.explanation && <div className="rounded-lg border border-line bg-surface-2 px-3 py-2 text-xs leading-relaxed text-ink-soft"><Markdown components={MD_COMPONENTS}>{result.explanation}</Markdown></div>}
-          {result.teaching && <p className="text-xs font-medium text-foreground">💡 {result.teaching}</p>}
+          {result.teaching && (
+            <p className="text-xs font-medium text-foreground">
+              <Lightbulb className="mr-1 inline size-3.5 text-gold" aria-hidden />
+              {result.teaching}
+            </p>
+          )}
         </motion.div>
       )}
       {(result !== null) && (
@@ -1063,7 +1069,7 @@ export function TutorView() {
     const summary: TutorMessage = {
       id: nextId('assistant'),
       role: 'assistant',
-      content: `🏁 **Drill complete — ${probes} probes on “${pair.a} vs ${pair.b}”.**`,
+      content: `**Drill complete — ${probes} probes on “${pair.a} vs ${pair.b}”.**`,
     }
     setMessages((prev) => [...prev, summary])
     api.drillComplete({ pairId: pair.id, probes })
@@ -1183,7 +1189,7 @@ export function TutorView() {
       {/* Header */}
       <header className="flex items-start justify-between gap-3">
         <div className="flex min-w-0 items-start gap-3">
-          <div className="grid size-11 shrink-0 place-items-center rounded-xl border border-cyan-500/20 bg-cyan-500/10 text-cyan-600 dark:text-cyan-300">
+          <div className="grid size-11 shrink-0 place-items-center rounded-xl border border-primary/20 bg-primary/10 text-primary">
             <Stethoscope className="size-5" aria-hidden />
           </div>
           <div className="min-w-0">
@@ -1273,7 +1279,7 @@ export function TutorView() {
                   className={cn(
                     'inline-flex min-h-11 shrink-0 items-center gap-1.5 rounded-full border px-3.5 text-sm font-medium transition-all',
                     active
-                      ? 'border-primary/60 bg-primary/15 text-primary shadow-[0_0_20px_-8px_rgba(34,211,238,0.55)]'
+                      ? 'border-primary/60 bg-primary/15 text-primary shadow-[0_0_20px_-8px_var(--primary)]'
                       : 'border-line bg-surface-2 text-ink-soft hover:border-primary/40 hover:text-foreground',
                   )}
                 >
@@ -1392,7 +1398,7 @@ export function TutorView() {
                 transition={{ duration: 0.28, ease: EASE }}
                 className="flex justify-end"
               >
-                <div className="max-w-[85%] rounded-2xl rounded-br-sm border border-primary/30 bg-primary/15 px-4 py-2.5 text-sm leading-relaxed text-foreground">
+                <div className="max-w-[85%] rounded-2xl rounded-br-sm bg-primary/10 px-4 py-2.5 text-sm leading-relaxed text-foreground">
                   {m.content}
                 </div>
               </motion.div>
@@ -1427,7 +1433,19 @@ export function TutorView() {
                   <Bot className="size-4 text-primary" />
                 </span>
                 <div className="min-w-0 max-w-[calc(100%-3rem)]">
-                  <div className="glass rounded-2xl rounded-tl-sm px-4 py-3">
+                  {m.content.includes('**Drill complete') ? (
+                    <div className="clay-in rounded-2xl border-gold/50! px-4 py-3">
+                      <div className="flex items-start gap-2.5">
+                        <span className="grid size-7 shrink-0 place-items-center rounded-lg bg-gold/25 text-gold" aria-hidden>
+                          <Flag className="size-4" />
+                        </span>
+                        <div className="min-w-0 text-sm leading-relaxed [&_strong]:font-semibold">
+                          <Markdown components={MD_COMPONENTS}>{m.content.replace(/^\u{1F3C1}\s*/u, '')}</Markdown>
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                  <div className="clay rounded-2xl rounded-tl-sm px-4 py-3">
                     {parseSegments(m.content).map((seg, i) => {
                       if (seg.type === 'text') return <Markdown key={i} components={MD_COMPONENTS}>{seg.content}</Markdown>
                       if (seg.type === 'medq')
@@ -1448,6 +1466,7 @@ export function TutorView() {
                       return <FlashcardDeck key={i} cards={seg.data.cards} subjectCode={ctx?.topic?.subjectCode ?? null} />
                     })}
                   </div>
+                  )}
                   {m.grounded && (
                     <p className="mt-1 flex items-center gap-1.5 px-1 text-[10px] text-ink-soft">
                       <BookMarked className="size-3 shrink-0" aria-hidden />
@@ -1523,7 +1542,7 @@ export function TutorView() {
                   : `Ask anything — try ${MODES.find((m) => m.id === mode)?.label ?? 'exam'} style…`
             }
             aria-label="Message your medical tutor"
-            className="max-h-40 min-h-11 flex-1 resize-none border-none bg-transparent px-2 py-2.5 shadow-none focus-visible:ring-0 dark:bg-transparent"
+            className="max-h-40 min-h-11 flex-1 resize-none border-none bg-transparent px-2 py-2.5 shadow-none focus-visible:ring-0"
           />
           <Button
             size="icon"

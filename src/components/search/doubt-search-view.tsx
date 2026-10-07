@@ -31,6 +31,7 @@ import { api } from '@/lib/api'
 import { useAppStore } from '@/lib/store'
 import type { SearchResults, TopicSummary } from '@/lib/types'
 import { cn } from '@/lib/utils'
+import { PageHeader } from '@/components/primitives/kit'
 
 const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1]
 
@@ -274,10 +275,16 @@ export function DoubtSearchView() {
         transition={{ duration: 0.45, ease: EASE }}
         aria-label="Search your doubt"
       >
-        <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">What&apos;s your doubt?</h1>
-        <p className="mt-1 text-sm text-ink-soft">
-          Type any disease, drug, topic or full question — get the concept, practice and revision in one place.
-        </p>
+        <PageHeader
+          eyebrow={
+            <>
+              <Search className="mr-1 inline size-3" />
+              Doubt search
+            </>
+          }
+          title="What's your doubt?"
+          intro="Type any disease, drug, topic or full question — get the concept, practice and revision in one place."
+        />
 
         <div className="clay mt-4 flex items-center gap-2 rounded-2xl bg-card/80 p-2 pl-4">
           <Search className="size-5 shrink-0 text-primary" aria-hidden />

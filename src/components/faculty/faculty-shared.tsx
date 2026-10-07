@@ -11,7 +11,7 @@
 
 import { useCallback, useEffect, useState } from 'react'
 import {
-  BadgeCheck, History, Info, LayoutDashboard, Lock, ShieldCheck, Sparkles, Target,
+  BadgeCheck, History, Info, LayoutDashboard, Lock, ShieldCheck, Sparkles, Star, Target,
 } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 import type { FacultySeverity, FacultyVerificationStatus, FacultyDraftStatus, FacultyDraftKind, FacultyGapKind, FacultyQualityKind, FacultyHandoff } from '@/lib/types'
@@ -59,7 +59,7 @@ export function MicroLabel({ children, className }: { children: React.ReactNode;
   )
 }
 
-// ── SectionCard — the one glass card every tab builds on ─────────────────────
+// ── SectionCard — the one porcelain card every tab builds on ────────────────;
 
 export function SectionCard({ title, subtitle, icon: Icon, action, className, children }: {
   title?: string
@@ -91,12 +91,12 @@ export function SectionCard({ title, subtitle, icon: Icon, action, className, ch
 }
 
 // ── SeverityPill — info / warning / critical, non-alarm colors ───────────────
-// Slate (info), amber (warning), rose (critical) — matching the P18 semantics.
+// Ink-soft (info), warn (warning), crit (critical) — matching the P18 semantics.
 
 const SEVERITY_META: Record<FacultySeverity, { label: string; chip: string; dot: string }> = {
-  info: { label: 'Info', chip: 'bg-slate-500/12 text-slate-700 border-slate-500/40', dot: 'bg-slate-400' },
-  warning: { label: 'Warning', chip: 'bg-amber-500/12 text-amber-700 border-amber-500/40', dot: 'bg-amber-500' },
-  critical: { label: 'Critical', chip: 'bg-rose-500/12 text-rose-700 border-rose-500/40', dot: 'bg-rose-500' },
+  info: { label: 'Info', chip: 'bg-ink-soft/12 text-ink-soft border-ink-soft/40', dot: 'bg-ink-soft/40' },
+  warning: { label: 'Warning', chip: 'bg-sev-warn/12 text-sev-warn border-sev-warn/40', dot: 'bg-sev-warn' },
+  critical: { label: 'Critical', chip: 'bg-sev-crit/10 text-sev-crit border-sev-crit/40', dot: 'bg-sev-crit' },
 }
 
 export function SeverityPill({ severity, className }: { severity: FacultySeverity; className?: string }) {
@@ -110,19 +110,19 @@ export function SeverityPill({ severity, className }: { severity: FacultySeverit
 }
 
 // ── FacultyStatusPill — draft lifecycle + content verification states ────────
-// draft (slate) · in-review (amber) · published/verified (emerald) ·
-// rejected/flagged (rose) · unverified (slate).
+// draft (ink-soft) · in-review (warn) · published/verified (ok) ·
+// rejected/flagged (crit) · unverified (ink-soft).
 
 type StatusPillValue = FacultyDraftStatus | FacultyVerificationStatus
 
 const STATUS_META: Record<StatusPillValue, { label: string; chip: string; dot: string }> = {
-  draft: { label: 'Draft', chip: 'bg-slate-500/12 text-slate-700 border-slate-500/40', dot: 'bg-slate-400' },
-  'in-review': { label: 'In review', chip: 'bg-amber-500/12 text-amber-700 border-amber-500/40', dot: 'bg-amber-500' },
-  published: { label: 'Published', chip: 'bg-emerald-500/12 text-emerald-700 border-emerald-500/40', dot: 'bg-emerald-500' },
-  rejected: { label: 'Rejected', chip: 'bg-rose-500/12 text-rose-700 border-rose-500/40', dot: 'bg-rose-500' },
-  verified: { label: 'Verified', chip: 'bg-emerald-500/12 text-emerald-700 border-emerald-500/40', dot: 'bg-emerald-500' },
-  unverified: { label: 'Unverified', chip: 'bg-slate-500/12 text-slate-700 border-slate-500/40', dot: 'bg-slate-400' },
-  flagged: { label: 'Flagged', chip: 'bg-rose-500/12 text-rose-700 border-rose-500/40', dot: 'bg-rose-500' },
+  draft: { label: 'Draft', chip: 'bg-ink-soft/12 text-ink-soft border-ink-soft/40', dot: 'bg-ink-soft/40' },
+  'in-review': { label: 'In review', chip: 'bg-sev-warn/12 text-sev-warn border-sev-warn/40', dot: 'bg-sev-warn' },
+  published: { label: 'Published', chip: 'bg-sev-ok/12 text-sev-ok border-sev-ok/40', dot: 'bg-sev-ok' },
+  rejected: { label: 'Rejected', chip: 'bg-sev-crit/10 text-sev-crit border-sev-crit/40', dot: 'bg-sev-crit' },
+  verified: { label: 'Verified', chip: 'bg-sev-ok/12 text-sev-ok border-sev-ok/40', dot: 'bg-sev-ok' },
+  unverified: { label: 'Unverified', chip: 'bg-ink-soft/12 text-ink-soft border-ink-soft/40', dot: 'bg-ink-soft/40' },
+  flagged: { label: 'Flagged', chip: 'bg-sev-crit/10 text-sev-crit border-sev-crit/40', dot: 'bg-sev-crit' },
 }
 
 export function FacultyStatusPill({ status, className }: { status: StatusPillValue; className?: string }) {
@@ -135,12 +135,12 @@ export function FacultyStatusPill({ status, className }: { status: StatusPillVal
   )
 }
 
-// ── AiAssistedBadge — always visible on AI-assisted drafts, amber-ish ────────
+// ── AiAssistedBadge — always visible on AI-assisted drafts, warn-tinted ─────
 
 export function AiAssistedBadge({ className }: { className?: string }) {
   return (
     <span
-      className={cn('inline-flex shrink-0 items-center gap-1 rounded-full border border-amber-500/40 bg-amber-500/12 px-2 py-0.5 text-[10px] font-semibold whitespace-nowrap text-amber-700', className)}
+      className={cn('inline-flex shrink-0 items-center gap-1 rounded-full border border-sev-warn/40 bg-sev-warn/12 px-2 py-0.5 text-[10px] font-semibold whitespace-nowrap text-sev-warn', className)}
       title="Drafted with AI assistance grounded in existing platform content — not authoritative until a reviewer publishes it."
     >
       <Sparkles className="size-3 shrink-0" aria-hidden />
@@ -154,7 +154,7 @@ export function AiAssistedBadge({ className }: { className?: string }) {
 export function VerifiedBadge({ className }: { className?: string }) {
   return (
     <span
-      className={cn('inline-flex shrink-0 items-center gap-1 rounded-full border border-emerald-500/40 bg-emerald-500/12 px-2 py-0.5 text-[10px] font-semibold whitespace-nowrap text-emerald-700', className)}
+      className={cn('inline-flex shrink-0 items-center gap-1 rounded-full border border-sev-ok/40 bg-sev-ok/12 px-2 py-0.5 text-[10px] font-semibold whitespace-nowrap text-sev-ok', className)}
       title="A human reviewer published this version — it is the verified content of record."
     >
       <BadgeCheck className="size-3 shrink-0" aria-hidden />
@@ -200,7 +200,7 @@ export const DRAFT_KIND_LABELS: Record<FacultyDraftKind, string> = {
   manual: 'Manual note',
 }
 
-// ── ExamWeightStars — curriculum exam weight as ★ x/5 (published, not inferred)
+// ── ExamWeightStars — curriculum exam weight as stars x/5 (published, not inferred)
 
 export function ExamWeightStars({ weight, className }: { weight: number | null | undefined; className?: string }) {
   if (weight == null) return null
@@ -212,7 +212,7 @@ export function ExamWeightStars({ weight, className }: { weight: number | null |
       aria-label={`Exam weight ${w} of 5`}
       title={`Exam weight ${w} of 5`}
     >
-      <span className="text-ink-soft" aria-hidden>★</span>
+      <Star className="size-2.5 fill-current text-ink-soft" aria-hidden />
       <span className="font-semibold tabular-nums">{w}/5</span>
     </span>
   )
@@ -226,7 +226,7 @@ export function PriorityBar({ priority, className }: { priority: number; classNa
     <span className={cn('inline-flex w-16 shrink-0 items-center gap-1.5', className)}>
       <span className="h-1.5 flex-1 overflow-hidden rounded-full bg-surface-2" role="img" aria-label={`Priority ${pct} of 100`} title={`Priority ${pct}/100`}>
         <span
-          className={cn('block h-full rounded-full', pct >= 70 ? 'bg-rose-500' : pct >= 40 ? 'bg-amber-500' : 'bg-slate-400')}
+          className={cn('block h-full rounded-full', pct >= 70 ? 'bg-sev-crit' : pct >= 40 ? 'bg-sev-warn' : 'bg-ink-soft/40')}
           style={{ width: `${pct}%` }}
         />
       </span>

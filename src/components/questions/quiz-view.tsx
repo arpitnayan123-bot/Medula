@@ -200,7 +200,7 @@ function PairDebrief({
       initial={{ opacity: 0, y: 14 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, ease: EASE }}
-      className="glass space-y-4 rounded-2xl p-5 md:p-7"
+      className="clay space-y-4 rounded-2xl p-5 md:p-7"
       aria-label="Confusion-pair debrief"
     >
       <div className="flex flex-wrap items-center gap-2">
@@ -339,8 +339,8 @@ function ScoreRing({
       <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} className="-rotate-90">
         <defs>
           <linearGradient id={gradientId} x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0%" stopColor="#22d3ee" />
-            <stop offset="100%" stopColor="#0284c7" />
+            <stop offset="0%" stopColor="#5cb491" />
+            <stop offset="100%" stopColor="#16788c" />
           </linearGradient>
         </defs>
         <circle cx={size / 2} cy={size / 2} r={r} fill="none" strokeWidth={stroke} className="stroke-surface-2" />
@@ -370,7 +370,7 @@ function ConfigSkeleton() {
     <div className="space-y-6" aria-busy="true" role="status">
       <Skeleton className="shimmer h-10 w-56 rounded-lg" />
       <Skeleton className="shimmer h-4 w-80 rounded-md" />
-      <div className="glass space-y-6 rounded-2xl p-5 md:p-7">
+      <div className="clay space-y-6 rounded-2xl p-5 md:p-7">
         <div className="grid gap-5 md:grid-cols-2">
           <Skeleton className="shimmer h-16 rounded-xl" />
           <Skeleton className="shimmer h-16 rounded-xl" />
@@ -387,7 +387,7 @@ function RunSkeleton() {
   return (
     <div className="space-y-4" aria-busy="true" role="status">
       <Skeleton className="shimmer h-6 w-40 rounded-md" />
-      <div className="glass space-y-5 rounded-2xl p-5 md:p-7">
+      <div className="clay space-y-5 rounded-2xl p-5 md:p-7">
         <Skeleton className="shimmer h-4 w-48 rounded-md" />
         <Skeleton className="shimmer h-6 w-full rounded-md" />
         <Skeleton className="shimmer h-6 w-4/5 rounded-md" />
@@ -404,7 +404,7 @@ function RunSkeleton() {
 
 function LoadErrorCard({ onRetry, message }: { onRetry: () => void; message: string }) {
   return (
-    <div className="glass flex flex-col items-center gap-3 rounded-2xl p-8 text-center">
+    <div className="clay flex flex-col items-center gap-3 rounded-2xl p-8 text-center">
       <span className="grid size-12 place-items-center rounded-full bg-sev-crit/10">
         <AlertTriangle className="size-6 text-sev-crit" />
       </span>
@@ -779,7 +779,7 @@ export function QuizView() {
         )}
 
         {subjectsStatus === 'ready' && (
-          <section className="glass space-y-7 rounded-2xl p-5 md:p-7">
+          <section className="clay space-y-7 rounded-2xl p-5 md:p-7">
             <div className="grid gap-5 md:grid-cols-2">
               <div className="space-y-2">
                 <label className="text-xs font-semibold uppercase tracking-[0.14em] text-ink-soft">Subject</label>
@@ -918,7 +918,7 @@ export function QuizView() {
         {runStatus === 'loading' && <RunSkeleton />}
         {runStatus === 'error' && <LoadErrorCard message="Couldn't start this session" onRetry={retryRun} />}
         {runStatus === 'empty' && (
-          <div className="glass flex flex-col items-center gap-3 rounded-2xl p-8 text-center">
+          <div className="clay flex flex-col items-center gap-3 rounded-2xl p-8 text-center">
             <span className="grid size-12 place-items-center rounded-full bg-sev-warn/10">
               <AlertTriangle className="size-6 text-sev-warn" />
             </span>
@@ -941,7 +941,7 @@ export function QuizView() {
               exit={{ opacity: 0, x: -24 }}
               transition={{ duration: 0.25, ease: EASE }}
             >
-              <section className="glass space-y-5 rounded-2xl p-5 md:p-7">
+              <section className="clay space-y-5 rounded-2xl p-5 md:p-7">
                 {/* Meta row */}
                 <div className="flex flex-wrap items-center gap-2.5 text-xs">
                   <DifficultyDots n={q.difficulty} />
@@ -1149,7 +1149,7 @@ export function QuizView() {
       </header>
 
       {/* Score ring + stats */}
-      <section className="glass rounded-2xl p-5 md:p-7">
+      <section className="clay rounded-2xl p-5 md:p-7">
         <div className="flex flex-col items-center gap-6 sm:flex-row sm:gap-8">
           <ScoreRing value={accuracy} size={168} stroke={12} gradientId="quiz-result-ring">
             <span className="text-4xl font-semibold tabular-nums tracking-tight">{accuracy}%</span>
@@ -1220,7 +1220,7 @@ export function QuizView() {
       {/* Pair-drill debrief — the distinction, side by side */}
       {activePairId &&
         (pairDebriefLoading ? (
-          <section className="glass rounded-2xl p-5 md:p-7" aria-label="Loading pair debrief">
+          <section className="clay rounded-2xl p-5 md:p-7" aria-label="Loading pair debrief">
             <p className="flex items-center gap-2.5 text-sm text-ink-soft">
               <Loader2 className="size-4 animate-spin" /> Loading the pair breakdown…
             </p>
@@ -1249,7 +1249,7 @@ export function QuizView() {
         ) : null)}
 
       {/* Missed questions + teaching */}
-      <section className="glass space-y-4 rounded-2xl p-5 md:p-7">
+      <section className="clay space-y-4 rounded-2xl p-5 md:p-7">
         <h2 className="text-sm font-semibold uppercase tracking-[0.14em] text-ink-soft">
           Missed questions &amp; teaching
         </h2>

@@ -89,7 +89,7 @@ const stepVariants = {
 function StepHeader({ icon: Icon, title, sub }: { icon: LucideIcon; title: string; sub: string }) {
   return (
     <div className="flex items-start gap-3">
-      <div className="grid size-10 shrink-0 place-items-center rounded-xl border border-cyan-500/20 bg-cyan-500/10 text-cyan-500 dark:text-cyan-300">
+      <div className="grid size-10 shrink-0 place-items-center rounded-xl border border-primary/20 bg-primary/10 text-primary">
         <Icon className="size-5" aria-hidden />
       </div>
       <div>
@@ -123,7 +123,7 @@ function Segmented({
           className={cn(
             'min-h-11 rounded-xl border px-3 text-sm font-medium transition-all',
             value === o.value
-              ? 'border-primary/60 bg-primary/10 text-foreground shadow-[0_0_20px_-8px_rgba(34,211,238,0.55)]'
+              ? 'border-primary/60 bg-primary/10 text-foreground'
               : 'border-line bg-surface-2 text-ink-soft hover:border-primary/40 hover:text-foreground'
           )}
         >
@@ -143,11 +143,11 @@ function Chip({ label, selected, onToggle }: { label: string; selected: boolean;
       className={cn(
         'inline-flex min-h-11 items-center gap-1.5 rounded-full border px-4 text-sm font-medium transition-all',
         selected
-          ? 'border-cyan-400/60 bg-cyan-400/10 text-foreground'
-          : 'border-line bg-surface-2 text-ink-soft hover:border-cyan-400/40 hover:text-foreground'
+          ? 'border-primary/50 bg-primary/10 text-foreground'
+          : 'border-line bg-surface-2 text-ink-soft hover:border-primary/40 hover:text-foreground'
       )}
     >
-      {selected && <Check className="size-3.5 text-cyan-400" aria-hidden />}
+      {selected && <Check className="size-3.5 text-primary" aria-hidden />}
       {label}
     </button>
   )
@@ -346,7 +346,7 @@ export function OnboardingWizard() {
     <div className="relative min-h-svh overflow-hidden bg-background text-foreground">
       <div className="med-grid absolute inset-0" aria-hidden />
       <div
-        className="absolute left-1/2 top-[-15%] h-[420px] w-[680px] -translate-x-1/2 rounded-full bg-cyan-500/[0.06] blur-3xl"
+        className="absolute left-1/2 top-[-15%] h-[420px] w-[680px] -translate-x-1/2 rounded-full bg-gold/[0.10] blur-3xl"
         aria-hidden
       />
 
@@ -366,7 +366,7 @@ export function OnboardingWizard() {
 
       <div className="relative flex min-h-svh items-center justify-center px-4 py-20 sm:py-16">
         <div
-          className="glass-strong w-full max-w-xl rounded-3xl p-5 shadow-2xl sm:p-8"
+          className="clay w-full max-w-xl rounded-3xl p-5 shadow-float sm:p-8"
           onKeyDown={onKeyDown}
         >
           {/* Header: wordmark + step counter */}
@@ -380,7 +380,10 @@ export function OnboardingWizard() {
             </p>
           </div>
 
-          <Progress value={progress} className="mt-4 h-1.5" />
+          <Progress
+            value={progress}
+            className="mt-4 h-1.5 bg-surface-2 shadow-well [&_[data-slot=progress-indicator]]:bg-gradient-to-r [&_[data-slot=progress-indicator]]:from-primary [&_[data-slot=progress-indicator]]:to-[oklch(0.62_0.105_158)]"
+          />
 
           {/* Step dots */}
           <div className="mt-3 flex items-center justify-center gap-1.5" aria-hidden>
@@ -431,15 +434,15 @@ export function OnboardingWizard() {
                     </div>
                     <ul className="mt-6 space-y-3.5 text-sm leading-relaxed text-ink-soft">
                       <li className="flex gap-3">
-                        <Network className="mt-0.5 size-4 shrink-0 text-cyan-400" aria-hidden />
+                        <Network className="mt-0.5 size-4 shrink-0 text-primary" aria-hidden />
                         Your entire MBBS curriculum, connected into one navigable knowledge map.
                       </li>
                       <li className="flex gap-3">
-                        <Target className="mt-0.5 size-4 shrink-0 text-cyan-400" aria-hidden />
+                        <Target className="mt-0.5 size-4 shrink-0 text-primary" aria-hidden />
                         Daily missions picked by an engine that knows what you knew — and what you forgot.
                       </li>
                       <li className="flex gap-3">
-                        <Route className="mt-0.5 size-4 shrink-0 text-cyan-400" aria-hidden />
+                        <Route className="mt-0.5 size-4 shrink-0 text-primary" aria-hidden />
                         A NEET-PG roadmap that starts today, not after internship panic sets in.
                       </li>
                     </ul>
@@ -572,13 +575,13 @@ export function OnboardingWizard() {
                           className={cn(
                             'min-h-11 rounded-xl border p-3 text-left transition-all',
                             prepStage === o.value
-                              ? 'border-cyan-400/60 bg-cyan-400/10 shadow-[0_0_20px_-8px_rgba(34,211,238,0.55)]'
-                              : 'border-line bg-surface-2 hover:border-cyan-400/40'
+                              ? 'border-primary/60 bg-primary/10'
+                              : 'border-line bg-surface-2 hover:border-primary/40'
                           )}
                         >
                           <span className="flex items-center gap-2 text-sm font-semibold">
                             {prepStage === o.value && (
-                              <Check className="size-3.5 shrink-0 text-cyan-400" aria-hidden />
+                              <Check className="size-3.5 shrink-0 text-primary" aria-hidden />
                             )}
                             {o.label}
                           </span>
@@ -624,7 +627,7 @@ export function OnboardingWizard() {
                         unit="h/weekend day"
                         onChange={setWeekendHours}
                       />
-                      <div className="rounded-xl border border-cyan-500/20 bg-cyan-500/[0.06] px-4 py-3 text-sm">
+                      <div className="clay-in rounded-xl px-4 py-3 text-sm">
                         <span className="text-ink-soft">Capacity estimate · </span>
                         <span className="font-semibold text-foreground">≈ {weeklyHours} h/week</span>
                       </div>

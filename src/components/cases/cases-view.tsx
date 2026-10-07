@@ -31,6 +31,7 @@ import {
 import { api } from '@/lib/api'
 import { useAppStore } from '@/lib/store'
 import { Concept3D } from '@/components/concept/concept-3d'
+import { PageHeader } from '@/components/primitives/kit'
 import type { ConceptDetail } from '@/lib/types'
 import { SYSTEMS } from '@/lib/types'
 import type { LogbookEntryClient } from '@/lib/types'
@@ -187,8 +188,8 @@ function ScoreRing({
       <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} className="-rotate-90">
         <defs>
           <linearGradient id={gradientId} x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0%" stopColor="#22d3ee" />
-            <stop offset="100%" stopColor="#0284c7" />
+            <stop offset="0%" stopColor="var(--chart-1)" />
+            <stop offset="100%" stopColor="var(--chart-2)" />
           </linearGradient>
         </defs>
         <circle cx={size / 2} cy={size / 2} r={r} fill="none" strokeWidth={stroke} className="stroke-surface-2" />
@@ -225,7 +226,7 @@ function ListSkeleton() {
 
 function LoadErrorCard({ onRetry, message }: { onRetry: () => void; message: string }) {
   return (
-    <div className="glass flex flex-col items-center gap-3 rounded-2xl p-8 text-center">
+    <div className="clay flex flex-col items-center gap-3 rounded-2xl p-8 text-center">
       <span className="grid size-12 place-items-center rounded-full bg-sev-crit/10">
         <AlertTriangle className="size-6 text-sev-crit" />
       </span>
@@ -453,20 +454,15 @@ export function CasesView() {
   if (!detail) {
     return (
       <div className="mx-auto max-w-5xl space-y-6 p-4 md:p-6">
-        <header className="space-y-2">
-          <div className="flex items-center gap-2.5">
-            <span className="grid size-10 place-items-center rounded-xl bg-primary/10">
-              <Stethoscope className="size-5 text-primary" />
-            </span>
-            <h1 className="text-3xl font-semibold tracking-tight md:text-4xl">CLINICAL CASE SIMULATOR</h1>
-          </div>
-          <p className="text-sm text-ink-soft md:text-base">
-            Progressive-reveal cases. Make the call at every step — the platform explains your reasoning after.
-          </p>
-        </header>
+        {/* ── Header — porcelain editorial ── */}
+        <PageHeader
+          eyebrow={<><Stethoscope className="mr-1 inline size-3" />Clinical case simulator</>}
+          title="Clinical Case Simulator"
+          intro="Progressive-reveal cases. Make the call at every step — the platform explains your reasoning after."
+        />
 
         {/* Tab switcher — case simulator / clinical logbook */}
-        <div className="inline-flex rounded-xl border border-line bg-surface-2 p-1" role="tablist" aria-label="Cases sections">
+        <div className="clay-tray inline-flex rounded-xl p-1" role="tablist" aria-label="Cases sections">
           {([
             { id: 'cases' as const, label: 'CASE SIMULATOR', icon: Stethoscope },
             { id: 'logbook' as const, label: 'CLINICAL LOGBOOK', icon: NotebookPen },
@@ -475,10 +471,11 @@ export function CasesView() {
               key={t.id}
               role="tab"
               aria-selected={tab === t.id}
+              data-state={tab === t.id ? 'active' : 'inactive'}
               onClick={() => setTab(t.id)}
               className={cn(
-                'flex min-h-10 items-center gap-2 rounded-lg px-4 text-xs font-semibold tracking-wide transition-colors',
-                tab === t.id ? 'bg-primary/15 text-primary' : 'text-ink-soft hover:text-foreground',
+                'clay-tab flex min-h-10 items-center gap-2 rounded-lg px-4 text-xs font-semibold tracking-wide',
+                tab === t.id ? 'text-foreground' : 'text-ink-soft hover:text-foreground',
               )}
             >
               <t.icon className="size-4" />
@@ -506,7 +503,7 @@ export function CasesView() {
                   initial={reduce ? false : { opacity: 0, y: 14 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.4, delay: reduce ? 0 : Math.min(i * 0.06, 0.3), ease: EASE }}
-                  className="glass flex flex-col rounded-2xl p-5 md:p-6"
+                  className="clay clay-hover flex flex-col rounded-2xl p-5 md:p-6"
                 >
                   <div className="flex flex-wrap items-center justify-between gap-2">
                     <span
@@ -608,7 +605,7 @@ export function CasesView() {
       {detailStatus === 'ready' && step && (
         <div className="grid items-start gap-5 lg:grid-cols-[320px_minmax(0,1fr)]">
           {/* Patient chart */}
-          <aside className="glass rounded-2xl p-5 lg:sticky lg:top-6 lg:self-start">
+          <aside className="clay rounded-2xl p-5 lg:sticky lg:top-6 lg:self-start">
             <div className="flex items-center gap-3">
               <span className="grid size-12 shrink-0 place-items-center rounded-full bg-primary/15 text-sm font-bold text-primary">
                 {initialsOf(detail.title)}
@@ -701,7 +698,7 @@ export function CasesView() {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -12 }}
                 transition={{ duration: 0.3, ease: EASE }}
-                className="glass space-y-5 rounded-2xl p-5 md:p-7"
+                className="clay space-y-5 rounded-2xl p-5 md:p-7"
               >
                 <div className="flex items-center gap-2.5">
                   <span className="rounded-full bg-primary/10 px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.16em] text-primary">
@@ -1011,10 +1008,10 @@ export function CasesView() {
 const CASE_TYPES = ['Ward case', 'Emergency', 'OPD visit', 'Procedure observed', 'Interesting finding'] as const
 
 const LOG_TYPE_META: Record<string, { color: string }> = {
-  'Ward case': { color: '#22d3ee' },
+  'Ward case': { color: '#16788c' },
   'Emergency': { color: 'var(--sev-crit)' },
   'OPD visit': { color: 'var(--sev-ok)' },
-  'Procedure observed': { color: '#a78bfa' },
+  'Procedure observed': { color: '#9a7fc0' },
   'Interesting finding': { color: 'var(--sev-warn)' },
 }
 
@@ -1075,7 +1072,7 @@ function LogbookPanel({ reduce }: { reduce: boolean | null }) {
           { label: 'Systems touched', value: systemsCovered },
           { label: 'Learning tasks', value: entries.length * 3 },
         ].map((s) => (
-          <div key={s.label} className="glass rounded-2xl p-4 text-center">
+          <div key={s.label} className="clay rounded-2xl p-4 text-center">
             <p className="text-2xl font-semibold tabular-nums tracking-tight">{s.value}</p>
             <p className="mt-0.5 text-[10px] uppercase tracking-[0.14em] text-ink-soft">{s.label}</p>
           </div>
@@ -1083,7 +1080,7 @@ function LogbookPanel({ reduce }: { reduce: boolean | null }) {
       </div>
 
       {/* New entry form */}
-      <section className="glass rounded-2xl p-4 md:p-5">
+      <section className="clay rounded-2xl p-4 md:p-5">
         <div className="flex items-center gap-2">
           <Plus className="size-4 text-primary" />
           <h3 className="text-sm font-semibold tracking-tight">Log a clinical exposure</h3>
@@ -1172,7 +1169,7 @@ function LogbookPanel({ reduce }: { reduce: boolean | null }) {
         <div className="space-y-3">{[0, 1].map((i) => <Skeleton key={i} className="h-24 rounded-2xl" />)}</div>
       )}
       {status === 'error' && (
-        <div className="glass rounded-2xl p-6 text-center">
+        <div className="clay rounded-2xl p-6 text-center">
           <p className="text-sm text-ink-soft">Couldn&apos;t load your logbook.</p>
           <Button variant="outline" size="sm" className="mt-3 min-h-9" onClick={() => setReloadKey((k) => k + 1)}>
             <RefreshCw className="mr-2 size-3.5" /> Retry
@@ -1180,7 +1177,7 @@ function LogbookPanel({ reduce }: { reduce: boolean | null }) {
         </div>
       )}
       {status === 'ready' && entries.length === 0 && (
-        <div className="glass rounded-2xl p-8 text-center">
+        <div className="clay rounded-2xl p-8 text-center">
           <NotebookPen className="mx-auto size-8 text-ink-soft" />
           <p className="mt-3 text-sm font-medium">Your logbook is empty</p>
           <p className="mx-auto mt-1 max-w-md text-xs leading-relaxed text-ink-soft">
@@ -1200,7 +1197,7 @@ function LogbookPanel({ reduce }: { reduce: boolean | null }) {
                 initial={reduce ? false : { opacity: 0, y: 10 }}
                 animate={justAdded === e.id ? { opacity: 1, y: 0, scale: [1, 1.015, 1] } : { opacity: 1, y: 0 }}
                 transition={reduce ? undefined : { duration: 0.35, delay: Math.min(i * 0.04, 0.2) }}
-                className="glass rounded-2xl p-4 md:p-5"
+                className="clay rounded-2xl p-4 md:p-5"
               >
                 <div className="flex flex-wrap items-center gap-2">
                   <span

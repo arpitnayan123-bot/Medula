@@ -249,7 +249,7 @@ export function Concept3D({ detail, compact = false }: { detail: ConceptDetail; 
           wrapper with clip-path forces flattening of the rendered output. */}
       <div
         className={cn(
-          'relative overflow-hidden rounded-2xl border border-line bg-gradient-to-b from-sky-400/[0.07] via-transparent to-amber-300/[0.06] [clip-path:inset(0_round_1rem)]',
+          'relative overflow-hidden rounded-2xl border border-line bg-gradient-to-b from-[#c9e8d4]/[0.10] via-transparent to-[#f3d5a4]/[0.10] [clip-path:inset(0_round_1rem)]',
           compact ? 'h-[240px] md:h-[290px]' : 'h-[340px]',
         )}
         style={{ touchAction: 'none' }}

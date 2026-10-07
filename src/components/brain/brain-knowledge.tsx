@@ -225,8 +225,8 @@ function ConceptRow({ row }: { row: BrainConceptState }) {
             <span aria-hidden>·</span>
             <span>{row.attempts > 0 ? `${row.attempts} attempts` : 'no attempts yet'}</span>
             {row.accuracy != null && <><span aria-hidden>·</span><span>{Math.round(row.accuracy)}% correct</span></>}
-            {row.openMistakes > 0 && <><span aria-hidden>·</span><span className="font-medium text-rose-600">{row.openMistakes} open mistake{row.openMistakes === 1 ? '' : 's'}</span></>}
-            {row.prereqGap && <><span aria-hidden>·</span><span className="font-medium text-amber-600">prerequisite gap upstream</span></>}
+            {row.openMistakes > 0 && <><span aria-hidden>·</span><span className="font-medium text-sev-crit">{row.openMistakes} open mistake{row.openMistakes === 1 ? '' : 's'}</span></>}
+            {row.prereqGap && <><span aria-hidden>·</span><span className="font-medium text-sev-warn">prerequisite gap upstream</span></>}
           </div>
           <EvidenceList signals={row.signals} className="mb-3" />
           <div className="flex flex-wrap gap-2">

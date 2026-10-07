@@ -54,10 +54,10 @@ function AlternateRow({ action }: { action: OsAction }) {
   return (
     <button
       onClick={() => go(action.view, action.conceptId, action.topicId)}
-      className="group flex w-full items-center gap-3 rounded-xl border border-transparent px-2.5 py-2 text-left transition hover:border-border/80 hover:bg-muted/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50"
+      className="group flex w-full items-center gap-3 rounded-xl border border-transparent px-2.5 py-2 text-left transition hover:border-line hover:bg-surface-2/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50"
     >
-      <span className="flex size-8 shrink-0 items-center justify-center rounded-lg border border-border/70 bg-background">
-        <Icon className="size-4 text-ink-soft" aria-hidden />
+      <span className="grid size-8 shrink-0 place-items-center rounded-lg border border-line/80 bg-card shadow-sm">
+        <Icon className="size-4 text-primary/80" aria-hidden />
       </span>
       <span className="min-w-0 flex-1">
         <span className="block truncate text-[13px] font-medium">{action.title}</span>
@@ -75,8 +75,8 @@ function StatChip({ icon: Icon, label, value, hint }: {
   hint?: string
 }) {
   return (
-    <div className="flex items-center gap-2 rounded-xl border border-border/70 bg-card/80 px-2.5 py-2" title={hint}>
-      <Icon className="size-3.5 shrink-0 text-ink-soft" aria-hidden />
+    <div className="clay clay-hover flex items-center gap-2 rounded-xl px-2.5 py-2" title={hint}>
+      <Icon className="size-3.5 shrink-0 text-gold" aria-hidden />
       <div className="min-w-0">
         <div className="text-[13px] font-semibold leading-tight tabular-nums">{value}</div>
         <div className="truncate text-[10px] text-ink-soft">{label}</div>
@@ -99,10 +99,10 @@ export function OsHero({ data }: { data: OsCommandCenter }) {
       {/* greeting row */}
       <div className="flex flex-wrap items-end justify-between gap-x-4 gap-y-1">
         <div>
-          <h1 className="text-xl font-bold tracking-tight md:text-2xl">
+          <h1 className="font-display text-2xl font-semibold tracking-tight md:text-3xl">
             {greeting.hello}
           </h1>
-          <p className="mt-0.5 text-xs text-ink-soft">
+          <p className="mt-1 text-xs text-ink-soft">
             {greeting.dateLine} · {greeting.stageLabel}
             {greeting.examLine ? ` · ${greeting.examLine}` : ''}
           </p>
@@ -110,28 +110,30 @@ export function OsHero({ data }: { data: OsCommandCenter }) {
         <ReadinessRing readiness={readiness} />
       </div>
 
-      {/* primary action card */}
+      {/* primary action — the porcelain podium answers the core question */}
       <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-        className="rounded-2xl border border-primary/25 bg-primary/[0.06] p-4 shadow-sm md:p-5"
+        className="podium relative overflow-hidden rounded-3xl p-4 md:p-6"
       >
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-start">
+        <div className="pointer-events-none absolute -right-12 -top-16 size-52 rounded-full bg-[#f3d5a4]/35 blur-3xl" aria-hidden />
+        <div className="pointer-events-none absolute -left-14 -bottom-8 size-48 rounded-full bg-[#c9e8d4]/30 blur-3xl" aria-hidden />
+        <div className="relative flex flex-col gap-4 sm:flex-row sm:items-start">
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-2">
-              <span className="flex size-8 items-center justify-center rounded-xl border border-primary/30 bg-primary/10">
+              <span className="grid size-8 place-items-center rounded-xl border border-white/60 bg-primary/10 shadow-well">
                 <PrimaryIcon className="size-4 text-primary" aria-hidden />
               </span>
               <MicroLabel>Do this next</MicroLabel>
-              <span className="rounded-full border border-border/70 bg-background px-2 py-0.5 text-[10px] font-medium text-ink-soft">
+              <span className="rounded-full border border-line/80 bg-card/80 px-2 py-0.5 text-[10px] font-medium text-ink-soft shadow-sm">
                 {primary.ruleIndex ? `rule #${primary.ruleIndex} of ${now.rule.length}` : `priority ${primary.priority}/100`}
               </span>
             </div>
-            <h2 className="mt-2.5 text-lg font-semibold leading-snug md:text-xl">{primary.title}</h2>
-            <p className="mt-1 text-[13px] leading-relaxed text-ink-soft">{primary.reason}</p>
-            <div className="mt-3.5 flex flex-wrap items-center gap-2">
-              <Button size="sm" className="rounded-xl text-xs" onClick={() => go(primary.view, primary.conceptId, primary.topicId)}>
+            <h2 className="font-display mt-3 text-xl font-semibold leading-snug md:text-2xl">{primary.title}</h2>
+            <p className="mt-1.5 text-[13px] leading-relaxed text-ink-soft">{primary.reason}</p>
+            <div className="mt-4 flex flex-wrap items-center gap-2">
+              <Button size="sm" className="clay-btn rounded-xl text-xs" onClick={() => go(primary.view, primary.conceptId, primary.topicId)}>
                 {primary.cta}
                 <ChevronRight className="size-4" aria-hidden />
               </Button>
@@ -142,7 +144,7 @@ export function OsHero({ data }: { data: OsCommandCenter }) {
               <button
                 onClick={() => setRuleOpen((v) => !v)}
                 aria-expanded={ruleOpen}
-                className="inline-flex min-h-9 items-center gap-1 rounded-xl px-2 text-xs text-ink-soft transition hover:text-foreground"
+                className="press inline-flex min-h-9 items-center gap-1 rounded-xl px-2 text-xs text-ink-soft transition hover:text-foreground"
               >
                 <HelpCircle className="size-3.5" aria-hidden />
                 Why this?
@@ -152,7 +154,7 @@ export function OsHero({ data }: { data: OsCommandCenter }) {
         </div>
 
         {ruleOpen && (
-          <div className="mt-3 rounded-xl border border-border/70 bg-background/70 p-3">
+          <div className="clay-in mt-4 rounded-xl p-3.5">
             <MicroLabel>Published priority rule — applied top to bottom</MicroLabel>
             <ol className="mt-1.5 space-y-1">
               {now.rule.map((line, i) => (
@@ -171,7 +173,7 @@ export function OsHero({ data }: { data: OsCommandCenter }) {
 
       {/* alternates */}
       {now.alternates.length > 0 && (
-        <div className="rounded-2xl border border-border/70 bg-card/80 p-1.5 shadow-sm">
+        <div className="clay rounded-2xl p-1.5">
           {now.alternates.map((a) => <AlternateRow key={a.id} action={a} />)}
         </div>
       )}

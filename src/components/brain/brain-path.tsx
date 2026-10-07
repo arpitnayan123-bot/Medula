@@ -156,7 +156,7 @@ function StageRow({ stage, index }: { stage: BrainPathStage; index: number }) {
       <span
         className={cn(
           'relative z-10 mt-0.5 grid size-7 shrink-0 place-items-center rounded-full border',
-          stage.done && 'border-emerald-500/50 bg-emerald-500/15 text-emerald-600',
+          stage.done && 'border-sev-ok/50 bg-sev-ok/15 text-sev-ok',
           stage.current && 'border-primary/50 bg-primary/12 text-primary',
           !stage.done && !stage.current && 'border-line bg-surface-2 text-ink-soft',
         )}
@@ -191,7 +191,7 @@ function StageRow({ stage, index }: { stage: BrainPathStage; index: number }) {
           <ul className="mt-1.5 space-y-0.5" aria-label={`${stage.title} evidence`}>
             {stage.evidence.map((e, i) => (
               <li key={i} className="flex items-start gap-1.5 text-[10px] leading-relaxed text-ink-soft">
-                <Check className="mt-0.5 size-2.5 shrink-0 text-emerald-500" aria-hidden />
+                <Check className="mt-0.5 size-2.5 shrink-0 text-sev-ok" aria-hidden />
                 {e}
               </li>
             ))}

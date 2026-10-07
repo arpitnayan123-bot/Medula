@@ -161,11 +161,11 @@ function AchievementCard({ a, pending, onToggle }: {
       <span
         className={cn(
           'absolute right-2.5 top-2.5 transition-colors',
-          a.featured ? 'text-amber-500' : 'text-ink-soft/25 group-hover:text-ink-soft/50',
+          a.featured ? 'text-gold' : 'text-ink-soft/25 group-hover:text-ink-soft/50',
         )}
         aria-hidden
       >
-        <Star className={cn('size-3.5', a.featured && 'fill-amber-400')} />
+        <Star className={cn('size-3.5', a.featured && 'fill-gold')} />
       </span>
 
       <span

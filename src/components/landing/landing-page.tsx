@@ -15,6 +15,7 @@ import {
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { LogoMark } from '@/components/brand/logo'
+import { HeroAnatomy } from '@/components/brand/hero-anatomy'
 import { useAppStore } from '@/lib/store'
 
 const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1]
@@ -54,7 +55,7 @@ function Reveal({
 
 function Eyebrow({ children }: { children: ReactNode }) {
   return (
-    <p className="text-[11px] font-medium uppercase tracking-[0.3em] text-cyan-600 dark:text-cyan-300/90">
+    <p className="text-[11px] font-semibold uppercase tracking-[0.3em] text-ink-soft">
       {children}
     </p>
   )
@@ -64,12 +65,12 @@ function Eyebrow({ children }: { children: ReactNode }) {
 type Pt = { x: number; y: number }
 
 const NODES: { label: string; latin: string; scattered: Pt; formed: Pt; color: string }[] = [
-  { label: 'Anatomy', latin: 'Morphologia', scattered: { x: 100, y: 84 }, formed: { x: 168, y: 128 }, color: '#38bdf8' },
-  { label: 'Physiology', latin: 'Physiologia', scattered: { x: 688, y: 64 }, formed: { x: 632, y: 128 }, color: '#34d399' },
-  { label: 'Pathology', latin: 'Pathologia', scattered: { x: 84, y: 384 }, formed: { x: 168, y: 332 }, color: '#38bdf8' },
-  { label: 'Pharmacology', latin: 'Pharmacologia', scattered: { x: 706, y: 392 }, formed: { x: 632, y: 332 }, color: '#34d399' },
-  { label: 'Medicine', latin: 'Medicina Interna', scattered: { x: 352, y: 428 }, formed: { x: 400, y: 234 }, color: '#22d3ee' },
-  { label: 'NEET-PG', latin: 'Examen supremum', scattered: { x: 452, y: 44 }, formed: { x: 400, y: 72 }, color: '#fbbf24' },
+  { label: 'Anatomy', latin: 'Morphologia', scattered: { x: 100, y: 84 }, formed: { x: 168, y: 128 }, color: '#c97e59' },
+  { label: 'Physiology', latin: 'Physiologia', scattered: { x: 688, y: 64 }, formed: { x: 632, y: 128 }, color: '#16788c' },
+  { label: 'Pathology', latin: 'Pathologia', scattered: { x: 84, y: 384 }, formed: { x: 168, y: 332 }, color: '#c97e59' },
+  { label: 'Pharmacology', latin: 'Pharmacologia', scattered: { x: 706, y: 392 }, formed: { x: 632, y: 332 }, color: '#5cb491' },
+  { label: 'Medicine', latin: 'Medicina Interna', scattered: { x: 352, y: 428 }, formed: { x: 400, y: 234 }, color: '#4a7fae' },
+  { label: 'NEET-PG', latin: 'Examen supremum', scattered: { x: 452, y: 44 }, formed: { x: 400, y: 72 }, color: '#d9ad6e' },
 ]
 
 const EDGES: [number, number][] = [
@@ -81,7 +82,7 @@ const CAPTIONS = [
   { text: "Medicine doesn't work in departments.", cls: 'text-foreground' },
   {
     text: "Your preparation shouldn't either.",
-    cls: 'bg-gradient-to-r from-cyan-500 via-sky-500 to-emerald-500 bg-clip-text text-transparent dark:from-cyan-300 dark:via-sky-400 dark:to-emerald-300',
+    cls: 'ink-gradient',
   },
 ]
 
@@ -157,7 +158,7 @@ function Constellation() {
             y1={NODES[a].formed.y}
             x2={NODES[b].formed.x}
             y2={NODES[b].formed.y}
-            stroke={i === EDGES.length - 1 ? '#34d399' : '#22d3ee'}
+            stroke={i === EDGES.length - 1 ? '#5cb491' : '#16788c'}
             strokeWidth={1.4}
             strokeLinecap="round"
             initial={{ pathLength: reduce ? 1 : 0, opacity: reduce ? 0.5 : 0 }}
@@ -264,12 +265,12 @@ const FEATURES = [
 ] as const
 
 const HUES: Record<string, string> = {
-  cyan: 'text-cyan-500 dark:text-cyan-300 bg-cyan-500/10 border-cyan-500/20 group-hover:border-cyan-400/40 group-hover:shadow-[0_0_44px_-12px_rgba(34,211,238,0.4)]',
-  sky: 'text-sky-500 dark:text-sky-300 bg-sky-500/10 border-sky-500/20 group-hover:border-sky-400/40 group-hover:shadow-[0_0_44px_-12px_rgba(56,189,248,0.4)]',
+  cyan: 'text-primary bg-primary/10 border-primary/20 group-hover:border-primary/40',
+  sky: 'text-info bg-info/10 border-info/20 group-hover:border-info/40',
   emerald:
-    'text-emerald-500 dark:text-emerald-300 bg-emerald-500/10 border-emerald-500/20 group-hover:border-emerald-400/40 group-hover:shadow-[0_0_44px_-12px_rgba(52,211,153,0.4)]',
+    'text-sev-ok bg-sev-ok/10 border-sev-ok/20 group-hover:border-sev-ok/40',
   amber:
-    'text-amber-500 dark:text-amber-300 bg-amber-500/10 border-amber-500/20 group-hover:border-amber-400/40 group-hover:shadow-[0_0_44px_-12px_rgba(251,191,36,0.4)]',
+    'text-sev-warn bg-sev-warn/10 border-sev-warn/20 group-hover:border-sev-warn/40',
 }
 
 // ─── Classroom → NEET-PG chain ───
@@ -337,7 +338,7 @@ export function LandingPage() {
         <section className="relative overflow-hidden">
           <div className="med-grid absolute inset-0" aria-hidden />
           <div
-            className="absolute left-1/2 top-[-20%] h-[480px] w-[720px] -translate-x-1/2 rounded-full bg-cyan-500/[0.07] blur-3xl"
+            className="absolute left-1/2 top-[-20%] h-[480px] w-[720px] -translate-x-1/2 rounded-full bg-gold/[0.12] blur-3xl"
             aria-hidden
           />
 
@@ -351,7 +352,7 @@ export function LandingPage() {
                 className="ecg-line"
                 d="M0 90 H150 l10 -14 10 14 H360 l8 10 12 -46 14 82 10 -46 6 10 H640 l10 -16 10 16 H880 l8 10 12 -46 14 82 10 -46 6 10 H1200"
                 fill="none"
-                stroke="#22d3ee"
+                stroke="#16788c"
                 strokeWidth={1.6}
               />
             </svg>
@@ -364,7 +365,7 @@ export function LandingPage() {
               transition={{ duration: 0.7, ease: EASE }}
               className="glass inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-[11px] font-medium tracking-wide text-muted-foreground sm:text-xs"
             >
-              <span className="size-1.5 rounded-full bg-cyan-400" />
+              <span className="size-1.5 rounded-full bg-primary" />
               PROJECT MEDULA · The control centre of your medical mind
             </motion.div>
 
@@ -376,7 +377,7 @@ export function LandingPage() {
             >
               Don&apos;t just study medicine.
               <br />
-              <span className="bg-gradient-to-r from-cyan-500 via-sky-500 to-emerald-500 bg-clip-text text-transparent dark:from-cyan-300 dark:via-sky-400 dark:to-emerald-300">
+              <span className="ink-gradient">
                 Build a medical brain.
               </span>
             </motion.h1>
@@ -399,7 +400,7 @@ export function LandingPage() {
             >
               <Button
                 size="lg"
-                className="h-12 rounded-full px-8 text-sm font-semibold tracking-wide shadow-[0_0_36px_-10px_rgba(34,211,238,0.55)] transition-transform hover:scale-[1.03]"
+                className="h-12 rounded-full px-8 text-sm font-semibold tracking-wide"
                 onClick={() => setView('signin')}
               >
                 START YOUR MEDICAL JOURNEY
@@ -427,6 +428,15 @@ export function LandingPage() {
             >
               Built on the NMC CBME curriculum · For every MBBS year → NEET-PG
             </motion.p>
+
+            <motion.div
+              initial={{ opacity: 0, y: 18 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.9, delay: 0.5, ease: EASE }}
+              className="mt-10 w-full max-w-md"
+            >
+              <HeroAnatomy className="mx-auto w-full max-w-md" />
+            </motion.div>
           </div>
         </section>
 
@@ -460,7 +470,7 @@ export function LandingPage() {
                     id={f.title === 'Doubt Search' ? 'medical-map' : f.title === 'AI Study Coach' ? 'ai-tutor' : undefined}
                     whileHover={{ scale: 1.02 }}
                     transition={{ duration: 0.25, ease: 'easeOut' }}
-                    className="group glass h-full scroll-mt-32 rounded-2xl p-6 transition-all duration-300 hover:border-cyan-400/30 hover:shadow-[0_10px_44px_-16px_rgba(34,211,238,0.35)]"
+                    className="clay clay-hover group h-full scroll-mt-32 rounded-2xl p-6"
                   >
                     <div
                       className={`grid size-11 place-items-center rounded-xl border transition-all duration-300 ${HUES[f.hue]}`}
@@ -493,13 +503,13 @@ export function LandingPage() {
               <div className="mt-12 flex flex-wrap items-center justify-center gap-2 sm:gap-3">
                 {CHAIN.map((step, i) => (
                   <div key={step} className="flex items-center gap-2 sm:gap-3">
-                    <span className="glass rounded-full px-4 py-2.5 text-sm font-medium sm:px-5">
+                    <span className="clay-in rounded-full px-4 py-2.5 text-sm font-medium text-ink-soft">
                       {step}
                     </span>
                     {i < CHAIN.length - 1 && (
                       <motion.span
                         aria-hidden
-                        className="text-cyan-500 dark:text-cyan-300"
+                        className="text-primary"
                         initial={{ x: 0 }}
                         animate={reduce ? undefined : { x: [0, 4, 0] }}
                         transition={{ duration: 1.5, repeat: Infinity, delay: i * 0.18, ease: 'easeInOut' }}
@@ -527,8 +537,8 @@ export function LandingPage() {
             <div className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
               {PERSONAS.map((p, i) => (
                 <Reveal key={p.tag} delay={i * 0.06}>
-                  <div className="glass h-full rounded-2xl p-5 transition-colors hover:border-cyan-400/30">
-                    <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-cyan-600 dark:text-cyan-300/90">
+                  <div className="clay clay-hover h-full rounded-2xl p-5">
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-primary">
                       {p.tag}
                     </p>
                     <h3 className="mt-2 text-lg font-semibold tracking-tight">{p.title}</h3>
@@ -543,7 +553,7 @@ export function LandingPage() {
         {/* ─── Final CTA ─── */}
         <section className="px-4 pb-24 sm:px-6 sm:pb-32">
           <Reveal className="mx-auto max-w-5xl">
-            <div className="glass-strong relative overflow-hidden rounded-3xl px-6 py-16 text-center sm:px-12 sm:py-20">
+            <div className="podium relative overflow-hidden rounded-3xl px-6 py-16 text-center sm:px-12 sm:py-20">
               <div className="med-grid absolute inset-0 opacity-70" aria-hidden />
               <div className="relative">
                 <h2 className="mx-auto max-w-3xl text-balance text-3xl font-semibold tracking-tight sm:text-4xl">
@@ -551,7 +561,7 @@ export function LandingPage() {
                 </h2>
                 <Button
                   size="lg"
-                  className="mt-10 h-12 rounded-full px-10 text-sm font-semibold tracking-wide shadow-[0_0_36px_-10px_rgba(34,211,238,0.55)] transition-transform hover:scale-[1.03]"
+                  className="mt-10 h-12 rounded-full px-10 text-sm font-semibold tracking-wide"
                   onClick={() => setView('onboarding')}
                 >
                   START

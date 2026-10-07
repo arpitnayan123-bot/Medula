@@ -81,7 +81,7 @@ export function FacultyQuality({ onGoto }: { onGoto?: (tab: FacultyTab) => void 
                   ))}
                 </div>
                 {data.answerKeySkew && (
-                  <p className="mt-2 flex items-start gap-2 text-[11px] leading-relaxed text-amber-700" role="note">
+                  <p className="mt-2 flex items-start gap-2 text-[11px] leading-relaxed text-sev-warn" role="note">
                     <span className="mt-0.5 shrink-0 font-semibold">Skew —</span>
                     <span>{data.answerKeySkew.line}</span>
                   </p>

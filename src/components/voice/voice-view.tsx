@@ -36,12 +36,12 @@ type Screen = 'home' | 'session' | 'debrief'
 const SPEEDS = [0.75, 1, 1.25, 1.5] as const
 
 const MODE_META: Record<VoiceMode, { icon: typeof Mic; accent: string }> = {
-  listen: { icon: Radio, accent: 'text-sky-700 bg-sky-100' },
-  rapid: { icon: Play, accent: 'text-orange-700 bg-orange-100' },
-  viva: { icon: Mic, accent: 'text-rose-700 bg-rose-100' },
-  revision: { icon: RotateCcw, accent: 'text-emerald-700 bg-emerald-100' },
-  clinical: { icon: Square, accent: 'text-teal-700 bg-teal-100' },
-  doubt: { icon: Type, accent: 'text-violet-700 bg-violet-100' },
+  listen: { icon: Radio, accent: 'bg-primary/10 text-primary' },
+  rapid: { icon: Play, accent: 'bg-sev-warn/10 text-sev-warn' },
+  viva: { icon: Mic, accent: 'bg-sev-crit/10 text-sev-crit' },
+  revision: { icon: RotateCcw, accent: 'bg-sev-ok/10 text-sev-ok' },
+  clinical: { icon: Square, accent: 'bg-primary/10 text-primary' },
+  doubt: { icon: Type, accent: 'bg-info/10 text-info' },
 }
 
 const MODE_LABELS: Record<VoiceMode, string> = {
@@ -162,8 +162,8 @@ export function VoiceView() {
   return (
     <div className="mx-auto w-full max-w-4xl px-4 pb-24 pt-6 sm:px-6">
       {/* ── Hero: one tap, hands-free ── */}
-      <section className="rounded-3xl border border-sky-200/70 bg-gradient-to-br from-sky-100 via-white to-amber-50 p-6 sm:p-8">
-        <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-sky-700">
+      <section className="podium rounded-3xl p-6 sm:p-8">
+        <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-primary">
           <Mic className="size-4" aria-hidden />
           Product 11 · hands-free learning
         </div>
@@ -174,11 +174,11 @@ export function VoiceView() {
           Put the phone down and just talk. Listen to a topic, answer rapid-fire questions, run a
           viva, clear your revision queue — or ask tonight&apos;s doubt, all by voice.
         </p>
-        <div className="mt-3 flex flex-wrap items-center gap-1.5 text-[11px] font-medium text-sky-800">
+        <div className="mt-3 flex flex-wrap items-center gap-1.5 text-[11px] font-medium text-ink-soft">
           {['Listen', 'Speak', 'Answer', 'Get feedback', 'Learn'].map((step, i) => (
             <span key={step} className="flex items-center gap-1.5">
-              {i > 0 && <span aria-hidden className="text-sky-400">→</span>}
-              <span className="rounded-full bg-white/80 px-2.5 py-1 shadow-sm">{step}</span>
+              {i > 0 && <span aria-hidden className="text-ink-soft/50">→</span>}
+              <span className="clay-in rounded-full px-2.5 py-1">{step}</span>
             </span>
           ))}
         </div>
@@ -186,7 +186,7 @@ export function VoiceView() {
         <div className="mt-5 flex flex-wrap items-center gap-3">
           <Button
             size="lg"
-            className="h-14 rounded-2xl px-6 text-base font-semibold shadow-lg shadow-sky-900/10"
+            className="h-14 rounded-2xl px-6 text-base font-semibold"
             onClick={() => startSession('listen')}
             disabled={starting !== null}
           >
@@ -194,7 +194,7 @@ export function VoiceView() {
             {starting === 'listen' ? 'Starting…' : 'Start talking — one tap'}
           </Button>
           {!micOk && (
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-amber-100 px-3 py-1.5 text-xs font-medium text-amber-800">
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-sev-warn/10 px-3 py-1.5 text-xs font-medium text-sev-warn">
               <MicOff className="size-3.5" aria-hidden />
               No mic here — typed input works exactly the same
             </span>
@@ -205,8 +205,8 @@ export function VoiceView() {
       {/* ── Measured stats ── */}
       <section className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-4" aria-label="Your voice learning stats">
         {homeError || !home ? (
-          <div className="col-span-full rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-800">
-            <AlertTriangle className="mr-1.5 inline size-4" aria-hidden />
+          <div className="clay-in col-span-full rounded-2xl p-4 text-sm text-ink-soft">
+            <AlertTriangle className="mr-1.5 inline size-4 text-sev-warn" aria-hidden />
             {homeError
               ? 'Could not load your voice stats — check your connection and reopen.'
               : 'Loading your voice stats…'}
@@ -230,10 +230,10 @@ export function VoiceView() {
           <button
             onClick={() => startSession(home.resume!.mode, undefined, home.resume!.sessionId)}
             disabled={starting !== null}
-            className="flex w-full items-center justify-between gap-3 rounded-2xl border border-emerald-200 bg-emerald-50 p-4 text-left transition hover:border-emerald-300 hover:bg-emerald-100/70 disabled:opacity-60"
+            className="clay clay-hover flex w-full items-center justify-between gap-3 rounded-2xl p-4 text-left disabled:opacity-60"
           >
             <span>
-              <span className="block text-xs font-semibold uppercase tracking-wide text-emerald-700">
+              <span className="block text-xs font-semibold uppercase tracking-wide text-sev-ok">
                 Resume session
               </span>
               <span className="mt-0.5 block text-sm font-medium text-ink">
@@ -241,7 +241,7 @@ export function VoiceView() {
                 {new Date(home.resume.startedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
               </span>
             </span>
-            <Play className="size-5 shrink-0 text-emerald-700" aria-hidden />
+            <Play className="size-5 shrink-0 text-sev-ok" aria-hidden />
           </button>
         </section>
       )}
@@ -259,7 +259,7 @@ export function VoiceView() {
                   key={`${s.mode}-${i}`}
                   onClick={() => startSession(s.mode, s.topicId ?? undefined)}
                   disabled={starting !== null}
-                  className="group flex items-start gap-3 rounded-2xl border border-border bg-card p-4 text-left transition hover:border-sky-300 hover:shadow-sm disabled:opacity-60"
+                  className="clay clay-hover group flex items-start gap-3 rounded-2xl p-4 text-left disabled:opacity-60"
                 >
                   <span className={cn('mt-0.5 flex size-9 shrink-0 items-center justify-center rounded-xl', meta.accent)}>
                     <Icon className="size-4.5" aria-hidden />
@@ -288,7 +288,7 @@ export function VoiceView() {
               return (
                 <div
                   key={m.id}
-                  className="flex flex-col rounded-2xl border border-border bg-card p-4 transition hover:border-sky-300 hover:shadow-sm"
+                  className="clay clay-hover flex flex-col rounded-2xl p-4"
                 >
                   <div className="flex items-center gap-2.5">
                     <span className={cn('flex size-9 items-center justify-center rounded-xl', meta.accent)}>
@@ -296,13 +296,13 @@ export function VoiceView() {
                     </span>
                     <span className="text-sm font-bold text-ink">{m.name}</span>
                     {m.expectsAnswer && (
-                      <span className="ml-auto rounded-full bg-sky-100 px-2 py-0.5 text-[10px] font-semibold text-sky-700">
+                      <span className="ml-auto rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-semibold text-primary">
                         answers graded
                       </span>
                     )}
                   </div>
                   <p className="mt-2 flex-1 text-xs text-ink-soft">{m.tagline}</p>
-                  <p className="mt-2 text-xs italic text-sky-800">{m.speak}</p>
+                  <p className="mt-2 text-xs italic text-primary">{m.speak}</p>
                   <Button
                     size="sm"
                     variant="outline"
@@ -330,7 +330,7 @@ export function VoiceView() {
               <button
                 key={w.name}
                 onClick={() => startSession('viva')}
-                className="rounded-full border border-rose-200 bg-rose-50 px-3 py-1.5 text-xs font-medium text-rose-800 transition hover:border-rose-300 hover:bg-rose-100"
+                className="warm-card rounded-full px-3 py-1.5 text-xs font-medium text-ink"
               >
                 {w.name} · {w.mastery}%
               </button>
@@ -340,7 +340,7 @@ export function VoiceView() {
       )}
 
       {/* ── Honest boundaries ── */}
-      <section className="mt-8 rounded-2xl border border-border bg-card/60 p-4 text-xs leading-relaxed text-ink-soft">
+      <section className="clay-in mt-8 rounded-2xl p-4 text-xs leading-relaxed text-ink-soft">
         <p className="font-semibold text-ink">How this works &amp; where it stops</p>
         <p className="mt-1">
           Your speech is transcribed and processed to generate each reply; conversations are kept in
@@ -357,7 +357,7 @@ export function VoiceView() {
 
 function Stat({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-2xl border border-border bg-card p-4">
+    <div className="clay rounded-2xl p-4">
       <p className="text-xl font-bold text-ink">{value}</p>
       <p className="mt-0.5 text-xs text-ink-soft">{label}</p>
     </div>
@@ -579,7 +579,7 @@ function VoiceSessionView({
   return (
     <div className="mx-auto w-full max-w-3xl px-4 pb-24 pt-6 sm:px-6">
       {/* header */}
-      <div className="flex items-center justify-between gap-3 rounded-2xl border border-border bg-card p-4">
+      <div className="clay flex items-center justify-between gap-3 rounded-2xl p-4">
         <div className="flex items-center gap-2.5">
           <span className={cn('flex size-9 items-center justify-center rounded-xl', modeMeta.accent)}>
             <ModeIcon className="size-4.5" aria-hidden />
@@ -595,7 +595,7 @@ function VoiceSessionView({
         <Button
           variant="outline"
           size="sm"
-          className="rounded-xl border-rose-200 text-rose-700 hover:bg-rose-50"
+          className="rounded-xl border-sev-crit/30 text-sev-crit hover:bg-sev-crit/10"
           onClick={() => setConfirmEnd(true)}
           disabled={ending}
         >
@@ -616,11 +616,11 @@ function VoiceSessionView({
                 : 'Tap to speak'
           }
           className={cn(
-            'relative flex size-32 items-center justify-center rounded-full text-white shadow-xl transition-all duration-300 sm:size-36',
-            phase === 'listening' && 'bg-rose-500 shadow-rose-500/30',
-            phase === 'speaking' && 'bg-sky-600 shadow-sky-600/30',
-            phase === 'thinking' && 'bg-amber-500 shadow-amber-500/30',
-            phase === 'idle' && 'bg-emerald-600 shadow-emerald-600/30',
+            'relative flex size-32 items-center justify-center rounded-full text-primary-foreground shadow-xl transition-all duration-300 sm:size-36',
+            phase === 'listening' && 'bg-sev-crit shadow-sev-crit/30',
+            phase === 'speaking' && 'bg-primary shadow-primary/30',
+            phase === 'thinking' && 'bg-sev-warn shadow-sev-warn/30',
+            phase === 'idle' && 'bg-sev-ok shadow-sev-ok/30',
           )}
           style={
             phase === 'listening'
@@ -628,14 +628,14 @@ function VoiceSessionView({
               : undefined
           }
         >
-          {phase === 'listening' && <span className="absolute inset-0 animate-ping rounded-full bg-rose-400/40" aria-hidden />}
-          {phase === 'speaking' && <span className="absolute inset-0 animate-pulse rounded-full bg-sky-400/30" aria-hidden />}
+          {phase === 'listening' && <span className="absolute inset-0 animate-ping rounded-full bg-sev-crit/30" aria-hidden />}
+          {phase === 'speaking' && <span className="absolute inset-0 animate-pulse rounded-full bg-primary/25" aria-hidden />}
           {phase === 'listening' ? (
             <Mic className="size-10" aria-hidden />
           ) : phase === 'speaking' ? (
             <Radio className="size-10" aria-hidden />
           ) : phase === 'thinking' ? (
-            <span className="size-8 animate-spin rounded-full border-2 border-white/40 border-t-white" aria-hidden />
+            <span className="size-8 animate-spin rounded-full border-2 border-primary-foreground/40 border-t-primary-foreground" aria-hidden />
           ) : (
             <Mic className="size-10" aria-hidden />
           )}
@@ -646,14 +646,14 @@ function VoiceSessionView({
           {phase === 'thinking' && 'Thinking…'}
           {phase === 'idle' && (micOk ? 'Tap to speak' : 'Mic unavailable — type below')}
         </p>
-        {notice && <p className="mt-1 max-w-sm text-center text-xs text-amber-700">{notice}</p>}
-        {micError && <p className="mt-1 max-w-sm text-center text-xs text-amber-700">{micError}</p>}
+        {notice && <p className="mt-1 max-w-sm text-center text-xs text-sev-warn">{notice}</p>}
+        {micError && <p className="mt-1 max-w-sm text-center text-xs text-sev-warn">{micError}</p>}
       </div>
 
       {/* current tutor line — large, readable, mirrored text */}
       {tutorLine && (
-        <div className="mt-5 rounded-2xl border border-sky-200/70 bg-sky-50/80 p-4">
-          <p className="text-xs font-semibold uppercase tracking-wide text-sky-700">Tutor is saying</p>
+        <div className="clay-in mt-5 rounded-2xl p-4">
+          <p className="text-xs font-semibold uppercase tracking-wide text-primary">Tutor is saying</p>
           <p className="mt-1 text-sm leading-relaxed text-ink" aria-live="polite">{tutorLine}</p>
         </div>
       )}
@@ -665,14 +665,14 @@ function VoiceSessionView({
           className={cn(
             'rounded-full border px-3 py-1.5 text-xs font-medium transition',
             handsFree
-              ? 'border-emerald-300 bg-emerald-50 text-emerald-800'
-              : 'border-border bg-card text-ink-soft',
+              ? 'border-sev-ok/40 bg-sev-ok/10 text-sev-ok'
+              : 'border-line bg-card text-ink-soft',
           )}
           aria-pressed={handsFree}
         >
           {handsFree ? 'Hands-free: on' : 'Hands-free: off'}
         </button>
-        <div className="flex items-center gap-1 rounded-full border border-border bg-card px-1.5 py-1" role="group" aria-label="Speaking speed">
+        <div className="clay-in flex items-center gap-1 rounded-full px-1.5 py-1" role="group" aria-label="Speaking speed">
           {SPEEDS.map((s) => (
             <button
               key={s}
@@ -680,7 +680,7 @@ function VoiceSessionView({
               aria-pressed={speed === s}
               className={cn(
                 'rounded-full px-2.5 py-1 text-xs font-semibold transition',
-                speed === s ? 'bg-sky-600 text-white' : 'text-ink-soft hover:bg-sky-50',
+                speed === s ? 'bg-primary text-primary-foreground' : 'text-ink-soft hover:bg-primary/10',
               )}
             >
               {s}×
@@ -701,7 +701,7 @@ function VoiceSessionView({
           value={typed}
           onChange={(e) => setTyped(e.target.value)}
           placeholder="Type instead — works exactly like speaking…"
-          className="h-11 rounded-xl bg-card"
+          className="clay-field h-11 rounded-xl"
           aria-label="Type your answer"
         />
         <Button type="submit" className="h-11 rounded-xl px-4" disabled={!typed.trim() || phase === 'thinking'}>
@@ -710,7 +710,7 @@ function VoiceSessionView({
       </form>
 
       {/* transcript */}
-      <div className="mt-5 max-h-72 overflow-y-auto rounded-2xl border border-border bg-card p-4" aria-label="Conversation history">
+      <div className="clay mt-5 max-h-72 overflow-y-auto rounded-2xl p-4" aria-label="Conversation history">
         <p className="text-xs font-semibold uppercase tracking-wide text-ink-soft">Conversation</p>
         <div className="mt-2 space-y-2.5">
           {transcript.map((t, i) => (
@@ -718,7 +718,7 @@ function VoiceSessionView({
               <div
                 className={cn(
                   'max-w-[85%] rounded-2xl px-3 py-2 text-xs leading-relaxed',
-                  t.role === 'student' ? 'bg-sky-600/10 text-ink' : 'bg-muted text-ink-soft',
+                  t.role === 'student' ? 'bg-primary/10 text-ink' : 'bg-muted text-ink-soft',
                 )}
               >
                 <span className="mb-0.5 block text-[10px] font-bold uppercase tracking-wide opacity-60">
@@ -735,14 +735,14 @@ function VoiceSessionView({
       {/* end confirm */}
       {confirmEnd && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4" role="dialog" aria-modal="true" aria-label="End session confirmation">
-          <div className="w-full max-w-sm rounded-2xl bg-card p-5 shadow-2xl">
+          <div className="glass-strong w-full max-w-sm rounded-2xl p-5 shadow-float">
             <p className="text-sm font-bold text-ink">End this voice session?</p>
             <p className="mt-1 text-xs text-ink-soft">
               Your transcript, graded answers and study time are saved and fed to Mistake
               Intelligence and Smart Revision.
             </p>
             <div className="mt-4 flex gap-2">
-              <Button className="flex-1 rounded-xl bg-rose-600 hover:bg-rose-700" onClick={() => void endSession()} disabled={ending}>
+              <Button className="flex-1 rounded-xl bg-sev-crit hover:bg-sev-crit/90" onClick={() => void endSession()} disabled={ending}>
                 {ending ? 'Saving…' : 'End & save'}
               </Button>
               <Button variant="outline" className="flex-1 rounded-xl" onClick={() => setConfirmEnd(false)}>

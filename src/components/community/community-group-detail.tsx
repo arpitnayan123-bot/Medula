@@ -47,7 +47,7 @@ const CHALLENGE_KINDS: { value: string; label: string; unit: string }[] = [
 
 const CHALLENGE_STATUS_META: Record<string, { label: string; cls: string }> = {
   active: { label: 'Active', cls: 'border-primary/40 bg-primary/10 text-primary' },
-  complete: { label: 'Complete', cls: 'border-emerald-500/40 bg-emerald-500/10 text-emerald-700 dark:text-emerald-400' },
+  complete: { label: 'Complete', cls: 'border-sev-ok/40 bg-sev-ok/10 text-sev-ok' },
   archived: { label: 'Archived', cls: 'border-line bg-surface-2 text-ink-soft' },
 }
 
@@ -254,7 +254,7 @@ export function CommunityGroupDetailScreen({
   // ── render ─────────────────────────────────────────────────────────────────
   if (state === 'error') {
     return (
-      <div className="glass flex flex-col items-center gap-3 rounded-2xl p-8 text-center" role="alert">
+      <div className="clay flex flex-col items-center gap-3 rounded-2xl p-8 text-center" role="alert">
         <ShieldAlert className="size-6 text-ink-soft" aria-hidden />
         <h1 className="text-lg font-semibold tracking-tight">This group didn&apos;t load</h1>
         <p className="max-w-sm text-sm leading-relaxed text-ink-soft">
@@ -309,7 +309,7 @@ export function CommunityGroupDetailScreen({
             </span>
           )}
         </div>
-        <p className="rounded-xl border border-amber-500/40 bg-amber-500/10 px-3.5 py-2.5 text-xs leading-relaxed text-amber-700 dark:text-amber-400" role="note">
+        <p className="rounded-xl border border-sev-warn/40 bg-sev-warn/10 px-3.5 py-2.5 text-xs leading-relaxed text-sev-warn" role="note">
           Private group — ask the owner for an invite. Nothing inside is shown to non-members: not the plan, not the
           challenges, not the members.
         </p>
@@ -334,7 +334,7 @@ export function CommunityGroupDetailScreen({
               className={cn(
                 'inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide',
                 detail.privacy === 'private'
-                  ? 'border-amber-500/40 bg-amber-500/10 text-amber-600 dark:text-amber-400'
+                  ? 'border-sev-warn/40 bg-sev-warn/10 text-sev-warn'
                   : 'border-line bg-surface-2 text-ink-soft',
               )}
             >
@@ -414,7 +414,7 @@ export function CommunityGroupDetailScreen({
               className={cn(
                 'ml-auto shrink-0 rounded-full border px-2 py-0.5 text-[9px] font-bold uppercase tracking-wide',
                 detail.youShareData
-                  ? 'border-emerald-500/40 bg-emerald-500/10 text-emerald-700 dark:text-emerald-400'
+                  ? 'border-sev-ok/40 bg-sev-ok/10 text-sev-ok'
                   : 'border-line bg-surface-2 text-ink-soft',
               )}
             >
@@ -483,7 +483,7 @@ export function CommunityGroupDetailScreen({
             <ul className="mt-3 max-h-96 space-y-1.5 overflow-y-auto pr-1" aria-label="Shared plan lines">
               {detail.plan.map((line) => (
                 <li key={line.id} className="flex items-start gap-2.5 rounded-xl border border-line bg-surface-2/40 px-3.5 py-2.5">
-                  <CheckCircle2 className="mt-0.5 size-3.5 shrink-0 text-emerald-500" aria-hidden />
+                  <CheckCircle2 className="mt-0.5 size-3.5 shrink-0 text-sev-ok" aria-hidden />
                   <span className="min-w-0 flex-1">
                     <span className="block text-xs leading-relaxed">{line.line}</span>
                     <span className="mt-0.5 block text-[10px] text-ink-soft">added by {line.addedBy}</span>
@@ -540,7 +540,7 @@ export function CommunityGroupDetailScreen({
                       className={cn(
                         'shrink-0 rounded-full border px-2 py-0.5 text-[9px] font-bold uppercase tracking-wide',
                         m.sharesData
-                          ? 'border-emerald-500/40 bg-emerald-500/10 text-emerald-700 dark:text-emerald-400'
+                          ? 'border-sev-ok/40 bg-sev-ok/10 text-sev-ok'
                           : 'border-line bg-surface-2 text-ink-soft',
                       )}
                     >

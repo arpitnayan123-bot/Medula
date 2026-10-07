@@ -112,19 +112,19 @@ export const ACCENTS: Record<GamifyAccentId, GamifyAccentClasses> = {
     swatch: 'bg-gradient-to-br from-primary via-primary/70 to-primary/25',
   },
   'mint-rounds': {
-    text: 'text-emerald-600', soft: 'bg-emerald-500/10', chipBg: 'bg-emerald-500/12', chipText: 'text-emerald-700',
-    chipBorder: 'border-emerald-500/40', bar: 'bg-emerald-500', barTrack: 'bg-emerald-500/15', dot: 'bg-emerald-500',
-    swatch: 'bg-gradient-to-br from-emerald-500 via-emerald-400/70 to-emerald-200/60',
+    text: 'text-sev-ok', soft: 'bg-sev-ok/10', chipBg: 'bg-sev-ok/12', chipText: 'text-sev-ok',
+    chipBorder: 'border-sev-ok/40', bar: 'bg-sev-ok', barTrack: 'bg-sev-ok/15', dot: 'bg-sev-ok',
+    swatch: 'bg-gradient-to-br from-sev-ok via-sev-ok/70 to-mint/60',
   },
   'amber-clinical': {
-    text: 'text-amber-600', soft: 'bg-amber-500/10', chipBg: 'bg-amber-500/12', chipText: 'text-amber-700',
-    chipBorder: 'border-amber-500/40', bar: 'bg-amber-500', barTrack: 'bg-amber-500/15', dot: 'bg-amber-500',
-    swatch: 'bg-gradient-to-br from-amber-500 via-amber-400/70 to-amber-200/60',
+    text: 'text-gold', soft: 'bg-gold/10', chipBg: 'bg-gold/12', chipText: 'text-gold',
+    chipBorder: 'border-gold/40', bar: 'bg-gold', barTrack: 'bg-gold/15', dot: 'bg-gold',
+    swatch: 'bg-gradient-to-br from-gold via-gold/70 to-gold/25',
   },
   'slate-attending': {
-    text: 'text-slate-600', soft: 'bg-slate-500/10', chipBg: 'bg-slate-500/12', chipText: 'text-slate-700',
-    chipBorder: 'border-slate-500/40', bar: 'bg-slate-500', barTrack: 'bg-slate-500/15', dot: 'bg-slate-500',
-    swatch: 'bg-gradient-to-br from-slate-600 via-slate-500/70 to-slate-300/60',
+    text: 'text-ink-soft', soft: 'bg-ink-soft/10', chipBg: 'bg-ink-soft/12', chipText: 'text-ink-soft',
+    chipBorder: 'border-ink-soft/40', bar: 'bg-ink-soft', barTrack: 'bg-ink-soft/15', dot: 'bg-ink-soft',
+    swatch: 'bg-gradient-to-br from-ink-soft via-ink-soft/70 to-ink-soft/25',
   },
 }
 
@@ -230,7 +230,7 @@ export function LevelBadge({ level, tier, className }: { level: number; tier?: s
 
 const STREAK_DOT: Record<GamifyStreakState, string> = {
   intact: 'bg-primary',
-  recovered: 'bg-amber-500',
+  recovered: 'bg-gold',
   open: 'bg-transparent border border-line',
   none: 'bg-ink-soft/30',
 }

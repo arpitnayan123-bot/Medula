@@ -212,7 +212,7 @@ export function LibraryDetailPanel({
           {(stale || meta.state === 'loading') && <DetailSkeleton />}
 
           {!stale && meta.state === 'error' && (
-            <div className="glass flex flex-col items-center gap-3 rounded-2xl p-8 text-center" role="alert">
+            <div className="clay flex flex-col items-center gap-3 rounded-2xl p-8 text-center" role="alert">
               <h2 className="text-base font-semibold tracking-tight">This resource didn&apos;t load</h2>
               <p className="max-w-sm text-sm text-ink-soft">
                 The catalog did not respond for this resource — try again.

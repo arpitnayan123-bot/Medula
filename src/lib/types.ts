@@ -733,16 +733,16 @@ export const PREP_STAGE_LABELS: Record<string, string> = {
 }
 
 export const KIND_META: Record<string, { label: string; color: string; icon: string }> = {
-  concept: { label: 'Concept', color: '#22d3ee', icon: 'Lightbulb' },
-  disease: { label: 'Disease', color: '#f87171', icon: 'Stethoscope' },
-  drug: { label: 'Drug', color: '#a78bfa', icon: 'Pill' },
-  investigation: { label: 'Investigation', color: '#fbbf24', icon: 'Microscope' },
-  physiology: { label: 'Physiology', color: '#34d399', icon: 'Activity' },
-  anatomy: { label: 'Anatomy', color: '#38bdf8', icon: 'Bone' },
-  pathology: { label: 'Pathology', color: '#f472b6', icon: 'Biohazard' },
-  pharmacology: { label: 'Pharmacology', color: '#c084fc', icon: 'Syringe' },
-  microbiology: { label: 'Microbiology', color: '#facc15', icon: 'Bug' },
-  clinical_skill: { label: 'Clinical Skill', color: '#4ade80', icon: 'Hand' },
+  concept: { label: 'Concept', color: '#16788c', icon: 'Lightbulb' },
+  disease: { label: 'Disease', color: '#c4535e', icon: 'Stethoscope' },
+  drug: { label: 'Drug', color: '#9a7fc0', icon: 'Pill' },
+  investigation: { label: 'Investigation', color: '#d9ad6e', icon: 'Microscope' },
+  physiology: { label: 'Physiology', color: '#5cb491', icon: 'Activity' },
+  anatomy: { label: 'Anatomy', color: '#c97e59', icon: 'Bone' },
+  pathology: { label: 'Pathology', color: '#c4718c', icon: 'Biohazard' },
+  pharmacology: { label: 'Pharmacology', color: '#8f7fc4', icon: 'Syringe' },
+  microbiology: { label: 'Microbiology', color: '#c4b453', icon: 'Bug' },
+  clinical_skill: { label: 'Clinical Skill', color: '#6aae7f', icon: 'Hand' },
 }
 
 export interface AuditPayload {

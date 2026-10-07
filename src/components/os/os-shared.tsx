@@ -113,8 +113,8 @@ export function OsCard({ children, className, onClick, ariaLabel }: {
       onClick={onClick}
       aria-label={ariaLabel}
       className={cn(
-        'rounded-2xl border border-border/70 bg-card/80 p-4 text-left shadow-sm backdrop-blur-sm transition',
-        onClick && 'hover:border-primary/40 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50',
+        'clay rounded-2xl p-4 text-left',
+        onClick && 'clay-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50',
         className,
       )}
     >
@@ -125,7 +125,7 @@ export function OsCard({ children, className, onClick, ariaLabel }: {
 
 export function EmptyNote({ children }: { children: React.ReactNode }) {
   return (
-    <p className="rounded-xl border border-dashed border-border/80 bg-muted/30 px-3 py-2.5 text-xs leading-relaxed text-ink-soft">
+    <p className="rounded-xl border border-dashed border-line bg-card/50 px-3 py-2.5 text-xs leading-relaxed text-ink-soft">
       {children}
     </p>
   )
@@ -142,8 +142,8 @@ export function FootNote({ children }: { children: React.ReactNode }) {
 export function MiniBar({ value, className }: { value: number; className?: string }) {
   const pct = Math.max(0, Math.min(100, value))
   return (
-    <div className={cn('h-1.5 w-full overflow-hidden rounded-full bg-muted', className)} role="presentation">
-      <div className="h-full rounded-full bg-primary/70" style={{ width: `${pct}%` }} />
+    <div className={cn('h-1.5 w-full overflow-hidden rounded-full bg-surface-2 shadow-well', className)} role="presentation">
+      <div className="h-full rounded-full bg-gradient-to-r from-primary to-[oklch(0.62_0.105_158)]" style={{ width: `${pct}%` }} />
     </div>
   )
 }
@@ -154,7 +154,7 @@ export function StatusDot({ status }: { status: 'active' | 'quiet' }) {
       aria-hidden
       className={cn(
         'inline-block size-1.5 shrink-0 rounded-full',
-        status === 'active' ? 'bg-emerald-500' : 'bg-muted-foreground/30',
+        status === 'active' ? 'bg-sev-ok' : 'bg-muted-foreground/30',
       )}
     />
   )

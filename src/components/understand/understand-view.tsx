@@ -8,11 +8,12 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
 import {
-  BrainCircuit, ChevronLeft, ChevronRight, CircleCheck, CircleCheckBig, Pause, Play,
-  RotateCcw, Search, Sparkles, GraduationCap, Layers, AlertTriangle,
+  BrainCircuit, Brain, ChevronLeft, ChevronRight, CircleCheck, CircleCheckBig, Clapperboard, Lightbulb,
+  Pause, Play, RotateCcw, Search, Sparkles, GraduationCap, Layers, AlertTriangle,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { PageHeader } from '@/components/primitives/kit'
 import { useToast } from '@/hooks/use-toast'
 import { api } from '@/lib/api'
 import { UNDERSTAND_SUBJECTS, SEVERITY_META, YIELD_META } from '@/lib/understand-types'
@@ -153,26 +154,28 @@ export function UnderstandView() {
     <div className="mx-auto w-full max-w-7xl px-4 py-6 sm:px-6">
       <StepTimer topic={topic} playing={playing} reduce={reduce} step={step} setStep={setStep} />
 
-      {/* ── header ── */}
-      <motion.header
+      {/* ── header — porcelain editorial on a clay card ── */}
+      <motion.div
         initial={reduce ? false : { opacity: 0, y: 18 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, ease: EASE }}
         className="clay rounded-3xl p-5 sm:p-6"
       >
         <div className="flex flex-wrap items-start justify-between gap-4">
-          <div className="min-w-0">
-            <p className="inline-flex items-center gap-1.5 rounded-full border border-primary/25 bg-primary/[0.07] px-3 py-1 text-[11px] font-bold uppercase tracking-[0.16em] text-primary">
-              <Sparkles className="size-3" aria-hidden /> Core feature
-            </p>
-            <h1 className="mt-2 flex items-center gap-2.5 text-2xl font-bold tracking-tight sm:text-3xl">
-              <span aria-hidden>🧠</span> Understand Your Topic
-            </h1>
-            <p className="mt-1.5 max-w-2xl text-sm leading-relaxed text-ink-soft">
-              The whole MBBS + NEET-PG syllabus, mapped and brought to life — living 3D diagrams,
-              narrated step by step, with every point students slip on highlighted before the exam does.
-            </p>
-          </div>
+          <PageHeader
+            className="min-w-0"
+            eyebrow={
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-primary/25 bg-primary/[0.07] px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.16em] text-primary">
+                <Sparkles className="size-3" aria-hidden /> Core feature
+              </span>
+            }
+            title={
+              <span className="flex items-center gap-2.5">
+                <Brain className="size-7 text-primary" aria-hidden /> Understand Your Topic
+              </span>
+            }
+            intro="The whole MBBS + NEET-PG syllabus, mapped and brought to life — living 3D diagrams, narrated step by step, with every point students slip on highlighted before the exam does."
+          />
           <div className="grid grid-cols-2 gap-2 text-center sm:grid-cols-4">
             {[
               { v: ALL_TOPICS.length, l: 'topics' },
@@ -193,7 +196,7 @@ export function UnderstandView() {
           <div className="h-2 flex-1 overflow-hidden rounded-full bg-surface-2" role="progressbar"
             aria-valuenow={understood.size} aria-valuemin={0} aria-valuemax={ALL_TOPICS.length}>
             <div
-              className="h-full rounded-full bg-gradient-to-r from-emerald-400 to-teal-400 transition-all duration-500"
+              className="h-full rounded-full bg-gradient-to-r from-primary to-[oklch(0.62_0.105_158)] transition-all duration-500"
               style={{ width: `${Math.round((understood.size / Math.max(ALL_TOPICS.length, 1)) * 100)}%` }}
             />
           </div>
@@ -201,7 +204,7 @@ export function UnderstandView() {
             {understood.size}/{ALL_TOPICS.length} understood
           </p>
         </div>
-      </motion.header>
+      </motion.div>
 
       {/* ── filters ── */}
       <section aria-label="Topic filters" className="mt-4 space-y-3">
@@ -236,7 +239,7 @@ export function UnderstandView() {
             ))}
           </div>
           <FilterChip active={liveOnly} onClick={() => setLiveOnly((v) => !v)}>
-            <span aria-hidden>🎬</span> Live scenes only
+            <Clapperboard className="size-3.5" aria-hidden /> Live scenes only
           </FilterChip>
         </div>
       </section>
@@ -258,7 +261,7 @@ export function UnderstandView() {
                   onClick={() => selectTopic(t.id)}
                   aria-current={active ? 'true' : undefined}
                   className={cn(
-                    'flex w-full items-start gap-2.5 rounded-2xl border p-2.5 text-left transition-all min-h-11',
+                    'clay-hover flex w-full items-start gap-2.5 rounded-2xl border p-2.5 text-left transition-all min-h-11',
                     active ? 'border-primary/50 bg-primary/10' : 'border-transparent hover:border-line hover:bg-surface-2',
                   )}
                 >
@@ -366,17 +369,18 @@ export function UnderstandView() {
                       </p>
                     </div>
 
-                    {/* step chips */}
-                    <div className="mt-3 flex gap-1.5 overflow-x-auto pb-1" role="tablist" aria-label="Narration steps">
+                    {/* step chips — porcelain tray */}
+                    <div className="clay-tray mt-3 flex gap-1.5 overflow-x-auto rounded-full p-1.5" role="tablist" aria-label="Narration steps">
                       {topic.steps.map((st, i) => (
                         <button
                           key={st.title}
                           role="tab"
                           aria-selected={i === step}
+                          data-state={i === step ? 'active' : 'inactive'}
                           onClick={() => setStep(i)}
                           className={cn(
-                            'shrink-0 rounded-full border px-3 py-1.5 text-xs font-semibold transition-all min-h-9',
-                            i === step ? 'border-primary/50 bg-primary/12 text-primary' : 'border-line bg-surface-2 text-ink-soft hover:text-foreground',
+                            'clay-tab shrink-0 rounded-full border px-3 py-1.5 text-xs font-semibold min-h-9',
+                            i === step ? 'border-primary/40 text-primary' : 'border-transparent text-ink-soft hover:text-foreground',
                           )}
                         >
                           {i + 1}. {st.title}
@@ -411,8 +415,9 @@ export function UnderstandView() {
                   <GraduationCap className="size-4 text-primary" aria-hidden /> In plain words
                 </h3>
                 <p className="mt-2 text-sm leading-relaxed">{topic.plain}</p>
-                <p className="mt-2 rounded-xl border border-primary/20 bg-primary/[0.06] px-3 py-2 text-xs font-medium text-primary">
-                  💡 {topic.oneLiner}
+                <p className="mt-2 flex items-start gap-1.5 rounded-xl border border-primary/20 bg-primary/[0.06] px-3 py-2 text-xs font-medium text-primary">
+                  <Lightbulb className="mt-0.5 size-3.5 shrink-0" aria-hidden />
+                  <span>{topic.oneLiner}</span>
                 </p>
               </section>
 

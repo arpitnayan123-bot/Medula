@@ -13,17 +13,27 @@ import {
   ArrowRight,
   Bookmark,
   BookmarkCheck,
+  Brain,
   CheckCircle2,
   ChevronDown,
+  Crown,
+  Dices,
+  EyeOff,
   FilePenLine,
+  FlaskConical,
   GraduationCap,
+  Landmark,
   ListFilter,
   Loader2,
   Play,
   RotateCcw,
   Send,
+  Star,
+  Stethoscope,
+  Target,
   Timer,
   XCircle,
+  Zap,
 } from 'lucide-react'
 
 import { api } from '@/lib/api'
@@ -62,18 +72,18 @@ const SEC_PER_Q = 60 // NEET-PG pace: ~1 min per question
 
 // Paper-mix presets — how the question set is composed
 const MIXES = [
-  { id: 'high-yield', label: 'High-Yield Mix', emoji: '⭐', desc: 'Weighted to the big NEET-PG subjects — Medicine, Surgery, OBGY get more seats' },
-  { id: 'weak', label: 'Weak-Areas Focus', emoji: '🎯', desc: 'Pulled from concepts your knowledge map flags as weak or unstable' },
-  { id: 'random', label: 'Mixed Bag', emoji: '🎲', desc: 'A uniform draw across the whole bank — good for surprises' },
-  { id: 'custom', label: 'Build My Paper', emoji: '🧪', desc: 'Pick your own subject mix — your personal mock, your rules' },
+  { id: 'high-yield', label: 'High-Yield Mix', icon: Star, desc: 'Weighted to the big NEET-PG subjects — Medicine, Surgery, OBGY get more seats' },
+  { id: 'weak', label: 'Weak-Areas Focus', icon: Target, desc: 'Pulled from concepts your knowledge map flags as weak or unstable' },
+  { id: 'random', label: 'Mixed Bag', icon: Dices, desc: 'A uniform draw across the whole bank — good for surprises' },
+  { id: 'custom', label: 'Build My Paper', icon: FlaskConical, desc: 'Pick your own subject mix — your personal mock, your rules' },
 ] as const
 
 // One-tap quick starts — jump straight into a run without touching the config
 const QUICK_STARTS = [
-  { label: 'Full Mock 50', emoji: '🏛️', desc: 'The real-feel paper — 50 questions weighted across the whole bank', size: 50, mix: 'high-yield' },
-  { label: 'Grand Mock 100', emoji: '👑', desc: 'The biggest paper in MEDULA — 100 questions, 100 minutes, every subject in play', size: 100, mix: 'high-yield' },
-  { label: 'Rapid Fire 20', emoji: '⚡', desc: 'A 20-minute mixed bag at exam pace', size: 20, mix: 'random' },
-  { label: 'Weak-Spot 10', emoji: '🎯', desc: 'Ten questions aimed at your flagged weak concepts', size: 10, mix: 'weak' },
+  { label: 'Full Mock 50', icon: Landmark, desc: 'The real-feel paper — 50 questions weighted across the whole bank', size: 50, mix: 'high-yield' },
+  { label: 'Grand Mock 100', icon: Crown, desc: 'The biggest paper in MEDULA — 100 questions, 100 minutes, every subject in play', size: 100, mix: 'high-yield' },
+  { label: 'Rapid Fire 20', icon: Zap, desc: 'A 20-minute mixed bag at exam pace', size: 20, mix: 'random' },
+  { label: 'Weak-Spot 10', icon: Target, desc: 'Ten questions aimed at your flagged weak concepts', size: 10, mix: 'weak' },
 ] as const
 
 // Quick-pick bundles for the custom paper builder (codes must match seeded subjects)
@@ -325,7 +335,7 @@ export function MockTestView() {
           </p>
         </header>
 
-        <section className="glass space-y-6 rounded-2xl p-5 md:p-7">
+        <section className="clay space-y-6 rounded-2xl p-5 md:p-7">
           {/* Quick starts — one tap, straight into the run */}
           <div className="space-y-3">
             <label className="text-xs font-semibold uppercase tracking-[0.14em] text-ink-soft">
@@ -340,8 +350,10 @@ export function MockTestView() {
                   onClick={() => startTest({ size: qk.size, mix: qk.mix })}
                   className="clay-btn min-h-11 border border-line bg-surface-2/40 p-3 text-left transition-colors hover:border-primary/40 disabled:pointer-events-none disabled:opacity-50"
                 >
-                  <span className="flex items-center gap-1.5 text-sm font-semibold">
-                    <span aria-hidden>{qk.emoji}</span>
+                  <span className="flex items-center gap-2 text-sm font-semibold">
+                    <span className="grid size-6 shrink-0 place-items-center rounded-lg bg-surface-2 text-primary shadow-well">
+                      <qk.icon className="size-3.5" aria-hidden />
+                    </span>
                     <span className="whitespace-nowrap">{qk.label}</span>
                   </span>
                   <span className="mt-1 block text-[11px] leading-snug text-ink-soft">{qk.desc}</span>
@@ -390,8 +402,10 @@ export function MockTestView() {
                         : 'border-line bg-surface-2/40 hover:border-primary/40',
                     )}
                   >
-                    <span className="flex items-center gap-1.5">
-                      <span aria-hidden>{m.emoji}</span>
+                    <span className="flex items-center gap-2">
+                      <span className="grid size-6 shrink-0 place-items-center rounded-lg bg-surface-2 text-primary shadow-well">
+                        <m.icon className="size-3.5" aria-hidden />
+                      </span>
                       <span className="whitespace-nowrap">{m.label}</span>
                       {m.id === 'high-yield' && (
                         <span className="rounded-full bg-sev-warn/15 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wide text-sev-warn">recommended</span>
@@ -429,17 +443,18 @@ export function MockTestView() {
                   <div className="flex flex-wrap gap-2">
                     {([
                       { label: `All ${subjects.length || 19}`, on: pickAllSubjects, disabled: subjectStatus !== 'ready' },
-                      { label: '🩺 Clinical Core', on: () => pickBundle(BUNDLE_CLINICAL_CORE), disabled: subjectStatus !== 'ready' },
-                      { label: '🎓 Final-Year Gateway', on: () => pickBundle(BUNDLE_FINAL_YEAR), disabled: subjectStatus !== 'ready' },
-                      { label: 'Clear', on: clearSubjects, disabled: picked.size === 0 },
+                      { label: 'Clinical Core', icon: Stethoscope, on: () => pickBundle(BUNDLE_CLINICAL_CORE), disabled: subjectStatus !== 'ready' },
+                      { label: 'Final-Year Gateway', icon: GraduationCap, on: () => pickBundle(BUNDLE_FINAL_YEAR), disabled: subjectStatus !== 'ready' },
+                      { label: 'Clear', icon: null, on: clearSubjects, disabled: picked.size === 0 },
                     ]).map((qk) => (
                       <button
                         key={qk.label}
                         type="button"
                         onClick={qk.on}
                         disabled={qk.disabled}
-                        className="clay-btn min-h-9 rounded-full! border border-line bg-surface-2/50 px-3.5 text-xs font-medium text-ink-soft hover:border-primary/50 hover:text-foreground disabled:pointer-events-none disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+                        className="clay-btn inline-flex min-h-9 items-center gap-1.5 rounded-full! border border-line bg-surface-2/50 px-3.5 text-xs font-medium text-ink-soft hover:border-primary/50 hover:text-foreground disabled:pointer-events-none disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
                       >
+                        {qk.icon && <qk.icon className="size-3.5 text-primary" aria-hidden />}
                         {qk.label}
                       </button>
                     ))}
@@ -507,11 +522,23 @@ export function MockTestView() {
             )}
           </AnimatePresence>
 
-          <ul className="space-y-2 rounded-xl border border-line bg-surface-2/50 p-4 text-sm text-ink-soft">
-            <li className="flex items-center gap-2">⏱️ <span><strong className="text-foreground">1 minute per question</strong> — the clock auto-submits when it hits zero.</span></li>
-            <li className="flex items-center gap-2">🙈 <span><strong className="text-foreground">No feedback during the test</strong> — just like the real NEET-PG hall.</span></li>
-            <li className="flex items-center gap-2">🔖 <span>Mark questions for review and jump around with the palette.</span></li>
-            <li className="flex items-center gap-2">🧠 <span>Every attempt still updates your knowledge map and spaced-repetition schedule.</span></li>
+          <ul className="space-y-2.5 rounded-xl border border-line bg-surface-2/50 p-4 text-sm text-ink-soft">
+            <li className="flex items-start gap-2.5">
+              <span className="mt-0.5 grid size-6 shrink-0 place-items-center rounded-lg bg-background/60 text-ink-soft shadow-well"><Timer className="size-3.5" aria-hidden /></span>
+              <span><strong className="text-foreground">1 minute per question</strong> — the clock auto-submits when it hits zero.</span>
+            </li>
+            <li className="flex items-start gap-2.5">
+              <span className="mt-0.5 grid size-6 shrink-0 place-items-center rounded-lg bg-background/60 text-ink-soft shadow-well"><EyeOff className="size-3.5" aria-hidden /></span>
+              <span><strong className="text-foreground">No feedback during the test</strong> — just like the real NEET-PG hall.</span>
+            </li>
+            <li className="flex items-start gap-2.5">
+              <span className="mt-0.5 grid size-6 shrink-0 place-items-center rounded-lg bg-background/60 text-ink-soft shadow-well"><Bookmark className="size-3.5" aria-hidden /></span>
+              <span>Mark questions for review and jump around with the palette.</span>
+            </li>
+            <li className="flex items-start gap-2.5">
+              <span className="mt-0.5 grid size-6 shrink-0 place-items-center rounded-lg bg-background/60 text-ink-soft shadow-well"><Brain className="size-3.5" aria-hidden /></span>
+              <span>Every attempt still updates your knowledge map and spaced-repetition schedule.</span>
+            </li>
           </ul>
 
           <Button size="lg" className="min-h-12 w-full text-base font-semibold" onClick={() => startTest()} disabled={loadState === 'loading' || !canStart}>
@@ -598,7 +625,7 @@ export function MockTestView() {
             exit={reduce ? undefined : { opacity: 0, x: -24 }}
             transition={{ duration: 0.25, ease: EASE }}
           >
-            <section className="glass space-y-5 rounded-2xl p-5 md:p-7">
+            <section className="clay space-y-5 rounded-2xl p-5 md:p-7">
               <div className="flex items-center justify-between gap-2">
                 <div className="flex items-center gap-2">
                   <span className="rounded-full bg-primary/10 px-2.5 py-1 text-[11px] font-bold text-primary">
@@ -702,7 +729,7 @@ export function MockTestView() {
   if (phase === 'results') {
     const scorePct = accuracy
     const verdict =
-      scorePct >= 80 ? 'Outstanding — exam-ready pace 🏆' : scorePct >= 60 ? 'Solid — polish the misses and it clicks 💪' : scorePct >= 40 ? 'Building — review the explanations below 🌱' : 'Early days — this is exactly what mocks are for 🌤️'
+      scorePct >= 80 ? 'Outstanding — exam-ready pace.' : scorePct >= 60 ? 'Solid — polish the misses and it clicks.' : scorePct >= 40 ? 'Building — review the explanations below.' : 'Early days — this is exactly what mocks are for.'
     return (
       <div className="mx-auto max-w-3xl space-y-5 p-4 md:p-6">
         <header className="flex flex-wrap items-center justify-between gap-3">
@@ -735,7 +762,7 @@ export function MockTestView() {
         </header>
 
         {/* Score card */}
-        <section className="glass flex flex-col items-center gap-4 rounded-2xl p-6 sm:flex-row sm:gap-8">
+        <section className="clay flex flex-col items-center gap-4 rounded-2xl p-6 sm:flex-row sm:gap-8">
           <div className="relative grid size-32 shrink-0 place-items-center">
             <svg viewBox="0 0 128 128" className="absolute inset-0 -rotate-90">
               <circle cx="64" cy="64" r="56" fill="none" strokeWidth="10" className="stroke-surface-2" />
@@ -771,7 +798,7 @@ export function MockTestView() {
 
         {/* Per-subject breakdown */}
         {bySubject.length > 0 && (
-          <section className="glass rounded-2xl p-5 md:p-6">
+          <section className="clay rounded-2xl p-5 md:p-6">
             <h2 className="text-sm font-semibold uppercase tracking-[0.14em] text-ink-soft">Subject breakdown</h2>
             <ul className="mt-3 space-y-2.5">
               {bySubject.map(([code, s]) => (
@@ -795,7 +822,7 @@ export function MockTestView() {
         )}
 
         {/* Review list */}
-        <section className="glass rounded-2xl p-4 md:p-6">
+        <section className="clay rounded-2xl p-4 md:p-6">
           <h2 className="text-sm font-semibold uppercase tracking-[0.14em] text-ink-soft">Review every question</h2>
           <div className="mt-3 space-y-2">
             {results.map(({ q: qq, a }, i) => {
@@ -832,8 +859,9 @@ export function MockTestView() {
                     </p>
                     {a?.explanation && <p className="text-xs leading-relaxed text-ink-soft">{a.explanation}</p>}
                     {a?.teaching && (
-                      <p className="rounded-lg border border-primary/25 bg-primary/5 px-3 py-2 text-xs font-medium leading-snug text-primary">
-                        🎯 {a.teaching}
+                      <p className="flex items-start gap-2 rounded-lg border border-primary/25 bg-primary/5 px-3 py-2 text-xs font-medium leading-snug text-primary">
+                        <Target className="mt-0.5 size-3.5 shrink-0" aria-hidden />
+                        <span>{a.teaching}</span>
                       </p>
                     )}
                   </div>

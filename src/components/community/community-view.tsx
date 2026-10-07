@@ -269,12 +269,12 @@ export function CommunityView() {
                         className="flex min-h-11 w-full items-center gap-2 rounded-xl px-2.5 text-left text-xs transition-colors hover:bg-surface-2"
                       >
                         {p.resolved ? (
-                          <Flame className="size-3.5 shrink-0 text-emerald-500" aria-hidden />
+                          <Flame className="size-3.5 shrink-0 text-sev-ok" aria-hidden />
                         ) : (
                           <Flame className="size-3.5 shrink-0 text-ink-soft/50" aria-hidden />
                         )}
                         <span className="min-w-0 flex-1 truncate">{p.title}</span>
-                        {p.resolved && <span className="shrink-0 text-[10px] font-semibold text-emerald-600 dark:text-emerald-400">resolved</span>}
+                        {p.resolved && <span className="shrink-0 text-[10px] font-semibold text-sev-ok">resolved</span>}
                       </button>
                     </li>
                   ))}
@@ -302,7 +302,7 @@ export function CommunityView() {
             </div>
           )
         ) : home === null && homeMeta.state === 'error' ? (
-          <div className="glass flex flex-col items-center gap-3 rounded-2xl p-8 text-center" role="alert">
+          <div className="clay flex flex-col items-center gap-3 rounded-2xl p-8 text-center" role="alert">
             <h1 className="text-lg font-semibold tracking-tight">The community didn&apos;t load</h1>
             <p className="max-w-sm text-sm leading-relaxed text-ink-soft">
               The community engine did not respond — it may still be warming up. Nothing is lost; retry below.

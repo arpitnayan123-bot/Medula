@@ -26,6 +26,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { Input } from '@/components/ui/input'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Textarea } from '@/components/ui/textarea'
+import { PageHeader } from '@/components/primitives/kit'
 import { cn } from '@/lib/utils'
 import {
   MicroLabel, MiniStat, PhaseTimeline, Reveal, SLOT_META, SubjectBar, TaskRow, slotLabel,
@@ -210,21 +211,24 @@ export function PlannerView() {
   return (
     <div className="mx-auto w-full max-w-3xl space-y-4 p-4 pb-28">
       {/* ── header ── */}
-      <Reveal className="flex items-start justify-between gap-3">
-        <div className="min-w-0">
-          <MicroLabel>AI Study Planner · {todayIst()}</MicroLabel>
-          <h1 className="mt-0.5 truncate text-xl font-bold tracking-tight">
-            {plan.examLabel || 'NEET-PG'} · {plan.daysLeft > 0 ? `${plan.daysLeft} days left` : 'exam day'}
-          </h1>
-          <p className="mt-0.5 flex flex-wrap items-center gap-1.5 text-xs text-ink-soft">
-            {plan.examIsEstimate && <Badge variant="outline" className="text-[9px]">estimated date</Badge>}
-            <span className="inline-flex items-center gap-1"><Flame className="size-3 text-sev-warn" /> {progress.streakDays}d streak</span>
-            <span>· {progress.consistency14}% consistency</span>
-          </p>
-        </div>
-        <Button size="sm" variant="outline" className="min-h-9 shrink-0 gap-1.5 text-xs" onClick={() => setEditOpen(true)}>
-          <Pencil className="size-3.5" /> Edit plan
-        </Button>
+      <Reveal>
+        <PageHeader
+          eyebrow={<>AI Study Planner · {todayIst()}</>}
+          title={plan.examLabel || 'NEET-PG'}
+          intro={
+            <span className="flex flex-wrap items-center gap-1.5">
+              <span className="font-semibold text-foreground">{plan.daysLeft > 0 ? `${plan.daysLeft} days left` : 'exam day'}</span>
+              {plan.examIsEstimate && <Badge variant="outline" className="text-[9px]">estimated date</Badge>}
+              <span className="inline-flex items-center gap-1"><Flame className="size-3 text-sev-warn" /> {progress.streakDays}d streak</span>
+              <span>· {progress.consistency14}% consistency</span>
+            </span>
+          }
+          right={
+            <Button size="sm" variant="outline" className="min-h-9 shrink-0 gap-1.5 text-xs" onClick={() => setEditOpen(true)}>
+              <Pencil className="size-3.5" /> Edit plan
+            </Button>
+          }
+        />
       </Reveal>
 
       {/* ── priority banner ── */}
@@ -275,7 +279,7 @@ export function PlannerView() {
 
       {/* ── TODAY board ── */}
       <Reveal delay={0.07}>
-        <div className="rounded-2xl border border-border bg-card p-4">
+        <div className="clay rounded-2xl p-4">
           <div className="flex flex-wrap items-center justify-between gap-2">
             <div className="min-w-0">
               <MicroLabel>Today · {today.modeLabel}</MicroLabel>
@@ -309,7 +313,7 @@ export function PlannerView() {
         const done = slot.tasks.filter((t) => t.status === 'done')
         return (
           <Reveal key={slot.slot} delay={0.09 + i * 0.02}>
-            <section className="rounded-2xl border border-border bg-card p-4" aria-label={`${slotLabel(slot.slot)} tasks`}>
+            <section className="clay rounded-2xl p-4" aria-label={`${slotLabel(slot.slot)} tasks`}>
               <div className="flex items-center gap-2.5">
                 <span className={cn('flex size-9 shrink-0 items-center justify-center rounded-xl', meta.tone)}>
                   <Icon className="size-4.5" />
@@ -344,7 +348,7 @@ export function PlannerView() {
 
       {/* ── plan overview ── */}
       <Reveal delay={0.2}>
-        <section className="rounded-2xl border border-border bg-card p-4" aria-label="Plan overview">
+        <section className="clay rounded-2xl p-4" aria-label="Plan overview">
           <div className="flex items-center justify-between gap-2">
             <MicroLabel>Plan overview · {plan.stageLabel}</MicroLabel>
             <Badge variant="secondary" className="text-[9px] font-bold">mock every {plan.mockCadenceDays}d</Badge>
@@ -365,7 +369,7 @@ export function PlannerView() {
 
       {/* ── feasibility ── */}
       <Reveal delay={0.22}>
-        <details className="group rounded-2xl border border-border bg-card p-4" open>
+        <details className="clay group rounded-2xl p-4" open>
           <summary className="flex cursor-pointer list-none items-center justify-between gap-2">
             <span className="flex items-center gap-2">
               <Gauge className={cn('size-4', feasibility.verdict === 'comfortable' ? 'text-sev-ok' : feasibility.verdict === 'tight' ? 'text-sev-warn' : 'text-sev-crit')} />
@@ -398,7 +402,7 @@ export function PlannerView() {
       {/* ── subjects ── */}
       {home.subjects.length > 0 && (
         <Reveal delay={0.24}>
-          <section className="rounded-2xl border border-border bg-card p-4" aria-label="Priority subjects">
+          <section className="clay rounded-2xl p-4" aria-label="Priority subjects">
             <MicroLabel>Where the time goes · top subjects by urgency</MicroLabel>
             <div className="mt-3 space-y-3">
               {home.subjects.map((s) => <SubjectBar key={s.code} row={s} />)}
@@ -410,7 +414,7 @@ export function PlannerView() {
       {/* ── intelligence ── */}
       {home.intelligence.length > 0 && (
         <Reveal delay={0.26}>
-          <section className="rounded-2xl border border-border bg-card p-4" aria-label="Planner intelligence">
+          <section className="clay rounded-2xl p-4" aria-label="Planner intelligence">
             <MicroLabel>What the engine noticed</MicroLabel>
             <div className="mt-3 space-y-2">
               {home.intelligence.map((n) => (
@@ -433,7 +437,7 @@ export function PlannerView() {
 
       {/* ── progress ── */}
       <Reveal delay={0.28}>
-        <section className="rounded-2xl border border-border bg-card p-4" aria-label="Progress">
+        <section className="clay rounded-2xl p-4" aria-label="Progress">
           <div className="flex items-center justify-between gap-2">
             <MicroLabel>Progress · planned vs done</MicroLabel>
             <span className="text-[10px] font-semibold text-ink-soft">last 14 days</span>
@@ -471,7 +475,7 @@ export function PlannerView() {
 
       {/* ── AI coach ── */}
       <Reveal delay={0.3}>
-        <section className="rounded-2xl border border-border bg-card p-4" aria-label="AI coach">
+        <section className="clay rounded-2xl p-4" aria-label="AI coach">
           <div className="flex items-center gap-2">
             <Sparkles className="size-4 text-primary" />
             <MicroLabel>AI coach · narrates the engine's numbers</MicroLabel>
@@ -513,7 +517,7 @@ export function PlannerView() {
 
       {/* ── plan notes ── */}
       <Reveal delay={0.32}>
-        <section className="rounded-2xl border border-dashed border-border/70 p-4" aria-label="Plan notes">
+        <section className="clay rounded-2xl border-dashed p-4" aria-label="Plan notes">
           <MicroLabel>Plan notes</MicroLabel>
           <ul className="mt-2 space-y-1">
             {plan.notes.map((n, i) => (
@@ -627,7 +631,7 @@ function PlannerSetup({
   )
 
   return (
-    <div className={cn('rounded-2xl border border-border bg-card p-5', compact ? 'border-0 bg-transparent p-1' : '')}>
+    <div className={cn('clay rounded-2xl p-5', compact ? '!border-0 !bg-transparent p-1' : '')}>
       {!compact && (
         <>
           <div className="flex items-center gap-2.5">

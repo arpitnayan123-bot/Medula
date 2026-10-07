@@ -24,6 +24,7 @@ import { useAppStore } from '@/lib/store'
 import type { ProgressPayload, SubjectSummary } from '@/lib/types'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
+import { EmptyState, PageHeader } from '@/components/primitives/kit'
 import { cn } from '@/lib/utils'
 
 const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1]
@@ -99,8 +100,8 @@ function ProgressRing({
       <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} className="-rotate-90">
         <defs>
           <linearGradient id={gradientId} x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0%" stopColor="#22d3ee" />
-            <stop offset="100%" stopColor="#0284c7" />
+            <stop offset="0%" stopColor="#16788c" />
+            <stop offset="100%" stopColor="#5cb491" />
           </linearGradient>
         </defs>
         <circle cx={size / 2} cy={size / 2} r={r} fill="none" strokeWidth={stroke} className="stroke-surface-2" />
@@ -168,7 +169,7 @@ function ProgressSkeleton() {
 function ProgressError({ onRetry }: { onRetry: () => void }) {
   return (
     <div className="mx-auto max-w-6xl p-4 md:p-6">
-      <div className="glass flex flex-col items-center gap-3 rounded-2xl p-8 text-center md:p-12">
+      <div className="clay flex flex-col items-center gap-3 rounded-2xl p-8 text-center md:p-12">
         <span className="grid size-12 place-items-center rounded-full bg-sev-crit/10">
           <RefreshCw className="size-6 text-sev-crit" />
         </span>
@@ -339,7 +340,7 @@ function SubjectCard({ s, maxWeight, index }: { s: ProgressPayload['subjects'][n
   const status = STATUS_META[s.status]
   return (
     <motion.article
-      className="glass rounded-2xl p-4 md:p-5"
+      className="clay rounded-2xl p-4 md:p-5"
       initial={{ opacity: 0, y: 14 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: '-40px' }}
@@ -368,7 +369,7 @@ function SubjectCard({ s, maxWeight, index }: { s: ProgressPayload['subjects'][n
           <span>NEET-PG weight</span>
           <span className="font-semibold tabular-nums">~{s.neetWeight}%</span>
         </div>
-        <div className="mt-1 h-1 w-full overflow-hidden rounded-full bg-surface-2">
+        <div className="clay-in mt-1 h-1 w-full overflow-hidden rounded-full">
           <Bar
             pct={maxWeight > 0 ? (s.neetWeight / maxWeight) * 100 : 0}
             delay={0.15 + (index % 2) * 0.05}
@@ -383,7 +384,7 @@ function SubjectCard({ s, maxWeight, index }: { s: ProgressPayload['subjects'][n
           <div key={m.label} className="grid grid-cols-[1fr_auto] items-center gap-x-3 gap-y-1">
             <dt className="text-xs text-ink-soft">{m.label}</dt>
             <dd className="text-xs font-semibold tabular-nums">{m.value}%</dd>
-            <div className="col-span-2 h-1.5 w-full overflow-hidden rounded-full bg-surface-2">
+            <div className="clay-in col-span-2 h-1.5 w-full overflow-hidden rounded-full">
               <Bar pct={m.value} delay={0.2 + i * 0.05} className={toneFor(m.value)} />
             </div>
           </div>
@@ -444,11 +445,17 @@ export function ProgressView() {
   return (
     <div className="mx-auto max-w-6xl space-y-8 p-4 md:p-6">
       {/* Header */}
-      <Reveal index={0} className="space-y-2">
-        <h1 className="text-3xl font-semibold tracking-tight md:text-4xl">PROGRESS</h1>
-        <p className="max-w-2xl text-sm text-ink-soft md:text-base">
-          Your past self is the only benchmark that matters here.
-        </p>
+      <Reveal index={0}>
+        <PageHeader
+          eyebrow={
+            <>
+              <TrendingUp className="mr-1 inline size-3" />
+              Learning analytics
+            </>
+          }
+          title="Progress"
+          intro="Your past self is the only benchmark that matters here."
+        />
       </Reveal>
 
       {/* 1 · Top stat row */}
@@ -460,7 +467,7 @@ export function ProgressView() {
           )}
         >
           {/* Mastery ring */}
-          <section className="glass flex flex-col items-center rounded-2xl p-5">
+          <section className="clay flex flex-col items-center rounded-2xl p-5">
             <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-ink-soft">Mastery</p>
             <div className="my-3">
               <ProgressRing value={overall.mastery} size={132} stroke={11} gradientId="ring-progress-mastery">
@@ -473,7 +480,7 @@ export function ProgressView() {
           </section>
 
           {/* Accuracy + trend */}
-          <section className="glass flex flex-col rounded-2xl p-5">
+          <section className="clay flex flex-col rounded-2xl p-5">
             <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-ink-soft">Accuracy</p>
             <p className="mt-3 text-5xl font-semibold leading-none tabular-nums tracking-tight">
               <AnimatedNumber value={overall.accuracy} />%
@@ -492,7 +499,7 @@ export function ProgressView() {
 
           {/* Clinical questions — optional */}
           {clinical !== null && (
-            <section className="glass flex flex-col rounded-2xl p-5">
+            <section className="clay flex flex-col rounded-2xl p-5">
               <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-ink-soft">Clinical questions</p>
               <p className="mt-3 text-5xl font-semibold leading-none tabular-nums tracking-tight">
                 <AnimatedNumber value={clinical} />%
@@ -502,7 +509,7 @@ export function ProgressView() {
           )}
 
           {/* Consistency */}
-          <section className="glass flex flex-col rounded-2xl p-5">
+          <section className="clay flex flex-col rounded-2xl p-5">
             <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-ink-soft">Consistency</p>
             <p className="mt-3 text-5xl font-semibold leading-none tabular-nums tracking-tight">
               <AnimatedNumber value={weeklyReport.consistency} />%
@@ -528,7 +535,7 @@ export function ProgressView() {
       {/* 2 · Study heatmap */}
       <Reveal index={2} className="space-y-3">
         <SectionHeading>Study heatmap</SectionHeading>
-        <section className="glass rounded-2xl p-4 md:p-6">
+        <section className="clay rounded-2xl p-4 md:p-6">
           <StudyHeatmap heat={heatmap} />
         </section>
       </Reveal>
@@ -536,7 +543,7 @@ export function ProgressView() {
       {/* 3 · Weekly medical intelligence report */}
       <Reveal index={3} className="space-y-3">
         <SectionHeading>Weekly medical intelligence report</SectionHeading>
-        <section className="glass rounded-2xl border-l-4 border-l-primary p-4 md:p-6">
+        <section className="clay rounded-2xl border-l-4 border-l-primary p-4 md:p-6">
           <div className="flex flex-wrap items-center justify-between gap-2">
             <p className="inline-flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-primary">
               <TrendingUp className="size-4" />
@@ -585,12 +592,15 @@ export function ProgressView() {
         <SectionHeading>Error intelligence</SectionHeading>
         <div className="grid items-start gap-4 lg:grid-cols-2">
           {/* left — error patterns */}
-          <section className="glass rounded-2xl p-4 md:p-5">
+          <section className="clay rounded-2xl p-4 md:p-5">
             <h3 className="text-xs font-semibold uppercase tracking-[0.16em] text-ink-soft">Error patterns</h3>
             {errorPatterns.length === 0 ? (
-              <p className="py-8 text-center text-sm text-ink-soft">
-                No error patterns recorded yet — mistakes here become intelligence, not shame.
-              </p>
+              <EmptyState
+                icon={AlertTriangle}
+                className="mt-3 border-0 bg-transparent px-0 py-6"
+                title="No error patterns recorded yet"
+                hint="mistakes here become intelligence, not shame."
+              />
             ) : (
               <ul className="mt-3 space-y-2">
                 {errorPatterns.map((p) => (
@@ -620,15 +630,17 @@ export function ProgressView() {
           </section>
 
           {/* right — confusion list */}
-          <section className="glass rounded-2xl p-4 md:p-5">
+          <section className="clay rounded-2xl p-4 md:p-5">
             <div className="flex items-center justify-between gap-2">
               <h3 className="text-xs font-semibold uppercase tracking-[0.16em] text-ink-soft">Your confusion list</h3>
               <span className="text-[10px] text-muted-foreground">pairs the engine watches for you</span>
             </div>
             {confusions.length === 0 ? (
-              <p className="py-8 text-center text-sm text-ink-soft">
-                No confusion pairs on your watchlist yet.
-              </p>
+              <EmptyState
+                icon={Brain}
+                className="mt-3 border-0 bg-transparent px-0 py-6"
+                title="No confusion pairs on your watchlist yet."
+              />
             ) : (
               <ul className="mt-3 space-y-3">
                 {confusions.map((c) => (

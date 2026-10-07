@@ -91,7 +91,7 @@ function ImportanceDots({ n }: { n: number }) {
       {[1, 2, 3, 4, 5].map((i) => (
         <Star
           key={i}
-          className={cn('size-3', i <= n ? 'fill-amber-400 text-amber-400' : 'text-muted-foreground/30')}
+          className={cn('size-3', i <= n ? 'fill-gold text-gold' : 'text-muted-foreground/30')}
         />
       ))}
     </span>
@@ -367,7 +367,7 @@ function TopicStudy({ topicId, onBack, onOpenSubject, onOpenTopic }: {
         {/* breadcrumb */}
         <div className="flex flex-wrap items-center gap-1.5 text-xs text-ink-soft">
           {onBack && (
-            <button type="button" onClick={onBack} className="mr-1 inline-flex items-center gap-1 rounded-full border border-line bg-surface px-2.5 py-1 font-medium transition-colors hover:border-primary/40">
+            <button type="button" onClick={onBack} className="mr-1 inline-flex items-center gap-1 rounded-full border border-line bg-surface px-2.5 py-1 font-medium transition-colors clay-hover">
               <ArrowLeft className="size-3" /> Topics
             </button>
           )}
@@ -389,7 +389,7 @@ function TopicStudy({ topicId, onBack, onOpenSubject, onOpenTopic }: {
             <Badge variant="outline" className="text-[10px]">{data.concepts.length} concepts</Badge>
           </div>
           <div className="flex flex-wrap items-start justify-between gap-3">
-            <h1 className="text-2xl font-semibold tracking-tight md:text-3xl">{t.name}</h1>
+            <h1 className="font-display text-2xl font-semibold tracking-tight md:text-3xl">{t.name}</h1>
             <div className="flex items-center gap-2">
               <button
                 type="button"
@@ -444,7 +444,7 @@ function TopicStudy({ topicId, onBack, onOpenSubject, onOpenTopic }: {
                   return (
                     <div
                       key={c.id}
-                      className="group min-w-0 rounded-xl border border-line bg-card p-3.5 text-left transition-all hover:border-primary/45 hover:shadow-md hover:shadow-primary/5"
+                      className="group min-w-0 rounded-xl clay p-3.5 text-left transition-all clay-hover"
                     >
                       <button
                         type="button"
@@ -456,7 +456,7 @@ function TopicStudy({ topicId, onBack, onOpenSubject, onOpenTopic }: {
                           <StatusDot status={c.learnStatus} />
                           <span className="truncate text-sm font-medium group-hover:text-primary">{c.name}</span>
                           {c.examWeight >= 4 && (
-                            <span className="ml-auto inline-flex shrink-0 items-center gap-0.5 rounded-full bg-amber-100 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wide text-amber-700">
+                            <span className="ml-auto inline-flex shrink-0 items-center gap-0.5 rounded-full bg-gold/15 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wide text-sev-warn">
                               <Zap className="size-2.5" /> High yield
                             </span>
                           )}
@@ -496,7 +496,7 @@ function TopicStudy({ topicId, onBack, onOpenSubject, onOpenTopic }: {
           <section aria-label="Key facts" className="space-y-3">
             <h2 className="text-xs font-semibold uppercase tracking-[0.18em] text-ink-soft">High-yield facts</h2>
             {data.keyFacts.numbers.length > 0 && (
-              <div className="rounded-2xl border border-line bg-card p-4">
+              <div className="rounded-2xl clay p-4">
                 <h3 className="flex items-center gap-1.5 text-sm font-semibold"><Scale className="size-3.5 text-primary" /> Numbers to remember</h3>
                 <div className="mt-3 grid gap-x-6 gap-y-2 sm:grid-cols-2">
                   {data.keyFacts.numbers.map((n) => (
@@ -509,7 +509,7 @@ function TopicStudy({ topicId, onBack, onOpenSubject, onOpenTopic }: {
               </div>
             )}
             {data.keyFacts.differentials.length > 0 && (
-              <div className="rounded-2xl border border-line bg-card p-4">
+              <div className="rounded-2xl clay p-4">
                 <h3 className="flex items-center gap-1.5 text-sm font-semibold"><Scale className="size-3.5 text-primary" /> Don&apos;t confuse with</h3>
                 <ul className="mt-2.5 space-y-1.5">
                   {data.keyFacts.differentials.map((d) => (
@@ -522,15 +522,15 @@ function TopicStudy({ topicId, onBack, onOpenSubject, onOpenTopic }: {
               </div>
             )}
             {data.keyFacts.mistakes.length > 0 && (
-              <div className="rounded-2xl border border-amber-300/60 bg-amber-50/70 p-4">
-                <h3 className="flex items-center gap-1.5 text-sm font-semibold"><TriangleAlert className="size-3.5 text-amber-600" /> Common mistakes</h3>
+              <div className="callout callout-warn rounded-2xl p-4">
+                <h3 className="flex items-center gap-1.5 text-sm font-semibold"><TriangleAlert className="size-3.5 text-sev-warn" /> Common mistakes</h3>
                 <ul className="mt-2.5 space-y-1.5 text-sm leading-relaxed">
-                  {data.keyFacts.mistakes.map((m, i) => <li key={`${i}-${m.slice(0, 24)}`} className="flex gap-2"><span className="text-amber-600">•</span><span>{m}</span></li>)}
+                  {data.keyFacts.mistakes.map((m, i) => <li key={`${i}-${m.slice(0, 24)}`} className="flex gap-2"><span className="text-sev-warn">•</span><span>{m}</span></li>)}
                 </ul>
               </div>
             )}
             {data.keyFacts.mnemonics.length > 0 && (
-              <div className="rounded-2xl border border-line bg-card p-4">
+              <div className="rounded-2xl clay p-4">
                 <h3 className="flex items-center gap-1.5 text-sm font-semibold"><Lightbulb className="size-3.5 text-primary" /> Mnemonics</h3>
                 <ul className="mt-2.5 space-y-2 text-sm">
                   {data.keyFacts.mnemonics.map((m) => (
@@ -551,7 +551,7 @@ function TopicStudy({ topicId, onBack, onOpenSubject, onOpenTopic }: {
                 key={c.id}
                 type="button"
                 onClick={() => { closeLearn(); setView('cases') }}
-                className="flex w-full items-center gap-3 rounded-xl border border-line bg-card p-3.5 text-left transition-all hover:border-primary/45"
+                className="flex w-full items-center gap-3 rounded-xl clay p-3.5 text-left transition-all hover:border-primary/45"
               >
                 <span className="grid size-9 shrink-0 place-items-center rounded-xl bg-primary/10"><Stethoscope className="size-4 text-primary" /></span>
                 <span className="min-w-0 flex-1">
@@ -577,7 +577,7 @@ function TopicStudy({ topicId, onBack, onOpenSubject, onOpenTopic }: {
         )}
 
         {/* sources & evidence */}
-        <section aria-label="Sources and evidence" className="rounded-2xl border border-line bg-surface-2 p-4">
+        <section aria-label="Sources and evidence" className="rounded-2xl clay-in p-4">
           <h2 className="flex items-center gap-1.5 text-sm font-semibold"><ShieldCheck className="size-4 text-primary" /> Sources &amp; reliability</h2>
           <div className="mt-2.5 flex flex-wrap gap-1.5">
             {Object.entries(data.evidence.levels).map(([level, n]) => (
@@ -610,7 +610,7 @@ function TopicLinkCard({ topic, onOpen }: {
     <button
       type="button"
       onClick={onOpen}
-      className="group flex items-start gap-3 rounded-xl border border-line bg-card p-3.5 text-left transition-all hover:border-primary/45 hover:shadow-md hover:shadow-primary/5"
+      className="group flex items-start gap-3 rounded-xl clay p-3.5 text-left transition-all clay-hover"
     >
       <span className="mt-0.5 size-2.5 shrink-0 rounded-full" style={{ backgroundColor: topic.subjectColor }} />
       <span className="min-w-0 flex-1">
@@ -684,7 +684,7 @@ function SubjectStudy({ subjectId, onOpenTopic }: {
           </div>
           <div className="flex flex-wrap items-start justify-between gap-3">
             <div>
-              <h1 className="text-2xl font-semibold tracking-tight md:text-3xl">{s.name}</h1>
+              <h1 className="font-display text-2xl font-semibold tracking-tight md:text-3xl">{s.name}</h1>
               {s.latinName && <p className="mt-0.5 text-sm italic text-muted-foreground">{s.latinName}</p>}
             </div>
             <Button
@@ -730,7 +730,7 @@ function SubjectStudy({ subjectId, onOpenTopic }: {
                       type="button"
                       onClick={() => onOpenTopic(t.id)}
                       aria-label={`Open topic ${t.name}`}
-                      className="group flex min-w-0 w-full items-center gap-3 rounded-xl border border-line bg-card p-3.5 text-left transition-all hover:border-primary/45 hover:shadow-md hover:shadow-primary/5"
+                      className="group flex min-w-0 w-full items-center gap-3 rounded-xl clay p-3.5 text-left transition-all clay-hover"
                     >
                       <div className="min-w-0 flex-1">
                         <div className="flex flex-wrap items-center gap-2">
@@ -760,7 +760,7 @@ function SubjectStudy({ subjectId, onOpenTopic }: {
 
         {/* curriculum registry */}
         {data.registry.length > 0 && (
-          <section aria-label="Curriculum alignment" className="rounded-2xl border border-line bg-surface-2 p-4">
+          <section aria-label="Curriculum alignment" className="rounded-2xl clay-in p-4">
             <h2 className="flex items-center gap-1.5 text-sm font-semibold"><ShieldCheck className="size-4 text-primary" /> Curriculum alignment</h2>
             <ul className="mt-2.5 space-y-1.5 text-xs text-ink-soft">
               {data.registry.map((r) => (
@@ -776,7 +776,7 @@ function SubjectStudy({ subjectId, onOpenTopic }: {
 
         {/* cross-links hint */}
         {data.topics.length === 0 && (
-          <p className="rounded-xl border border-line bg-surface-2 p-4 text-sm text-ink-soft">
+          <p className="rounded-xl clay-in p-4 text-sm text-ink-soft">
             Topics for this subject are being curated — check back soon.
           </p>
         )}

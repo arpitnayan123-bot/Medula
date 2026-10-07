@@ -37,8 +37,8 @@ function ScoreRing({ value, size, stroke, children }: { value: number; size: num
       <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} className="-rotate-90">
         <defs>
           <linearGradient id="adaptive-report-ring" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0%" stopColor="#22d3ee" />
-            <stop offset="100%" stopColor="#0284c7" />
+            <stop offset="0%" stopColor="#5cb491" />
+            <stop offset="100%" stopColor="#16788c" />
           </linearGradient>
         </defs>
         <circle cx={size / 2} cy={size / 2} r={r} fill="none" strokeWidth={stroke} className="stroke-surface-2" />
@@ -136,7 +136,7 @@ export function AdaptiveReportView({ report, markedIds, onStart, onHome }: Adapt
       </header>
 
       {/* ── Score + speed ── */}
-      <section className="glass rounded-2xl p-5 md:p-7">
+      <section className="clay rounded-2xl p-5 md:p-7">
         <div className="flex flex-col items-center gap-6 sm:flex-row sm:gap-8">
           <ScoreRing value={report.accuracy} size={168} stroke={12}>
             <span className="text-4xl font-semibold tabular-nums tracking-tight">{report.accuracy}%</span>
@@ -184,7 +184,7 @@ export function AdaptiveReportView({ report, markedIds, onStart, onHome }: Adapt
                   <span className="text-[11px] tabular-nums text-ink-soft">{'●'.repeat(Math.max(1, Math.min(4, row.d)))}</span>
                   <div className="h-1.5 min-w-0 flex-1 overflow-hidden rounded-full bg-surface-2">
                     <motion.div
-                      className="h-full rounded-full bg-primary"
+                      className="h-full rounded-full bg-gradient-to-r from-primary to-[oklch(0.62_0.105_158)]"
                       initial={{ width: 0 }}
                       animate={{ width: `${pct}%` }}
                       transition={{ duration: 0.9, ease: EASE }}
@@ -204,7 +204,7 @@ export function AdaptiveReportView({ report, markedIds, onStart, onHome }: Adapt
       {(report.strongTopics.length > 0 || report.weakTopics.length > 0) && (
         <section className="grid gap-4 md:grid-cols-2">
           {report.strongTopics.length > 0 && (
-            <div className="glass space-y-3 rounded-2xl p-4">
+            <div className="clay space-y-3 rounded-2xl p-4">
               <h2 className="flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.14em] text-sev-ok">
                 <TrendingUp className="size-4" /> Strong topics
               </h2>
@@ -216,7 +216,7 @@ export function AdaptiveReportView({ report, markedIds, onStart, onHome }: Adapt
             </div>
           )}
           {report.weakTopics.length > 0 && (
-            <div className="glass space-y-3 rounded-2xl p-4">
+            <div className="clay space-y-3 rounded-2xl p-4">
               <h2 className="flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.14em] text-sev-warn">
                 <Crosshair className="size-4" /> Weak topics
               </h2>
@@ -232,7 +232,7 @@ export function AdaptiveReportView({ report, markedIds, onStart, onHome }: Adapt
 
       {/* ── Error patterns + all-time repeat offenders ── */}
       {(report.mistakes.length > 0 || report.repeatedWrong.length > 0) && (
-        <section className="glass space-y-4 rounded-2xl p-4 md:p-6">
+        <section className="clay space-y-4 rounded-2xl p-4 md:p-6">
           <h2 className="flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.14em] text-ink-soft">
             <Flag className="size-4 text-primary" /> Mistake profile
           </h2>
@@ -267,7 +267,7 @@ export function AdaptiveReportView({ report, markedIds, onStart, onHome }: Adapt
 
       {/* ── Wrong-question review ── */}
       {report.wrongQuestions.length > 0 && (
-        <section className="glass space-y-3 rounded-2xl p-4 md:p-6">
+        <section className="clay space-y-3 rounded-2xl p-4 md:p-6">
           <h2 className="text-sm font-semibold uppercase tracking-[0.14em] text-ink-soft">Wrong questions — review</h2>
           <ul className="space-y-2">
             {report.wrongQuestions.map((wq) => {
@@ -331,7 +331,7 @@ export function AdaptiveReportView({ report, markedIds, onStart, onHome }: Adapt
       )}
 
       {/* ── Hand-offs ── */}
-      <section className="glass space-y-3 rounded-2xl p-4 md:p-6">
+      <section className="clay space-y-3 rounded-2xl p-4 md:p-6">
         <h2 className="text-sm font-semibold uppercase tracking-[0.14em] text-ink-soft">Keep going</h2>
         <div className="flex flex-col gap-2 sm:flex-row">
           <Button

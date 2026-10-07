@@ -16,7 +16,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { motion, useReducedMotion } from 'framer-motion'
 import {
   AlertTriangle, ArrowRight, Bandage, BookMarked, Check, CheckCheck, CheckCircle2,
-  ChevronRight, Landmark, Loader2, RefreshCw, Sparkles, Stethoscope, Target, XCircle,
+  ChevronRight, Landmark, Lightbulb, Loader2, RefreshCw, Sparkles, Stethoscope, Target, XCircle,
 } from 'lucide-react'
 
 import { api } from '@/lib/api'
@@ -49,10 +49,10 @@ interface RevisionRunProps {
 // ─── Grade buttons (same convention as the Revise deck) ──────────────────────
 
 const GRADES: { label: string; sub: string; grade: number; classes: string }[] = [
-  { label: 'AGAIN', sub: 'seen again today', grade: 0, classes: 'border-rose-500/40 bg-rose-500/10 text-rose-600 hover:bg-rose-500/20 dark:text-rose-300' },
-  { label: 'HARD', sub: 'short interval', grade: 1, classes: 'border-amber-500/40 bg-amber-500/10 text-amber-700 hover:bg-amber-500/20 dark:text-amber-300' },
+  { label: 'AGAIN', sub: 'seen again today', grade: 0, classes: 'border-sev-crit/40 bg-sev-crit/10 text-sev-crit hover:bg-sev-crit/20' },
+  { label: 'HARD', sub: 'short interval', grade: 1, classes: 'border-sev-warn/40 bg-sev-warn/10 text-sev-warn hover:bg-sev-warn/20' },
   { label: 'GOOD', sub: 'solid', grade: 2, classes: 'border-primary/50 bg-primary/10 text-primary hover:bg-primary/20' },
-  { label: 'EASY', sub: 'long interval', grade: 3, classes: 'border-emerald-500/40 bg-emerald-500/10 text-emerald-700 hover:bg-emerald-500/20 dark:text-emerald-300' },
+  { label: 'EASY', sub: 'long interval', grade: 3, classes: 'border-sev-ok/40 bg-sev-ok/10 text-sev-ok hover:bg-sev-ok/20' },
 ]
 
 // ─── Flip card (local implementation, revise-deck pattern) ───────────────────
@@ -72,13 +72,13 @@ function FlipCard({ card, flipped, onFlip }: { card: RevisionFlashcardContent; f
           }
         }}
         aria-label={flipped ? 'Answer side — tap to hide' : 'Question side — tap to reveal answer'}
-        className="glass relative block min-h-56 w-full cursor-pointer select-none rounded-2xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/60"
+        className="clay relative block min-h-56 w-full cursor-pointer select-none rounded-2xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/60"
         animate={{ rotateY: flipped ? 180 : 0 }}
         transition={{ duration: reduce ? 0 : 0.55, ease: EASE }}
         style={{ transformStyle: 'preserve-3d' }}
       >
         {/* front — question */}
-        <div className="glass absolute inset-0 flex flex-col overflow-y-auto rounded-2xl p-5 md:p-6" style={{ backfaceVisibility: 'hidden' }}>
+        <div className="clay absolute inset-0 flex flex-col overflow-y-auto rounded-2xl p-5 md:p-6" style={{ backfaceVisibility: 'hidden' }}>
           <div className="flex items-center justify-between text-[10px] font-semibold uppercase tracking-[0.18em] text-ink-soft">
             <span>Question</span>
             <span>tap or press Space</span>
@@ -89,7 +89,7 @@ function FlipCard({ card, flipped, onFlip }: { card: RevisionFlashcardContent; f
         </div>
         {/* back — answer + subject badge */}
         <div
-          className="glass absolute inset-0 flex flex-col overflow-y-auto rounded-2xl border-primary/30 p-5 md:p-6"
+          className="clay absolute inset-0 flex flex-col overflow-y-auto rounded-2xl border-primary/30 p-5 md:p-6"
           style={{ backfaceVisibility: 'hidden', transform: 'rotateY(180deg)' }}
         >
           <div className="flex items-center justify-between text-[10px] font-semibold uppercase tracking-[0.18em] text-ink-soft">
@@ -420,7 +420,7 @@ function QuestionBlock({ block, questions, onDone, completing }: { block: Revisi
   return (
     <section className="space-y-4">
       <header className="flex flex-wrap items-center gap-2">
-        <MicroLabel className={cn(block.kind === 'mistake' ? 'text-sev-crit' : block.kind === 'pyq' ? 'text-sev-warn' : 'text-amber-600 dark:text-amber-300')}>
+        <MicroLabel className={cn(block.kind === 'mistake' ? 'text-sev-crit' : block.kind === 'pyq' ? 'text-sev-warn' : 'text-primary')}>
           {headerLabel}
         </MicroLabel>
         <span className="text-xs tabular-nums text-ink-soft">
@@ -435,7 +435,7 @@ function QuestionBlock({ block, questions, onDone, completing }: { block: Revisi
         </div>
       )}
 
-      <div className="glass space-y-3 rounded-2xl p-5">
+      <div className="clay space-y-3 rounded-2xl p-5">
         <div className="flex flex-wrap items-center gap-2 text-[10px] font-bold uppercase tracking-[0.12em] text-ink-soft">
           {q.pyqPattern && (
             <span className="inline-flex items-center gap-1 rounded-full bg-sev-warn/15 px-2.5 py-1 text-sev-warn">
@@ -511,8 +511,9 @@ function QuestionBlock({ block, questions, onDone, completing }: { block: Revisi
           </p>
           {attempt.explanation && <p className="text-sm leading-relaxed text-ink-soft">{attempt.explanation}</p>}
           {attempt.teaching && (
-            <p className="rounded-lg border-l-2 border-sev-warn bg-sev-warn/10 px-3 py-2 text-xs italic leading-relaxed text-ink-soft">
-              💡 {attempt.teaching}
+            <p className="flex items-start gap-2 rounded-lg border-l-2 border-sev-warn bg-sev-warn/10 px-3 py-2 text-xs italic leading-relaxed text-ink-soft">
+              <Lightbulb className="mt-0.5 size-3.5 shrink-0 text-gold" aria-hidden />
+              <span>{attempt.teaching}</span>
             </p>
           )}
 
@@ -645,12 +646,12 @@ function CaseBlock({ cs, onDone, completing }: { cs: { id: string; title: string
   return (
     <section className="space-y-4">
       <header className="space-y-1.5">
-        <MicroLabel className="text-teal-600 dark:text-teal-300">Clinical case</MicroLabel>
+        <MicroLabel className="text-info">Clinical case</MicroLabel>
         <h2 className="text-xl font-semibold tracking-tight">{cs.title}</h2>
         <p className="text-xs text-ink-soft">{cs.specialty} · {cs.system}</p>
       </header>
 
-      <div className="glass space-y-3 rounded-2xl p-5">
+      <div className="clay space-y-3 rounded-2xl p-5">
         <div className="flex flex-wrap items-center gap-2 text-[10px] font-bold uppercase tracking-[0.12em] text-ink-soft">
           <span className="rounded-full border border-line bg-surface-2 px-2.5 py-1">{cs.specialty}</span>
           <span className="rounded-full border border-line bg-surface-2 px-2.5 py-1">{cs.system}</span>
@@ -678,7 +679,7 @@ function CaseBlock({ cs, onDone, completing }: { cs: { id: string; title: string
 
 function MissingContent({ onDone, completing }: { onDone: () => void; completing: boolean }) {
   return (
-    <div className="glass space-y-3 rounded-2xl p-6 text-center">
+    <div className="clay space-y-3 rounded-2xl p-6 text-center">
       <AlertTriangle className="mx-auto size-6 text-sev-warn" aria-hidden />
       <p className="text-sm font-medium">This block&apos;s content couldn&apos;t be loaded.</p>
       <p className="text-xs text-ink-soft">You can skip it — your session progress is still saved.</p>
@@ -831,7 +832,7 @@ export function RevisionRun({ sessionId, plan, content, onComplete, onQuit }: Re
       <div className="space-y-4 p-4 md:p-6">
         {cursor === -1 ? (
           /* Wrap-up: last block finished (or nothing was due) — closing the session */
-          <div className="glass flex flex-col items-center gap-3 rounded-2xl px-6 py-12 text-center">
+          <div className="clay flex flex-col items-center gap-3 rounded-2xl px-6 py-12 text-center">
             {finishError ? (
               <>
                 <span className="grid size-12 place-items-center rounded-full bg-sev-crit/10">

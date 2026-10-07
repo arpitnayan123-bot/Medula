@@ -42,7 +42,7 @@ export function QuestionsIndex() {
     <div>
       {/* Tab switcher — sits above whichever lab the student picks */}
       <div className="mx-auto max-w-3xl px-4 pt-4 md:px-6 md:pt-6">
-        <div className="glass inline-flex w-full rounded-2xl p-1.5" role="tablist" aria-label="Question lab mode">
+        <div className="clay-tray inline-flex w-full rounded-2xl p-1.5" role="tablist" aria-label="Question lab mode">
           {(
             [
               { id: 'practice', label: 'Practice', icon: FlaskConical, hint: 'Instant feedback' },

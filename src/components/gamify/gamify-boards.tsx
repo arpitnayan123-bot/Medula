@@ -199,7 +199,7 @@ function ConsentPanel({ groupId, groupName, consentOn, onChanged }: {
   }
 
   return (
-    <section className="rounded-2xl border border-line bg-surface-2/40 p-4" aria-label="Sharing settings">
+    <section className="clay rounded-2xl p-4" aria-label="Sharing settings">
       <div className="flex items-start justify-between gap-4">
         <div className="min-w-0">
           <h2 className="flex items-center gap-2 text-xs font-semibold tracking-tight">

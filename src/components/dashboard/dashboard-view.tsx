@@ -33,6 +33,7 @@ import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { SubjectIndex } from '@/components/dashboard/subject-index'
 import { InternshipPanel } from '@/components/dashboard/internship-panel'
+import { HeroAnatomy } from '@/components/brand/hero-anatomy'
 import { cn } from '@/lib/utils'
 
 const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1]
@@ -150,13 +151,13 @@ function StatTile({
 }) {
   const tones = {
     sky: 'bg-primary/10 text-primary',
-    warn: 'bg-sev-warn/10 text-sev-warn',
+    warn: 'bg-sev-warn/12 text-sev-warn',
     crit: 'bg-sev-crit/10 text-sev-crit',
     ok: 'bg-sev-ok/10 text-sev-ok',
   } as const
   return (
-    <div className="flex items-center gap-3 rounded-xl border border-line bg-card/70 p-3.5">
-      <span className={cn('grid size-9 shrink-0 place-items-center rounded-xl', tones[tone])}>
+    <div className="clay clay-hover flex items-center gap-3 rounded-2xl p-3.5">
+      <span className={cn('grid size-9 shrink-0 place-items-center rounded-xl shadow-well', tones[tone])}>
         <Icon className="size-4" />
       </span>
       <div className="min-w-0 flex-1">
@@ -173,13 +174,11 @@ function StatTile({
 
 function SegmentRow({ index, seg }: { index: number; seg: PlanSegment }) {
   return (
-    <div className="flex min-h-11 items-center gap-3 rounded-lg px-2 py-2 transition-colors hover:bg-accent/40">
-      <span className="grid size-6 shrink-0 place-items-center rounded-full bg-primary/10 text-[11px] font-semibold text-primary">
+    <div className="flex min-h-11 items-center gap-3 rounded-lg px-2 py-2 transition-colors hover:bg-card/70">
+      <span className="grid size-6 shrink-0 place-items-center rounded-full bg-primary/10 text-[11px] font-semibold text-primary shadow-well">
         {index + 1}
       </span>
-      <span className="shrink-0 rounded-md bg-primary/10 px-2 py-0.5 text-[11px] font-semibold text-primary">
-        {seg.minutes} min
-      </span>
+      <span className="shrink-0 rounded-md bg-primary/10 px-2 py-0.5 text-[11px] font-semibold text-primary">{seg.minutes} min</span>
       <div className="min-w-0">
         <p className="truncate text-sm font-medium">{seg.activity}</p>
         <p className="truncate text-xs text-ink-soft">{seg.detail}</p>
@@ -225,6 +224,23 @@ function DashboardError({ onRetry }: { onRetry: () => void }) {
   )
 }
 
+// Time-aware human greeting — the campus door, not a dashboard label.
+function useGreeting() {
+  const profile = useAppStore((s) => s.profile)
+  // This view only renders after the profile hydrates client-side (page.tsx
+  // gates on profile), so reading the clock during init is hydration-safe.
+  const [hour] = useState(() => new Date().getHours())
+  const first = profile?.name?.trim()?.split(/\s+/)[0]
+  const word = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening'
+  const line =
+    hour < 12
+      ? 'Ready to understand medicine a little deeper today?'
+      : hour < 17
+        ? 'Let\u2019s continue your journey through medicine.'
+        : 'One quiet hour with medicine tonight goes a long way.'
+  return { title: first ? `${word}, ${first}.` : `${word}, Doctor.`, line }
+}
+
 // ─── Main view ───────────────────────────────────────────────────────────────
 
 export function DashboardView() {
@@ -232,6 +248,8 @@ export function DashboardView() {
   const setQuizPreset = useAppStore((s) => s.setQuizPreset)
   const setAuditOpen = useAppStore((s) => s.setAuditOpen)
   const setMapScope = useAppStore((s) => s.setMapScope)
+  // Hooks stay above every early return — greeting reads the clock + profile.
+  const greeting = useGreeting()
 
   const [data, setData] = useState<DashboardPayload | null>(null)
   const [insights, setInsights] = useState<MapInsights | null>(null)
@@ -287,74 +305,75 @@ export function DashboardView() {
 
   return (
     <div className="mx-auto max-w-5xl space-y-6 overflow-x-clip p-4 md:p-6">
-      {/* 1 · Greeting — one line, one chip */}
-      <Reveal index={0} className="space-y-1.5">
-        <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-2">
-          <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">
-            <span className="bg-gradient-to-r from-sky-600 via-sky-500 to-cyan-600 bg-clip-text text-transparent">
-              Namaste, Doctor
-            </span>
-            <motion.span
-              aria-hidden
-              className="ml-1.5 inline-block align-middle text-xl sm:text-2xl"
-              animate={{ y: [0, -4, 0], rotate: [0, 8, 0] }}
-              transition={{ duration: 3.2, repeat: Infinity, ease: 'easeInOut' }}
-            >
-              🙏
-            </motion.span>
-          </h1>
-          <span className="inline-flex items-center gap-1.5 whitespace-nowrap rounded-full border border-line bg-card/70 px-3 py-1.5 text-xs font-medium text-ink-soft">
-            <Timer className="size-3.5 text-sev-warn" aria-hidden />
-            {stats.streak}-day streak
-          </span>
-        </div>
-        <p className="text-sm text-ink-soft">
-          {stageLabel} · {stageLabelText} — here&apos;s the plan for today.
-        </p>
-      </Reveal>
-
-      {/* 2 · TODAY'S MISSION — the single hero card */}
-      <Reveal index={1}>
+      {/* 1+2 · THE PORCH — greeting + today's mission on one porcelain podium,
+          watched over by the anatomical hero */}
+      <Reveal index={0}>
         <section
-          className="warm-scene relative overflow-hidden rounded-3xl p-4 md:p-6"
+          className="podium relative overflow-hidden rounded-3xl p-5 md:p-7"
           aria-label="Today's mission"
         >
-          <div className="relative">
-            <div className="flex flex-wrap items-center justify-between gap-2">
-              <div>
-                <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-ink-soft">Today&apos;s mission</p>
-                <h2 className="text-xl font-semibold tracking-tight sm:text-2xl">
-                  {missionTotal > 0 ? `${missionTotal} minutes to stay on track` : 'Your plan is ready'}
-                </h2>
+          <div className="pointer-events-none absolute -right-10 -top-14 size-48 rounded-full bg-[#f3d5a4]/40 blur-3xl scene-float" aria-hidden />
+          <div className="pointer-events-none absolute -left-12 -bottom-4 size-44 rounded-full bg-[#c9e8d4]/35 blur-3xl scene-float" aria-hidden />
+          <div className="relative flex flex-col gap-6 md:flex-row md:items-center">
+            <div className="min-w-0 flex-1">
+              {/* the human greeting */}
+              <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-2">
+                <h1 className="font-display text-3xl font-semibold tracking-tight text-balance sm:text-4xl">
+                  {greeting.title}
+                </h1>
+                <span className="inline-flex items-center gap-1.5 whitespace-nowrap rounded-full border border-line/80 bg-card/80 px-3 py-1.5 text-xs font-medium text-ink-soft shadow-sm">
+                  <Timer className="size-3.5 text-gold" aria-hidden />
+                  {stats.streak}-day streak
+                </span>
               </div>
-              <span className="rounded-full bg-primary/10 px-3 py-1.5 text-xs font-semibold text-primary">
-                {heatToday.minutes}/{stats.recommendedMinutes} min done
-              </span>
+              <p className="mt-1 text-sm text-ink-soft">
+                {greeting.line} <span className="text-ink-soft/60">·</span> {stageLabel} · {stageLabelText}
+              </p>
+
+              {/* the day's mission */}
+              <div className="mt-5 rounded-2xl border border-white/50 bg-card/60 p-4 shadow-raised backdrop-blur-sm">
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <div>
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-ink-soft">Today&apos;s mission</p>
+                    <h2 className="font-display text-xl font-semibold tracking-tight sm:text-2xl">
+                      {missionTotal > 0 ? `${missionTotal} minutes to stay on track` : 'Your plan is ready'}
+                    </h2>
+                  </div>
+                  <span className="rounded-full bg-primary/10 px-3 py-1.5 text-xs font-semibold text-primary">
+                    {heatToday.minutes}/{stats.recommendedMinutes} min done
+                  </span>
+                </div>
+
+                {/* progress */}
+                <div className="mt-3">
+                  <div className="h-2 w-full overflow-hidden rounded-full bg-surface-2 shadow-well">
+                    <Bar pct={missionPct} className="bg-gradient-to-r from-primary via-primary to-[oklch(0.62_0.105_158)]" delay={0.25} />
+                  </div>
+                </div>
+
+                {/* plan segments */}
+                {todayPlan.length > 0 && (
+                  <div className="mt-2 space-y-0.5">
+                    {todayPlan.slice(0, 4).map((seg, i) => (
+                      <SegmentRow key={`${seg.activity}-${i}`} index={i} seg={seg} />
+                    ))}
+                  </div>
+                )}
+
+                <div className="mt-4 flex flex-col gap-2 sm:flex-row">
+                  <Button size="lg" className="clay-btn min-h-11 flex-1 sm:flex-none sm:px-8" onClick={startMission}>
+                    <Play className="size-4" /> Start today&apos;s mission
+                  </Button>
+                  <Button size="lg" variant="outline" className="clay-btn-soft min-h-11 border-0 bg-transparent" onClick={() => setView('revise')}>
+                    Open in Revise
+                  </Button>
+                </div>
+              </div>
             </div>
 
-            {/* progress */}
-            <div className="mt-3">
-              <div className="h-2 w-full overflow-hidden rounded-full bg-background/60">
-                <Bar pct={missionPct} className="bg-primary" delay={0.25} />
-              </div>
-            </div>
-
-            {/* plan segments */}
-            {todayPlan.length > 0 && (
-              <div className="mt-2 space-y-0.5">
-                {todayPlan.slice(0, 4).map((seg, i) => (
-                  <SegmentRow key={`${seg.activity}-${i}`} index={i} seg={seg} />
-                ))}
-              </div>
-            )}
-
-            <div className="mt-4 flex flex-col gap-2 sm:flex-row">
-              <Button size="lg" className="clay-btn min-h-11 flex-1 sm:flex-none sm:px-8" onClick={startMission}>
-                <Play className="size-4" /> Start today&apos;s mission
-              </Button>
-              <Button size="lg" variant="outline" className="min-h-11" onClick={() => setView('revise')}>
-                Open in Revise
-              </Button>
+            {/* the anatomical presence — the campus emblem */}
+            <div className="mx-auto w-full max-w-[260px] shrink-0 self-end md:mx-0 md:max-w-[330px]">
+              <HeroAnatomy />
             </div>
           </div>
         </section>

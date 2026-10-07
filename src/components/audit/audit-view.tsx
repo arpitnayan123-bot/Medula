@@ -104,7 +104,7 @@ export function AuditView() {
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.97, y: 12 }}
             transition={{ type: 'spring', stiffness: 260, damping: 26 }}
-            className="absolute inset-x-0 top-[6vh] mx-auto flex max-h-[86vh] w-[calc(100%-1.5rem)] max-w-2xl flex-col overflow-hidden rounded-3xl border border-line bg-background shadow-2xl"
+            className="glass-strong absolute inset-x-0 top-[6vh] mx-auto flex max-h-[86vh] w-[calc(100%-1.5rem)] max-w-2xl flex-col overflow-hidden rounded-3xl border border-line shadow-2xl"
           >
             {/* header */}
             <div className="flex items-center gap-3 border-b border-line px-5 py-4">
@@ -133,7 +133,7 @@ export function AuditView() {
 
                 {phase === 'intro' && !error && (
                   <div className="space-y-5">
-                    <div className="rounded-2xl border border-line bg-surface-2 p-4 text-sm leading-relaxed text-ink-soft">
+                    <div className="clay-in rounded-2xl p-4 text-sm leading-relaxed text-ink-soft">
                       I&apos;ll ask <span className="font-semibold text-foreground">a handful of quick questions across every subject</span> with
                       questions available — from pre-clinical to clinical. There is no pass or fail; the goal is to
                       map where you actually stand so the engine can calibrate your missions.
@@ -193,8 +193,8 @@ export function AuditView() {
                                 key={o.id}
                                 onClick={() => choose(o.id)}
                                 className={cn(
-                                  'flex w-full items-center gap-3 rounded-xl border border-line bg-card p-3.5 text-left text-sm transition-all min-h-11',
-                                  selected ? 'border-primary bg-primary/10 font-medium' : 'hover:border-primary/40',
+                                  'flex w-full items-center gap-3 rounded-xl p-3.5 text-left text-sm transition-all min-h-11',
+                                  selected ? 'border border-primary bg-primary/10 font-medium' : 'clay-in hover:border-primary/40',
                                 )}
                               >
                                 <span className={cn(
@@ -230,7 +230,7 @@ export function AuditView() {
 
                 {phase === 'results' && result && (
                   <div className="space-y-6">
-                    <div className="flex items-center gap-5 rounded-2xl border border-line bg-surface-2 p-5">
+                    <div className="clay-in flex items-center gap-5 rounded-2xl p-5">
                       <div className="relative flex size-24 items-center justify-center">
                         <svg width="96" height="96" viewBox="0 0 96 96" aria-hidden="true">
                           <circle cx="48" cy="48" r="40" fill="none" stroke="var(--muted)" strokeWidth="7" />
@@ -266,7 +266,7 @@ export function AuditView() {
                             initial={{ opacity: 0, y: 8 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: i * 0.05 }}
-                            className="rounded-xl border border-line bg-card p-3.5"
+                            className="clay-in rounded-xl p-3.5"
                           >
                             <div className="mb-2 flex items-center gap-2">
                               <span className="size-2.5 rounded-full" style={{ background: s.color }} />

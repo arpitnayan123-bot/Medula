@@ -36,6 +36,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { useToast } from '@/hooks/use-toast'
 import { FEATURES } from '@/lib/feature-flags'
+import { PageHeader } from '@/components/primitives/kit'
 import { cn } from '@/lib/utils'
 
 // ─── types (mirrors of the API responses) ───────────────────────────────────
@@ -593,16 +594,17 @@ function ResearchViewInner({ initialQuery }: { initialQuery?: string }) {
   return (
     <div className="mx-auto max-w-3xl px-4 pb-8 pt-4 md:px-6 md:pt-6">
       {/* header */}
-      <header className="flex items-start gap-3">
-        <div className="clay rounded-2xl p-2.5" aria-hidden="true">
-          <FlaskConical className="size-5" />
-        </div>
-        <div>
-          <h1 className="text-lg font-semibold tracking-tight sm:text-xl">RESEARCH</h1>
-          <p className="text-xs text-ink-soft sm:text-sm">
-            Real papers. Real metadata. Always linked to the original source.
-          </p>
-        </div>
+      <header>
+        <PageHeader
+          eyebrow={
+            <>
+              <FlaskConical className="mr-1 inline size-3" />
+              Source-first paper hub
+            </>
+          }
+          title="Research"
+          intro="Real papers. Real metadata. Always linked to the original source."
+        />
       </header>
 
       <Tabs value={tab} onValueChange={setTab} className="mt-4">
@@ -829,7 +831,7 @@ function ResearchViewInner({ initialQuery }: { initialQuery?: string }) {
           )}
 
           {!podLoading && !podError && pod?.paper && (
-            <article className="clay rounded-3xl p-5 sm:p-6">
+            <article className="clay clay-hover rounded-3xl p-5 sm:p-6">
               <div className="flex flex-wrap items-center gap-2 text-xs text-ink-soft">
                 <span className="inline-flex items-center gap-1.5">
                   <CalendarDays className="size-4" aria-hidden="true" />

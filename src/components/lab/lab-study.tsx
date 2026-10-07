@@ -130,7 +130,7 @@ function GuidedReveal({
   const atEnd = idx != null && idx >= steps.length - 1
 
   return (
-    <section className="glass space-y-3.5 rounded-2xl p-4 md:p-5" aria-label="Guided explanation">
+    <section className="clay space-y-3.5 rounded-2xl p-4 md:p-5" aria-label="Guided explanation">
       <div className="flex min-w-0 flex-wrap items-center justify-between gap-2">
         <div className="flex items-center gap-2">
           <span className="grid size-8 shrink-0 place-items-center rounded-lg bg-sev-warn/15 text-sev-warn">
@@ -261,7 +261,7 @@ function AiPanel({ imageId }: { imageId: string }) {
   }, [busy, imageId])
 
   return (
-    <section className="glass space-y-3 rounded-2xl p-4 md:p-5" aria-label="Ask the image tutor">
+    <section className="clay space-y-3 rounded-2xl p-4 md:p-5" aria-label="Ask the image tutor">
       <div className="flex min-w-0 flex-wrap items-center gap-2">
         <span className="grid size-8 shrink-0 place-items-center rounded-lg bg-primary/12 text-primary">
           <Bot className="size-4" aria-hidden />

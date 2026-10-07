@@ -40,7 +40,7 @@ type RelFilter = 0 | 3 | 4 | 5
 
 function StatChip({ icon: Icon, value, label, accent }: { icon: LucideIcon; value: string; label: string; accent?: boolean }) {
   return (
-    <div className="glass flex min-h-16 min-w-0 flex-1 basis-36 items-center gap-3 rounded-2xl px-4 py-3">
+    <div className="clay flex min-h-16 min-w-0 flex-1 basis-36 items-center gap-3 rounded-2xl px-4 py-3">
       <span className={cn('grid size-9 shrink-0 place-items-center rounded-xl', accent ? 'bg-primary/12 text-primary' : 'bg-surface-2 text-ink-soft')}>
         <Icon className="size-4" aria-hidden />
       </span>
@@ -208,22 +208,28 @@ export function LabHomeScreen({ home, onOpenImage, onStartRapid, rapidSignal }: 
 
   return (
     <div className="mx-auto max-w-5xl space-y-6 p-4 md:p-6">
-      {/* ── Hero: the learning loop ── */}
-      <Reveal index={0} className="min-w-0 space-y-2">
-        <MicroLabel className="text-primary">Product 10 · Visual diagnosis</MicroLabel>
-        <h1 className="text-3xl font-semibold tracking-tight md:text-4xl">Medical Image Learning Lab</h1>
-        <p className="flex flex-wrap items-center gap-x-1.5 gap-y-1 text-sm leading-relaxed text-ink-soft" aria-label="Learning loop">
-          {['See', 'Identify', 'Interpret', 'Reason', 'Learn', 'Practice'].map((step, i, arr) => (
-            <span key={step} className="inline-flex items-center gap-1.5">
-              <span className={cn('font-semibold', i === 0 ? 'text-foreground' : 'text-ink-soft')}>{step}</span>
-              {i < arr.length - 1 && <ArrowRight className="size-3.5 shrink-0 text-primary/70" aria-hidden />}
-            </span>
-          ))}
-        </p>
-        <p className="max-w-2xl text-sm leading-relaxed text-ink-soft">
-          {stats.imagesAvailable} platform-owned teaching images across {modalities.length} modalities. Zoom in,
-          place pins where the findings live, and let the deterministic engine grade your eye.
-        </p>
+      {/* ── Hero: the learning loop — porcelain podium ── */}
+      <Reveal index={0}>
+        <div className="podium relative overflow-hidden rounded-3xl p-5 md:p-7">
+          <div className="pointer-events-none absolute -right-12 -top-16 size-52 rounded-full bg-[#f3d5a4]/35 blur-3xl" aria-hidden />
+          <div className="pointer-events-none absolute -left-14 -bottom-8 size-48 rounded-full bg-[#c9e8d4]/30 blur-3xl" aria-hidden />
+          <div className="relative min-w-0 space-y-2">
+            <MicroLabel className="text-primary">Product 10 · Visual diagnosis</MicroLabel>
+            <h1 className="font-display text-3xl font-semibold tracking-tight md:text-4xl">Medical Image Learning Lab</h1>
+            <p className="flex flex-wrap items-center gap-x-1.5 gap-y-1 text-sm leading-relaxed text-ink-soft" aria-label="Learning loop">
+              {['See', 'Identify', 'Interpret', 'Reason', 'Learn', 'Practice'].map((step, i, arr) => (
+                <span key={step} className="inline-flex items-center gap-1.5">
+                  <span className={cn('font-semibold', i === 0 ? 'text-foreground' : 'text-ink-soft')}>{step}</span>
+                  {i < arr.length - 1 && <ArrowRight className="size-3.5 shrink-0 text-primary/70" aria-hidden />}
+                </span>
+              ))}
+            </p>
+            <p className="max-w-2xl text-sm leading-relaxed text-ink-soft">
+              {stats.imagesAvailable} platform-owned teaching images across {modalities.length} modalities. Zoom in,
+              place pins where the findings live, and let the deterministic engine grade your eye.
+            </p>
+          </div>
+        </div>
       </Reveal>
 
       {/* ── Resume banner ── */}
@@ -258,7 +264,7 @@ export function LabHomeScreen({ home, onOpenImage, onStartRapid, rapidSignal }: 
       <Reveal index={2}>
         <section
           className={cn(
-            'glass space-y-3.5 rounded-2xl border-primary/25 p-4 md:p-5',
+            'clay space-y-3.5 rounded-2xl border-primary/25 p-4 md:p-5',
             rapidSignal && 'ring-2 ring-primary/50',
           )}
           aria-label="Rapid fire drill"
@@ -365,7 +371,7 @@ export function LabHomeScreen({ home, onOpenImage, onStartRapid, rapidSignal }: 
         {/* ── Image cards grid ── */}
         {home.images.length === 0 ? (
           <Reveal index={5}>
-            <div className="glass flex flex-col items-center gap-3 rounded-2xl px-6 py-12 text-center">
+            <div className="clay flex flex-col items-center gap-3 rounded-2xl px-6 py-12 text-center">
               <span className="grid size-14 place-items-center rounded-full bg-primary/10">
                 <Compass className="size-7 text-primary" aria-hidden />
               </span>
@@ -378,7 +384,7 @@ export function LabHomeScreen({ home, onOpenImage, onStartRapid, rapidSignal }: 
           </Reveal>
         ) : filtered.length === 0 ? (
           <Reveal index={5}>
-            <div className="glass flex flex-col items-center gap-3 rounded-2xl px-6 py-10 text-center">
+            <div className="clay flex flex-col items-center gap-3 rounded-2xl px-6 py-10 text-center">
               <p className="text-sm font-medium">No images match these filters.</p>
               <Button variant="outline" className="min-h-11" onClick={clearFilters}>Clear filters</Button>
             </div>
@@ -396,7 +402,7 @@ export function LabHomeScreen({ home, onOpenImage, onStartRapid, rapidSignal }: 
       {home.weakModalities.length > 0 && (
         <Reveal index={6} className="space-y-3">
           <MicroLabel className="text-sev-warn">Weak modalities — below 70% measured</MicroLabel>
-          <div className="glass space-y-3.5 rounded-2xl p-4 md:p-5">
+          <div className="clay space-y-3.5 rounded-2xl p-4 md:p-5">
             {home.weakModalities.map((w, i) => (
               <div key={`${w.label}-${i}`} className="min-w-0">
                 <div className="mb-1.5 flex items-baseline justify-between gap-3">
@@ -419,7 +425,7 @@ export function LabHomeScreen({ home, onOpenImage, onStartRapid, rapidSignal }: 
       {home.missedPatterns.length > 0 && (
         <Reveal index={7} className="space-y-3">
           <MicroLabel className="text-sev-crit">Missed patterns — same finding, several runs</MicroLabel>
-          <div className="glass divide-y divide-line/70 rounded-2xl p-2 md:p-3">
+          <div className="clay divide-y divide-line/70 rounded-2xl p-2 md:p-3">
             {home.missedPatterns.map((p, i) => (
               <div key={i} className="flex min-w-0 items-start gap-3 p-2.5 md:p-3">
                 <span className="mt-0.5 grid size-8 shrink-0 place-items-center rounded-lg bg-sev-crit/10 text-sev-crit">
@@ -440,7 +446,7 @@ export function LabHomeScreen({ home, onOpenImage, onStartRapid, rapidSignal }: 
       {/* ── Recommended next image ── */}
       {home.recommended && (
         <Reveal index={8}>
-          <section className="glass space-y-3 rounded-2xl border-primary/25 p-4 md:p-5" aria-label="Recommended next image">
+          <section className="clay space-y-3 rounded-2xl border-primary/25 p-4 md:p-5" aria-label="Recommended next image">
             <div className="flex items-center gap-2">
               <span className="grid size-8 shrink-0 place-items-center rounded-lg bg-primary/12 text-primary">
                 <TrendingUp className="size-4" aria-hidden />
@@ -466,7 +472,7 @@ export function LabHomeScreen({ home, onOpenImage, onStartRapid, rapidSignal }: 
                 key={`${r.imageId}-${i}`}
                 type="button"
                 onClick={() => onOpenImage(r.imageId)}
-                className="glass flex w-52 shrink-0 flex-col gap-1 rounded-2xl p-3.5 text-left transition-colors hover:border-primary/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                className="clay flex w-52 shrink-0 flex-col gap-1 rounded-2xl p-3.5 text-left transition-colors hover:border-primary/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 aria-label={`Reopen ${r.title} — score ${Math.round(r.score)}, ${r.correct ? 'passed' : 'below pass mark'}`}
               >
                 <span className="flex items-center gap-1.5">

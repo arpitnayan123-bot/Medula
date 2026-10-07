@@ -28,6 +28,7 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Textarea } from '@/components/ui/textarea'
+import { EmptyState, PageHeader } from '@/components/primitives/kit'
 import { cn } from '@/lib/utils'
 
 const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1]
@@ -345,7 +346,7 @@ function PerfSkeleton() {
 function PerfError({ onRetry }: { onRetry: () => void }) {
   return (
     <div className="mt-5">
-      <div className="glass flex flex-col items-center gap-3 rounded-2xl p-8 text-center md:p-12">
+      <div className="clay flex flex-col items-center gap-3 rounded-2xl p-8 text-center md:p-12">
         <span className="grid size-12 place-items-center rounded-full bg-sev-crit/10">
           <RefreshCcw className="size-6 text-sev-crit" />
         </span>
@@ -366,7 +367,7 @@ function PerfError({ onRetry }: { onRetry: () => void }) {
 /** Compact "holding me back" row for the Overview tab. */
 function FocusRow({ w, onHandoff }: { w: PerformanceWeakItem; onHandoff: (h: PerformanceHandoff) => void }) {
   return (
-    <div className="glass flex flex-col gap-3 rounded-2xl p-4 sm:flex-row sm:items-center">
+    <div className="clay flex flex-col gap-3 rounded-2xl p-4 sm:flex-row sm:items-center">
       <span
         className="grid size-8 shrink-0 place-items-center rounded-lg bg-sev-crit/10 text-sm font-bold tabular-nums text-sev-crit"
         aria-label={`Priority ${Math.round(w.importance)} of 100`}
@@ -415,7 +416,7 @@ function MiniStat({ label, value }: { label: string; value: string }) {
 /** Full weakness card for the Focus tab — ranked by exam importance × weakness × decay. */
 function WeakCard({ w, pinned = false, onHandoff }: { w: PerformanceWeakItem; pinned?: boolean; onHandoff: (h: PerformanceHandoff) => void }) {
   return (
-    <div className={cn('glass rounded-2xl p-4', pinned && 'border-sev-crit/40')}>
+    <div className={cn('clay rounded-2xl p-4', pinned && 'border-sev-crit/40')}>
       <div className="flex items-start gap-3">
         <KindIcon kind={w.kind} />
         <div className="min-w-0 flex-1">
@@ -428,7 +429,7 @@ function WeakCard({ w, pinned = false, onHandoff }: { w: PerformanceWeakItem; pi
         <div className="w-16 shrink-0 text-right" aria-label={`Priority ${Math.round(w.importance)} of 100`}>
           <p className="text-[10px] uppercase tracking-wider text-ink-soft">Priority</p>
           <p className="text-lg font-bold leading-none tabular-nums">{Math.round(w.importance)}</p>
-          <div className="mt-1 h-1 w-full overflow-hidden rounded-full bg-surface-2">
+          <div className="mt-1 h-1 w-full overflow-hidden rounded-full clay-in">
             <div
               className={cn('h-full rounded-full', w.importance >= 66 ? 'bg-sev-crit' : w.importance >= 40 ? 'bg-sev-warn' : 'bg-sev-ok')}
               style={{ width: `${Math.max(0, Math.min(100, w.importance))}%` }}
@@ -469,7 +470,7 @@ function WeakCard({ w, pinned = false, onHandoff }: { w: PerformanceWeakItem; pi
 
 function StrengthCard({ s }: { s: PerformancePayload['strengths'][number] }) {
   return (
-    <div className="glass rounded-2xl p-4">
+    <div className="clay rounded-2xl p-4">
       <div className="flex items-start gap-3">
         <span className="grid size-9 shrink-0 place-items-center rounded-lg bg-sev-ok/10">
           <ShieldCheck className="size-4 text-sev-ok" />
@@ -498,7 +499,7 @@ function StrengthCard({ s }: { s: PerformancePayload['strengths'][number] }) {
 function InsightCard({ ins, onHandoff }: { ins: PerformanceInsight; onHandoff: (h: PerformanceHandoff) => void }) {
   const sev = SEVERITY_CLS[ins.severity]
   return (
-    <div className={cn('glass rounded-2xl border-l-4 p-4', sev.border)}>
+    <div className={cn('clay rounded-2xl border-l-4 p-4', sev.border)}>
       <div className="flex flex-wrap items-center gap-2">
         <h3 className="text-sm font-semibold leading-snug">{ins.title}</h3>
         <span className={cn('text-[10px] font-bold uppercase tracking-widest', sev.text)}>{sev.label}</span>
@@ -539,7 +540,7 @@ function IndicatorTile(props: {
       type="button"
       onClick={() => props.onTab(props.tab)}
       aria-label={props.aria}
-      className="group rounded-xl border border-line bg-surface-2/40 px-3 py-2.5 text-left transition-colors hover:border-primary/50"
+      className="clay clay-hover group rounded-xl px-3 py-2.5 text-left transition-colors"
     >
       <div className="flex items-center gap-1.5">
         <Icon className="size-3.5 text-ink-soft transition-colors group-hover:text-primary" />
@@ -566,7 +567,7 @@ function OverviewTab({ data, onTab, onHandoff }: { data: PerformancePayload; onT
       {/* 1 · WHERE AM I */}
       <Reveal index={0} className="space-y-3">
         <SectionHeading>Where am I?</SectionHeading>
-        <section className="glass rounded-2xl p-5 md:p-6" aria-label="Overall readiness">
+        <section className="clay rounded-2xl p-5 md:p-6" aria-label="Overall readiness">
           <div className="flex flex-col items-center gap-6 sm:flex-row">
             {readiness.overall != null ? (
               <ReadinessRing value={readiness.overall} size={148} stroke={12}>
@@ -683,9 +684,11 @@ function OverviewTab({ data, onTab, onHandoff }: { data: PerformancePayload; onT
           )}
         </div>
         {focusNow.length === 0 ? (
-          <p className="glass rounded-2xl p-4 text-sm text-ink-soft">
-            Nothing flagged right now — keep practising and the engine re-ranks continuously.
-          </p>
+          <EmptyState
+            icon={ShieldCheck}
+            title="Nothing flagged right now"
+            hint="keep practising and the engine re-ranks continuously."
+          />
         ) : (
           <div className="space-y-2.5">
             {focusNow.slice(0, 3).map((w) => (
@@ -699,7 +702,7 @@ function OverviewTab({ data, onTab, onHandoff }: { data: PerformancePayload; onT
       <Reveal index={2} className="space-y-3">
         <SectionHeading>What should I do next?</SectionHeading>
         {insights.length === 0 ? (
-          <div className="glass rounded-2xl border-l-4 border-l-sev-ok p-4">
+          <div className="clay rounded-2xl border-l-4 border-l-sev-ok p-4">
             <p className="flex items-center gap-2 text-sm font-medium">
               <ShieldCheck className="size-4 shrink-0 text-sev-ok" />
               No red flags right now — keep the streak.
@@ -804,7 +807,7 @@ function OverviewTab({ data, onTab, onHandoff }: { data: PerformancePayload; onT
 function DimensionCard({ d, index }: { d: PerformancePayload['readiness']['dimensions'][number]; index: number }) {
   return (
     <Reveal index={index}>
-      <div className="glass rounded-2xl p-4 md:p-5">
+      <div className="clay rounded-2xl p-4 md:p-5">
         <div className="flex flex-wrap items-baseline gap-2">
           <h3 className="text-sm font-semibold">{d.label}</h3>
           <Badge variant="outline" className="border-line text-ink-soft" title={d.effectiveWeight !== d.weight ? 'Renormalised after excluding data-poor dimensions' : undefined}>
@@ -813,7 +816,7 @@ function DimensionCard({ d, index }: { d: PerformancePayload['readiness']['dimen
           <span className="ml-auto text-2xl font-semibold tabular-nums leading-none">{d.value != null ? `${Math.round(d.value)}%` : '—'}</span>
         </div>
 
-        <div className="mt-3 h-2 w-full overflow-hidden rounded-full bg-surface-2" aria-hidden="true">
+        <div className="clay-in mt-3 h-2 w-full overflow-hidden rounded-full" aria-hidden="true">
           {d.lacksData || d.value == null ? (
             <div className="h-full w-full rounded-full border border-dashed border-line" />
           ) : (
@@ -847,7 +850,7 @@ function ReadinessTab({ data }: { data: PerformancePayload }) {
 
       <Reveal index={0} className="space-y-3">
         <SectionHeading>What does the number mean?</SectionHeading>
-        <section className="glass rounded-2xl p-5 md:p-6" aria-label="Overall readiness score">
+        <section className="clay rounded-2xl p-5 md:p-6" aria-label="Overall readiness score">
           <div className="flex flex-col items-center gap-5 sm:flex-row">
             {r.overall != null ? (
               <ReadinessRing value={r.overall} size={104} stroke={10}>
@@ -908,7 +911,7 @@ function TrendCard({ t, index }: { t: PerformanceTrend; index: number }) {
   const ariaLabel = `${t.label} trend: ${vals.length > 0 ? vals.map((v) => Math.round(v)).join(', ') : 'no data'} ${t.unit === '%' ? 'percent' : t.unit}`
   return (
     <Reveal index={index}>
-      <div className="glass rounded-2xl p-4 md:p-5">
+      <div className="clay rounded-2xl p-4 md:p-5">
         <div className="flex flex-wrap items-center gap-2">
           <h3 className="text-sm font-semibold">{t.label}</h3>
           <span className={cn('rounded-full border px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide', chip.cls)}>
@@ -968,14 +971,17 @@ function TrendsTab({ data }: { data: PerformancePayload }) {
       <Reveal index={1} className="space-y-3">
         <SectionHeading>Subject movement — last 14 days</SectionHeading>
         <div className="grid gap-3 md:grid-cols-2">
-          <div className="glass rounded-2xl p-4">
+          <div className="clay rounded-2xl p-4">
             <h3 className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest text-sev-ok">
               <ArrowUpRight className="size-3.5" /> Rising
             </h3>
             {rising.length === 0 ? (
-              <p className="mt-3 text-sm leading-relaxed text-ink-soft">
-                No measured risers yet — movement shows after about two weeks of practice.
-              </p>
+              <EmptyState
+                icon={TrendingUp}
+                className="mt-3 border-0 bg-transparent px-0"
+                title="No measured risers yet"
+                hint="movement shows after about two weeks of practice."
+              />
             ) : (
               <ul className="mt-3 space-y-2">
                 {rising.map((s) => (
@@ -990,14 +996,17 @@ function TrendsTab({ data }: { data: PerformancePayload }) {
               </ul>
             )}
           </div>
-          <div className="glass rounded-2xl p-4">
+          <div className="clay rounded-2xl p-4">
             <h3 className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest text-sev-warn">
               <ArrowDownRight className="size-3.5" /> Slipping
             </h3>
             {slipping.length === 0 ? (
-              <p className="mt-3 text-sm leading-relaxed text-ink-soft">
-                Nothing slipping — no subject lost ground in the last fortnight.
-              </p>
+              <EmptyState
+                icon={ArrowDownRight}
+                className="mt-3 border-0 bg-transparent px-0"
+                title="Nothing slipping"
+                hint="no subject lost ground in the last fortnight."
+              />
             ) : (
               <ul className="mt-3 space-y-2">
                 {slipping.map((s) => (
@@ -1023,7 +1032,7 @@ function TrendsTab({ data }: { data: PerformancePayload }) {
 function ExamReadinessCard({ data }: { data: PerformancePayload }) {
   const ex = data.examReadiness
   return (
-    <div className="glass rounded-2xl p-4 md:p-5">
+    <div className="clay rounded-2xl p-4 md:p-5">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <h2 className="text-xs font-bold uppercase tracking-widest text-ink-soft">Exam readiness</h2>
         {ex.daysLeft != null && (
@@ -1135,9 +1144,11 @@ function FocusTab({ data, onHandoff }: { data: PerformancePayload; onHandoff: (h
           Ranked by exam importance × weakness × decay — not just wrong answers.
         </p>
         {focusNow.length === 0 && weaknesses.length === 0 ? (
-          <p className="glass rounded-2xl p-4 text-sm leading-relaxed text-ink-soft">
-            No measured weaknesses yet — the engine ranks these automatically as you practice.
-          </p>
+          <EmptyState
+            icon={Crosshair}
+            title="No measured weaknesses yet"
+            hint="the engine ranks these automatically as you practice."
+          />
         ) : (
           <div className="space-y-3">
             {focusNow.map((w) => (
@@ -1156,9 +1167,11 @@ function FocusTab({ data, onHandoff }: { data: PerformancePayload; onHandoff: (h
           Protect these — don&apos;t over-study what already holds.
         </p>
         {strengths.length === 0 ? (
-          <p className="glass rounded-2xl p-4 text-sm leading-relaxed text-ink-soft">
-            No marked strengths yet — strengths appear once mastery holds across attempts.
-          </p>
+          <EmptyState
+            icon={ShieldCheck}
+            title="No marked strengths yet"
+            hint="strengths appear once mastery holds across attempts."
+          />
         ) : (
           <div className="grid gap-3 md:grid-cols-2">
             {strengths.map((s) => (
@@ -1447,20 +1460,22 @@ export function PerformanceView() {
 
   return (
     <div className="mx-auto max-w-6xl p-4 pb-24 md:p-6 md:pb-10">
-      <header className="space-y-2">
-        <div className="flex items-center gap-2.5">
-          <span className="grid size-10 place-items-center rounded-xl bg-primary/10">
-            <Gauge className="size-5 text-primary" />
-          </span>
-          <h1 className="text-3xl font-semibold tracking-tight md:text-4xl">PERFORMANCE INTELLIGENCE</h1>
-        </div>
-        <p className="text-lg font-medium leading-snug tracking-tight md:text-xl">
-          The true state of your preparation — <span className="text-primary">measured, explained, actionable.</span>
-        </p>
-        <p className="text-sm text-ink-soft">
-          Built from your real learning signals — attempts, recall curves, revision, and mock tests. Not a rank
-          prediction.
-        </p>
+      <header>
+        <PageHeader
+          eyebrow={
+            <>
+              <Gauge className="mr-1 inline size-3" />
+              Performance &amp; readiness
+            </>
+          }
+          title={
+            <>
+              Performance intelligence —{' '}
+              <span className="text-primary">measured, explained, actionable.</span>
+            </>
+          }
+          intro="Built from your real learning signals — attempts, recall curves, revision, and mock tests. Not a rank prediction."
+        />
       </header>
 
       {status === 'loading' && <PerfSkeleton />}

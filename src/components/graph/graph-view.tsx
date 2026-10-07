@@ -110,7 +110,7 @@ function ScreenSkeleton({ variant }: { variant: 'home' | 'hub' | 'path' }) {
 
 function ScreenError({ title, hint, onRetry }: { title: string; hint: string; onRetry: () => void }) {
   return (
-    <div className="glass flex flex-col items-center gap-3 rounded-2xl p-8 text-center">
+    <div className="clay flex flex-col items-center gap-3 rounded-2xl p-8 text-center">
       <span className="grid size-12 place-items-center rounded-full bg-sev-crit/10">
         <RefreshCw className="size-6 text-sev-crit" aria-hidden />
       </span>
@@ -178,7 +178,7 @@ function GraphSearch({ onOpenHub, onOpenTopicHub }: { onOpenHub: (id: string, na
   const hasRows = !!results && (results.concepts.length > 0 || results.topics.length > 0 || results.subjects.length > 0)
 
   return (
-    <div className="glass rounded-2xl p-3">
+    <div className="clay rounded-2xl p-3">
       <div className="flex min-h-11 items-center gap-2">
         <Search className="ml-1.5 size-4 shrink-0 text-ink-soft" aria-hidden />
         <Input
@@ -323,7 +323,7 @@ function SubjectExplorer({
   return (
     <Accordion type="multiple" className="space-y-2" onValueChange={(v) => v.forEach(load)}>
       {subjects.map((s) => (
-        <AccordionItem key={s.code} value={s.code} className="glass rounded-xl border border-line px-3">
+        <AccordionItem key={s.code} value={s.code} className="clay rounded-xl border border-line px-3">
           <AccordionTrigger className="min-h-11 py-3 hover:no-underline">
             <span className="flex min-w-0 flex-1 items-center gap-2 pr-2">
               <span className="size-2.5 shrink-0 rounded-full" style={{ backgroundColor: s.color }} aria-hidden />
@@ -572,7 +572,7 @@ function HomeScreen({
       {/* ── recommended today ── */}
       {p.recommendedToday.length > 0 && (
         <Reveal index={4}>
-          <section className="glass space-y-2.5 rounded-2xl p-4" aria-label="Recommended today">
+          <section className="clay space-y-2.5 rounded-2xl p-4" aria-label="Recommended today">
             <MicroLabel>Recommended today</MicroLabel>
             {p.recommendedToday.map((r) => (
               <button
@@ -762,7 +762,7 @@ function HubScreen({
 
       {/* ── header ── */}
       <Reveal index={0}>
-        <section className="glass space-y-3 rounded-2xl p-4 md:p-5" aria-label={`${c.name} hub`}>
+        <section className="clay space-y-3 rounded-2xl p-4 md:p-5" aria-label={`${c.name} hub`}>
           <div className="flex items-start gap-3">
             <span className="grid size-11 shrink-0 place-items-center rounded-xl bg-primary/10">
               <KindIcon kind={c.kind} className="size-5" />
@@ -907,7 +907,7 @@ function HubScreen({
       {/* ── minimap ── */}
       {hub.minimap.nodes.length > 0 && (
         <Reveal index={2}>
-          <section className="glass rounded-2xl p-4" aria-label="Neighbourhood map">
+          <section className="clay rounded-2xl p-4" aria-label="Neighbourhood map">
             <MicroLabel>The neighbourhood at a glance</MicroLabel>
             <div className="mt-1">
               <Minimap data={hub.minimap} onOpen={(id, name) => onOpenHub(id, name)} />
@@ -947,7 +947,7 @@ function HubScreen({
       {/* ── resources (measured counts only) ── */}
       {(resourceItems.length > 0 || hub.topic.id) && (
         <Reveal index={4}>
-          <section className="glass space-y-2.5 rounded-2xl p-4" aria-label="Practice this concept elsewhere">
+          <section className="clay space-y-2.5 rounded-2xl p-4" aria-label="Practice this concept elsewhere">
             <MicroLabel>Put it to work</MicroLabel>
             <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
               {resourceItems.map((r) => (
@@ -1066,7 +1066,7 @@ function PathScreen({
                   >
                     <StageIcon className="size-4" aria-hidden />
                   </span>
-                  <section className="glass space-y-2.5 rounded-2xl p-4" aria-label={stage.label}>
+                  <section className="clay space-y-2.5 rounded-2xl p-4" aria-label={stage.label}>
                     <div>
                       <p className="text-xs font-bold uppercase tracking-[0.14em]">
                         {i + 1}. {stage.label}
@@ -1106,7 +1106,7 @@ function PathScreen({
       {/* ── narrative ── */}
       {path.narrative.length > 0 && (
         <Reveal index={2}>
-          <section className="glass space-y-2 rounded-2xl p-4" aria-label="The story in one pass">
+          <section className="clay space-y-2 rounded-2xl p-4" aria-label="The story in one pass">
             <MicroLabel>{path.concept.name} — the story in one pass</MicroLabel>
             <ol className="space-y-1.5">
               {path.narrative.map((line, i) => (

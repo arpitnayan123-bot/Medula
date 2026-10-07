@@ -243,7 +243,7 @@ export function ExamRunner({ start, resume, onSubmitted, onExit }: Props) {
           markedCount={markedCount}
           onPalette={null}
         />
-        <div className="glass flex flex-col items-center gap-3 rounded-2xl p-8 text-center">
+        <div className="clay flex flex-col items-center gap-3 rounded-2xl p-8 text-center">
           <span className="grid size-12 place-items-center rounded-full bg-sev-warn/10">
             <AlertTriangle className="size-6 text-sev-warn" aria-hidden />
           </span>
@@ -318,7 +318,7 @@ export function ExamRunner({ start, resume, onSubmitted, onExit }: Props) {
               exit={reduce ? undefined : { opacity: 0, x: -24 }}
               transition={{ duration: 0.25, ease: EASE }}
             >
-              <section className="glass space-y-5 rounded-2xl p-5 md:p-7" aria-label={`Question ${qIndex + 1} of ${total}`}>
+              <section className="clay space-y-5 rounded-2xl p-5 md:p-7" aria-label={`Question ${qIndex + 1} of ${total}`}>
                 <div className="flex flex-wrap items-center gap-2 text-xs">
                   <DifficultyDots n={q.difficulty} />
                   {q.pyqPattern && (

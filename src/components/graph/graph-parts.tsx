@@ -1,10 +1,10 @@
 'use client'
 
 // ─── KNOWLEDGE GRAPH · SHARED PARTS (PRODUCT 08) ───
-// Calm, mobile-first primitives for the graph section. Visual language copied
-// from the Smart Revision / Adaptive / Mistakes sections (glass panels, sev
-// tones, uppercase micro-labels, Reveal entrances). The underlying graph is
-// complex — the UI stays quiet: small chips, tiny labels, measured numbers.
+// Calm, mobile-first primitives for the graph section. Visual language follows
+// the Porcelain Atlas system (clay panels, sev tones, uppercase micro-labels,
+// Reveal entrances). The underlying graph is complex — the UI stays quiet:
+// small chips, tiny labels, measured numbers.
 
 import { useEffect, useState } from 'react'
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
@@ -76,9 +76,10 @@ export const KIND_ICONS: Record<string, LucideIcon> = {
 }
 
 const KIND_COLORS: Record<string, string> = {
-  concept: '#22d3ee', disease: '#f87171', drug: '#a78bfa', investigation: '#fbbf24',
-  physiology: '#34d399', anatomy: '#38bdf8', pathology: '#f472b6', pharmacology: '#c084fc',
-  microbiology: '#facc15', clinical_skill: '#4ade80',
+  // Porcelain Atlas data-viz family — distinct hues, muted temperature.
+  concept: '#16788c', disease: '#c4535e', drug: '#9a7fc0', investigation: '#d9ad6e',
+  physiology: '#5cb491', anatomy: '#c97e59', pathology: '#c4718c', pharmacology: '#8f7fc4',
+  microbiology: '#c4b453', clinical_skill: '#6aae7f',
 }
 
 export function statusColor(s: string): string {
@@ -204,18 +205,19 @@ export const GROUP_ICONS: Record<GraphGroupKind, LucideIcon> = {
 }
 
 export const GROUP_COLORS: Record<GraphGroupKind, string> = {
-  prerequisite: '#f59e0b',
-  unlocks: '#34d399',
-  related: '#94a3b8',
-  confusable: '#e879f9',
-  causes: '#fb923c',
-  caused_by: '#fb7185',
-  mechanism: '#2dd4bf',
-  manifestation: '#a78bfa',
-  investigation: '#fbbf24',
-  treatment: '#4ade80',
-  complication: '#f87171',
-  application: '#22d3ee',
+  // Edge palette — softened to the same warm temperature as the node colors.
+  prerequisite: '#c99655',
+  unlocks: '#5cb491',
+  related: '#9a938a',
+  confusable: '#b678b8',
+  causes: '#c97e59',
+  caused_by: '#c4707e',
+  mechanism: '#4da3a8',
+  manifestation: '#9a7fc0',
+  investigation: '#d9ad6e',
+  treatment: '#6aae7f',
+  complication: '#c4535e',
+  application: '#16788c',
 }
 
 // ─── Relationship feedback dialog (data-quality loop) ─────────────────────────

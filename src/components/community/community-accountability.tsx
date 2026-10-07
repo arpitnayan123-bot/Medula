@@ -127,7 +127,7 @@ export function CommunityAccountabilityScreen() {
 
   if (state === 'error') {
     return (
-      <div className="glass flex flex-col items-center gap-3 rounded-2xl p-8 text-center" role="alert">
+      <div className="clay flex flex-col items-center gap-3 rounded-2xl p-8 text-center" role="alert">
         <ShieldAlert className="size-6 text-ink-soft" aria-hidden />
         <h1 className="text-lg font-semibold tracking-tight">Accountability didn&apos;t load</h1>
         <p className="max-w-sm text-sm leading-relaxed text-ink-soft">
@@ -451,12 +451,12 @@ function GoalRow({
           {kindMeta?.label.split(' —')[0] ?? goal.kind}
         </span>
         {goal.done && (
-          <span className="inline-flex items-center gap-1 rounded-full border border-emerald-500/40 bg-emerald-500/10 px-2 py-0.5 text-[10px] font-bold text-emerald-700 dark:text-emerald-400">
+          <span className="inline-flex items-center gap-1 rounded-full border border-sev-ok/40 bg-sev-ok/10 px-2 py-0.5 text-[10px] font-bold text-sev-ok">
             <CheckCircle2 className="size-3" aria-hidden /> Done
           </span>
         )}
         {!goal.active && (
-          <span className="rounded-full border border-amber-500/40 bg-amber-500/10 px-2 py-0.5 text-[10px] font-bold text-amber-600 dark:text-amber-400">
+          <span className="rounded-full border border-sev-warn/40 bg-sev-warn/10 px-2 py-0.5 text-[10px] font-bold text-sev-warn">
             Paused
           </span>
         )}
@@ -486,7 +486,7 @@ function GoalRow({
           </Button>
         </span>
       </div>
-      <p className={cn('text-xs font-semibold leading-snug', goal.done && 'text-emerald-700 dark:text-emerald-400')}>{goal.title}</p>
+      <p className={cn('text-xs font-semibold leading-snug', goal.done && 'text-sev-ok')}>{goal.title}</p>
       <ProgressMeter
         className="mt-1.5"
         value={goal.progress}

@@ -101,7 +101,7 @@ export function BrainStrategy() {
               <ul className="space-y-1.5" aria-label="Strong areas">
                 {data.strongAreas.map((s) => (
                   <li key={s.conceptId} className="flex items-start gap-2 rounded-xl border border-line bg-surface-2/40 p-3">
-                    <ShieldCheck className="mt-0.5 size-3.5 shrink-0 text-emerald-500" aria-hidden />
+                    <ShieldCheck className="mt-0.5 size-3.5 shrink-0 text-sev-ok" aria-hidden />
                     <div className="min-w-0">
                       <p className="text-xs font-semibold">{s.name}</p>
                       <p className="mt-0.5 text-[11px] leading-relaxed text-ink-soft">{s.line}</p>
@@ -157,9 +157,9 @@ export function BrainStrategy() {
                 <span className="font-semibold tabular-nums">{data.revisionGaps.coverage == null ? '—' : `${Math.round(data.revisionGaps.coverage)}%`}</span>
                 <span className="text-ink-soft">coverage</span>
               </span>
-              <span className="inline-flex min-h-9 items-center gap-1.5 rounded-full border border-amber-500/40 bg-amber-500/12 px-3 py-1.5 text-[11px]">
+              <span className="inline-flex min-h-9 items-center gap-1.5 rounded-full border border-sev-warn/40 bg-sev-warn/12 px-3 py-1.5 text-[11px]">
                 <span className="font-semibold tabular-nums">{data.revisionGaps.overdue}</span>
-                <span className="text-amber-700">overdue</span>
+                <span className="text-sev-warn">overdue</span>
               </span>
             </div>
             <p className="mt-3 text-xs leading-relaxed text-ink-soft">{data.revisionGaps.line}</p>

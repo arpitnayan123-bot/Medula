@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono, Source_Serif_4 } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
 import { ThemeProvider } from "@/components/theme-provider";
@@ -12,6 +12,13 @@ const geistSans = Geist({
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
+});
+
+// Editorial display voice — scholarly serif for the big moments (h1/h2, heroes).
+const sourceSerif = Source_Serif_4({
+  variable: "--font-source-serif",
+  subsets: ["latin"],
+  display: "swap",
 });
 
 export const metadata: Metadata = {
@@ -35,7 +42,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#ddf1fc",
+  themeColor: "#f5f0e6",
   width: "device-width",
   initialScale: 1,
 };
@@ -48,11 +55,12 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-background text-foreground`}
+        className={`${geistSans.variable} ${geistMono.variable} ${sourceSerif.variable} antialiased bg-background text-foreground`}
       >
-        {/* One signature SKY-BLUE daylight theme — night mode is gone for good.
-            forcedTheme pins the look on every device, so no stale localStorage
-            theme or OS dark preference can ever flip phones to a dark skin. */}
+        {/* One signature PORCELAIN daylight theme — warm ivory canvas, surgical
+            teal, champagne warmth. Night mode is gone for good: forcedTheme pins
+            the look on every device, so no stale localStorage theme or OS dark
+            preference can ever flip phones to a dark skin. */}
         <ThemeProvider attribute="class" defaultTheme="light" forcedTheme="light" enableSystem={false} disableTransitionOnChange>
           {children}
           <Toaster />
