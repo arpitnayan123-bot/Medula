@@ -53,6 +53,7 @@ import {
 } from '@/components/ui/alert-dialog'
 import { cn } from '@/lib/utils'
 import { ScrollReveal, Stagger, StaggerItem, Pop } from '@/components/primitives/motion'
+import { Sheen } from '@/components/primitives/aura'
 
 const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1]
 
@@ -544,8 +545,10 @@ export function MockTestView() {
           </ul>
 
           <Button size="lg" className="min-h-12 w-full text-base font-semibold" onClick={() => startTest()} disabled={loadState === 'loading' || !canStart}>
-            {loadState === 'loading' ? <Loader2 className="size-5 animate-spin" /> : <Play className="size-5" />}
-            BEGIN MOCK TEST
+            <Sheen className="w-full justify-center gap-2">
+              {loadState === 'loading' ? <Loader2 className="size-5 animate-spin" /> : <Play className="size-5" />}
+              BEGIN MOCK TEST
+            </Sheen>
           </Button>
           {mix === 'custom' && picked.size === 0 && (
             <p className="text-center text-xs font-medium text-sev-warn">Pick at least one subject to build your paper.</p>

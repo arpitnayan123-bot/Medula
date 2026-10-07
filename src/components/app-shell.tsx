@@ -354,7 +354,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         {/* Content — id/aria give the skip link a target; pb-safe-nav clears
             the floating mobile dock + device safe-area inset. The keyed motion
             wrapper gives every view a calm, physical entrance. */}
-        <main id="main-content" aria-label="Main content" tabIndex={-1} className="flex-1 pb-safe-nav">
+        <main id="main-content" aria-label="Main content" tabIndex={-1} className="flex-1 overflow-x-clip pb-safe-nav">
           <motion.div
             key={view}
             initial={reduce ? false : { opacity: 0, y: 12, scale: 0.996 }}

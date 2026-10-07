@@ -36,6 +36,7 @@ import { InternshipPanel } from '@/components/dashboard/internship-panel'
 import { HeroAnatomy } from '@/components/brand/hero-anatomy'
 import { Magnetic, ScrollReveal, Stagger, StaggerItem } from '@/components/primitives/motion'
 import { BlobField } from '@/components/primitives/scenery'
+import { Sheen, SpotlightCard } from '@/components/primitives/aura'
 import { cn } from '@/lib/utils'
 
 const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1]
@@ -296,78 +297,82 @@ export function DashboardView() {
       {/* 1+2 · THE PORCH — greeting + today's mission on one porcelain podium,
           watched over by the anatomical hero */}
       <ScrollReveal>
-        <section
-          className="podium relative overflow-hidden rounded-3xl p-5 md:p-7"
-          aria-label="Today's mission"
-        >
-          <BlobField className="opacity-60" />
-          <div className="pointer-events-none absolute -right-10 -top-14 size-48 rounded-full bg-[#f3d5a4]/40 blur-3xl scene-float" aria-hidden />
-          <div className="pointer-events-none absolute -left-12 -bottom-4 size-44 rounded-full bg-[#c9e8d4]/35 blur-3xl scene-float" aria-hidden />
-          <div className="relative flex flex-col gap-6 md:flex-row md:items-center">
-            <div className="min-w-0 flex-1">
-              {/* the human greeting */}
-              <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-2">
-                <h1 className="font-display text-3xl font-semibold tracking-tight text-balance sm:text-4xl">
-                  {greeting.title}
-                </h1>
-                <span className="inline-flex items-center gap-1.5 whitespace-nowrap rounded-full border border-line/80 bg-card/80 px-3 py-1.5 text-xs font-medium text-ink-soft shadow-sm">
-                  <Timer className="size-3.5 text-gold" aria-hidden />
-                  {stats.streak}-day streak
-                </span>
-              </div>
-              <p className="mt-1 text-sm text-ink-soft">
-                {greeting.line} <span className="text-ink-soft/60">·</span> {stageLabel} · {stageLabelText}
-              </p>
-
-              {/* the day's mission */}
-              <div className="mt-5 rounded-2xl border border-white/50 bg-card/60 p-4 shadow-raised backdrop-blur-sm">
-                <div className="flex flex-wrap items-center justify-between gap-2">
-                  <div>
-                    <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-ink-soft">Today&apos;s mission</p>
-                    <h2 className="font-display text-xl font-semibold tracking-tight sm:text-2xl">
-                      {missionTotal > 0 ? `${missionTotal} minutes to stay on track` : 'Your plan is ready'}
-                    </h2>
-                  </div>
-                  <span className="rounded-full bg-primary/10 px-3 py-1.5 text-xs font-semibold text-primary">
-                    {heatToday.minutes}/{stats.recommendedMinutes} min done
+        <SpotlightCard className="rounded-3xl">
+          <section
+            className="podium relative overflow-hidden rounded-3xl p-5 md:p-7"
+            aria-label="Today's mission"
+          >
+            <BlobField className="opacity-60" />
+            <div className="pointer-events-none absolute -right-10 -top-14 size-48 rounded-full bg-[#f3d5a4]/40 blur-3xl scene-float" aria-hidden />
+            <div className="pointer-events-none absolute -left-12 -bottom-4 size-44 rounded-full bg-[#c9e8d4]/35 blur-3xl scene-float" aria-hidden />
+            <div className="relative flex flex-col gap-6 md:flex-row md:items-center">
+              <div className="min-w-0 flex-1">
+                {/* the human greeting */}
+                <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-2">
+                  <h1 className="font-display text-3xl font-semibold tracking-tight text-balance sm:text-4xl">
+                    {greeting.title}
+                  </h1>
+                  <span className="inline-flex items-center gap-1.5 whitespace-nowrap rounded-full border border-line/80 bg-card/80 px-3 py-1.5 text-xs font-medium text-ink-soft shadow-sm">
+                    <Timer className="size-3.5 text-gold" aria-hidden />
+                    {stats.streak}-day streak
                   </span>
                 </div>
+                <p className="mt-1 text-sm text-ink-soft">
+                  {greeting.line} <span className="text-ink-soft/60">·</span> {stageLabel} · {stageLabelText}
+                </p>
 
-                {/* progress */}
-                <div className="mt-3">
-                  <div className="h-2 w-full overflow-hidden rounded-full bg-surface-2 shadow-well">
-                    <Bar pct={missionPct} className="bg-gradient-to-r from-primary via-primary to-[oklch(0.62_0.105_158)]" delay={0.25} />
+                {/* the day's mission */}
+                <div className="mt-5 rounded-2xl border border-white/50 bg-card/60 p-4 shadow-raised backdrop-blur-sm">
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <div>
+                      <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-ink-soft">Today&apos;s mission</p>
+                      <h2 className="font-display text-xl font-semibold tracking-tight sm:text-2xl">
+                        {missionTotal > 0 ? `${missionTotal} minutes to stay on track` : 'Your plan is ready'}
+                      </h2>
+                    </div>
+                    <span className="rounded-full bg-primary/10 px-3 py-1.5 text-xs font-semibold text-primary">
+                      {heatToday.minutes}/{stats.recommendedMinutes} min done
+                    </span>
                   </div>
-                </div>
 
-                {/* plan segments */}
-                {todayPlan.length > 0 && (
-                  <div className="mt-2 space-y-0.5">
-                    {todayPlan.slice(0, 4).map((seg, i) => (
-                      <SegmentRow key={`${seg.activity}-${i}`} index={i} seg={seg} />
-                    ))}
+                  {/* progress */}
+                  <div className="mt-3">
+                    <div className="h-2 w-full overflow-hidden rounded-full bg-surface-2 shadow-well">
+                      <Bar pct={missionPct} className="bg-gradient-to-r from-primary via-primary to-[oklch(0.62_0.105_158)]" delay={0.25} />
+                    </div>
                   </div>
-                )}
 
-                <div className="mt-4 flex flex-col gap-2 sm:flex-row">
-                  <Magnetic>
-                    <Button size="lg" className="clay-btn min-h-11 flex-1 sm:flex-none sm:px-8" onClick={startMission}>
-                      <Play className="size-4" /> Start today&apos;s mission
+                  {/* plan segments */}
+                  {todayPlan.length > 0 && (
+                    <div className="mt-2 space-y-0.5">
+                      {todayPlan.slice(0, 4).map((seg, i) => (
+                        <SegmentRow key={`${seg.activity}-${i}`} index={i} seg={seg} />
+                      ))}
+                    </div>
+                  )}
+
+                  <div className="mt-4 flex flex-col gap-2 sm:flex-row">
+                    <Magnetic>
+                      <Sheen className="rounded-[calc(var(--radius)+2px)]">
+                        <Button size="lg" className="clay-btn min-h-11 flex-1 sm:flex-none sm:px-8" onClick={startMission}>
+                          <Play className="size-4" /> Start today&apos;s mission
+                        </Button>
+                      </Sheen>
+                    </Magnetic>
+                    <Button size="lg" variant="outline" className="clay-btn-soft min-h-11 border-0 bg-transparent" onClick={() => setView('revise')}>
+                      Open in Revise
                     </Button>
-                  </Magnetic>
-                  <Button size="lg" variant="outline" className="clay-btn-soft min-h-11 border-0 bg-transparent" onClick={() => setView('revise')}>
-                    Open in Revise
-                  </Button>
+                  </div>
                 </div>
               </div>
-            </div>
 
-            {/* the anatomical presence — the campus emblem */}
-            <div className="mx-auto w-full max-w-[260px] shrink-0 self-end md:mx-0 md:max-w-[330px]">
-              <HeroAnatomy />
+              {/* the anatomical presence — the campus emblem */}
+              <div className="mx-auto w-full max-w-[260px] shrink-0 self-end md:mx-0 md:max-w-[330px]">
+                <HeroAnatomy />
+              </div>
             </div>
-          </div>
-        </section>
+          </section>
+        </SpotlightCard>
       </ScrollReveal>
 
       {/* 3 · Four quick numbers — the whole day at a glance */}

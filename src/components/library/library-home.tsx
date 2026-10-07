@@ -13,6 +13,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { cn } from '@/lib/utils'
 import { PageHeader } from '@/components/primitives/kit'
+import { NoiseVeil } from '@/components/primitives/aura'
 import { ContourAtlas } from '@/components/primitives/scenery'
 import {
   CardGrid, DisclaimerFootnote, KindIcon, LibraryCard, MicroLabel, Reveal,
@@ -42,6 +43,7 @@ export function LibraryHomeScreen({
       <Reveal index={0}>
         <div className="relative">
           <ContourAtlas opacity={0.4} />
+          <NoiseVeil />
           <div className="relative z-10">
         <PageHeader
           eyebrow={

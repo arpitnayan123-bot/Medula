@@ -27,6 +27,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Skeleton } from '@/components/ui/skeleton'
 import { ScrollReveal, Stagger, StaggerItem } from '@/components/primitives/motion'
+import { Aurora } from '@/components/primitives/aura'
 import { cn } from '@/lib/utils'
 import {
   EASE, GROUP_COLORS, MicroLabel, Minimap, ExplainLinkDialog,
@@ -434,7 +435,9 @@ function HomeScreen({
   return (
     <div className="space-y-6">
       {/* ── hero ── */}
-      <Reveal index={0} className="space-y-2">
+      <Reveal index={0} className="relative">
+        <Aurora intensity={0.6} />
+        <div className="relative z-10 space-y-2">
         <p className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-ink-soft">
           <Network className="size-3.5 text-primary" aria-hidden /> Knowledge Graph
         </p>
@@ -447,6 +450,7 @@ function HomeScreen({
           <StatChip label="connections" value={stats.edges} />
           <StatChip label={crossPct != null ? 'cross-subject' : 'cross-subject links'} value={crossPct != null ? `${crossPct}%` : stats.crossSubject} />
           <StatChip label="questions" value={stats.questions} />
+        </div>
         </div>
       </Reveal>
 

@@ -19,6 +19,7 @@ import { useAppStore } from '@/lib/store'
 import { Concept3D } from '@/components/concept/concept-3d'
 import { LessonSections } from '@/components/learn/lesson-sections'
 import { ProgressMark } from '@/components/learn/learn-study'
+import { TextShimmer } from '@/components/primitives/aura'
 import { ScrollReveal } from '@/components/primitives/motion'
 import { ContourAtlas } from '@/components/primitives/scenery'
 import { cn } from '@/lib/utils'
@@ -465,7 +466,9 @@ export function ConceptExplorer() {
                       </span>
                     </div>
                     <div className="flex items-start justify-between gap-4">
-                      <h1 className="text-2xl font-semibold tracking-tight md:text-3xl">{detail.name}</h1>
+                      <h1 className="text-2xl font-semibold tracking-tight md:text-3xl">
+                        <TextShimmer>{detail.name}</TextShimmer>
+                      </h1>
                       <MasteryRing knowledge={detail.knowledge} />
                     </div>
                     <p className="text-sm leading-relaxed text-ink-soft md:text-[15px]">{detail.summary}</p>

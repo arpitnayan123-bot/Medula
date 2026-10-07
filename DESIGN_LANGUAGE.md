@@ -145,3 +145,30 @@ real clock. Do NOT hardcode hour-based colors in views — the system handles it
 ### Shell (already elevated — zero work needed)
 Spring drawers/sheets, gliding dock pill, scroll-reactive header are done.
 Do not touch `app-shell.tsx`.
+
+## §8 — The Aura Layer (v3 expressiveness)
+
+Skiper-UI-grade effects, re-engineered for a light, warm, academic surface.
+Primitives live in `src/components/primitives/aura.tsx`, their keyframes in
+the `AURA` section of `globals.css`. Every effect animates transform/opacity
+only, is pointer-fine-aware, and collapses to a calm static state under
+`prefers-reduced-motion`.
+
+| Primitive | Feel | Spend it on |
+|---|---|---|
+| `SpotlightCard` | a warm teal wash follows the cursor | hero cards, feature grids (≤1 per view) |
+| `BorderBeam` | champagne comet riding the card edge | THE one hero card per view |
+| `Aurora` | slow champagne/mint/teal light drift | landing + view heroes, behind scenery |
+| `Marquee` | infinite edge-faded chip drift | ambient capability strips (landing only) |
+| `TiltCard` | ≤4.5° spring lean toward cursor | persona/feature cards (desktop only) |
+| `Sheen` | hover light sweep on CTAs | primary CTA per view |
+| `WordCycle` | rotating word in display headings | sparingly (greetings) |
+| `GlowRing` | conic progress ring + champagne halo | level/readiness ring moments |
+| `NoiseVeil` | 3.5% paper grain | hero cards needing texture |
+| `TextShimmer` | metallic drift on one word | one hero word per view max |
+
+**Budget law: 1–2 (max 3) aura moments per view. Never stack two effects on
+one element. Never inside question/answer runners.** The Legacy Board
+(`profile-legacy.tsx`) is the flagship composition: member-since hero,
+since-joined well grid, measured contribution calendar, badge wall, streak
+rails, subject mastery ladder — every number counted from real ledgers.

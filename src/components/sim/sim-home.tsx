@@ -21,6 +21,7 @@ import type { SimCaseSummary, SimDifficulty, SimHome } from '@/lib/types'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Progress } from '@/components/ui/progress'
+import { SpotlightCard } from '@/components/primitives/aura'
 import { Stagger, StaggerItem, ScrollReveal } from '@/components/primitives/motion'
 import { cn } from '@/lib/utils'
 import { DIFF_TONE, MicroLabel, Reveal, AnimatedNumber, relTime, SCROLL_SLIM } from './sim-shared'
@@ -169,31 +170,33 @@ export function SimHomeScreen({ home, onOpenCase }: Props) {
       {/* ── Resume banner ── */}
       {home.resume && (
         <Reveal index={1}>
-          <button
-            type="button"
-            onClick={() => onOpenCase(home.resume!.caseId)}
-            className="warm-card clay-hover flex w-full min-w-0 items-center gap-3 rounded-2xl p-4 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-            aria-label={`Resume case ${home.resume.caseTitle} at saved stage`}
-          >
-            <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-sev-warn/15 text-sev-warn">
-              <RotateCcw className="size-5" aria-hidden />
-            </span>
-            <span className="min-w-0 flex-1">
-              <span className="block text-[11px] font-semibold uppercase tracking-[0.16em] text-sev-warn">
-                Case in progress
+          <SpotlightCard className="warm-card clay-hover w-full overflow-visible rounded-2xl">
+            <button
+              type="button"
+              onClick={() => onOpenCase(home.resume!.caseId)}
+              className="flex w-full min-w-0 items-center gap-3 p-4 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              aria-label={`Resume case ${home.resume.caseTitle} at saved stage`}
+            >
+              <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-sev-warn/15 text-sev-warn">
+                <RotateCcw className="size-5" aria-hidden />
               </span>
-              <span className="block truncate text-sm font-semibold">
-                Picks up at “{home.resume.caseTitle}”
+              <span className="min-w-0 flex-1">
+                <span className="block text-[11px] font-semibold uppercase tracking-[0.16em] text-sev-warn">
+                  Case in progress
+                </span>
+                <span className="block truncate text-sm font-semibold">
+                  Picks up at “{home.resume.caseTitle}”
+                </span>
+                <span className="block text-xs text-ink-soft">
+                  {home.resume.mode === 'ai' ? 'AI patient mode' : 'Guided mode'} · stage{' '}
+                  {Math.max(1, home.resume.stageIndex + 1)}
+                </span>
               </span>
-              <span className="block text-xs text-ink-soft">
-                {home.resume.mode === 'ai' ? 'AI patient mode' : 'Guided mode'} · stage{' '}
-                {Math.max(1, home.resume.stageIndex + 1)}
+              <span className="hidden shrink-0 items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-primary sm:flex">
+                Continue <Play className="size-3.5" aria-hidden />
               </span>
-            </span>
-            <span className="hidden shrink-0 items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-primary sm:flex">
-              Continue <Play className="size-3.5" aria-hidden />
-            </span>
-          </button>
+            </button>
+          </SpotlightCard>
         </Reveal>
       )}
 

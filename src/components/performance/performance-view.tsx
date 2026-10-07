@@ -29,6 +29,7 @@ import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Textarea } from '@/components/ui/textarea'
 import { EmptyState, PageHeader } from '@/components/primitives/kit'
+import { NoiseVeil } from '@/components/primitives/aura'
 import { Stagger, StaggerItem } from '@/components/primitives/motion'
 import { cn } from '@/lib/utils'
 
@@ -1475,8 +1476,12 @@ export function PerformanceView() {
 
   return (
     <div className="mx-auto max-w-6xl p-4 pb-24 md:p-6 md:pb-10">
-      <header>
+      {/* Page header — paper-grain zone (the indicator tiles sit directly on
+          the page background, so the header zone carries the one aura moment) */}
+      <header className="relative overflow-hidden rounded-2xl">
+        <NoiseVeil />
         <PageHeader
+          className="relative z-10"
           eyebrow={
             <>
               <Gauge className="mr-1 inline size-3" />

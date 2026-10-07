@@ -16,6 +16,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Magnetic } from '@/components/primitives/motion'
 import { DotMatrix } from '@/components/primitives/scenery'
+import { Aurora, BorderBeam, Sheen } from '@/components/primitives/aura'
 import { api } from '@/lib/api'
 import { useAppStore, readStoredSession, readStoredView, viewFromHash, viewToLabel, writeStoredSession, clearStoredSession, type StoredSession } from '@/lib/store'
 import { LogoMark } from '@/components/brand/logo'
@@ -146,6 +147,7 @@ export function SignInView({ initialHash }: { initialHash?: string }) {
         <div className="scene-float absolute -right-20 bottom-10 size-80 rounded-full bg-gold/[0.12] blur-3xl" style={{ animationDelay: '3s' }} />
         <div className="scene-float absolute -left-24 bottom-1/4 size-64 rounded-full bg-mint/[0.12] blur-3xl" style={{ animationDelay: '6s' }} />
         <DotMatrix className="opacity-70" />
+        <Aurora intensity={0.7} />
       </div>
 
       {/* top bar */}
@@ -166,9 +168,10 @@ export function SignInView({ initialHash }: { initialHash?: string }) {
             initial={reduce ? false : { opacity: 0, y: 26 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, ease: EASE }}
-            className="clay w-full max-w-md rounded-3xl p-6 sm:p-8"
+            className="clay relative w-full max-w-md overflow-hidden rounded-3xl p-6 sm:p-8"
             aria-labelledby="signin-resume-heading"
           >
+            <BorderBeam duration={12} size={200} />
             <div className="flex flex-col items-center text-center">
               <LogoMark size={58} />
               <p className="mt-2 text-[10px] font-semibold uppercase tracking-[0.3em] text-ink-soft">Medula · Medical Learning OS</p>
@@ -205,16 +208,18 @@ export function SignInView({ initialHash }: { initialHash?: string }) {
             )}
 
             <Magnetic className="w-full">
-              <Button
-                type="button"
-                size="lg"
-                className="mt-5 min-h-11 w-full gap-2 text-sm font-semibold"
-                onClick={() => void continueSession()}
-                disabled={phase === 'working'}
-              >
-                {phase === 'working' ? <Loader2 className="size-4 animate-spin" /> : <ArrowRight className="size-4" />}
-                {resume.account === 'demo' ? 'Continue as Demo Doctor' : 'Continue to your dashboard'}
-              </Button>
+              <Sheen className="mt-5 w-full rounded-md">
+                <Button
+                  type="button"
+                  size="lg"
+                  className="min-h-11 w-full gap-2 text-sm font-semibold"
+                  onClick={() => void continueSession()}
+                  disabled={phase === 'working'}
+                >
+                  {phase === 'working' ? <Loader2 className="size-4 animate-spin" /> : <ArrowRight className="size-4" />}
+                  {resume.account === 'demo' ? 'Continue as Demo Doctor' : 'Continue to your dashboard'}
+                </Button>
+              </Sheen>
             </Magnetic>
             <Button
               type="button"

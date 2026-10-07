@@ -11,6 +11,7 @@ import { ArrowUpRight, Award, CheckCircle2, Flame, Info, MessageSquare, ScrollTe
 import type { CommunityGroupSummary, CommunityHomePayload, CommunitySpaceKind, CommunitySpaceSummary } from '@/lib/types'
 import { useAppStore } from '@/lib/store'
 import { Button } from '@/components/ui/button'
+import { Aurora } from '@/components/primitives/aura'
 import { ScrollReveal, SpringNumber, Stagger, StaggerItem } from '@/components/primitives/motion'
 import { DotMatrix } from '@/components/primitives/scenery'
 import { cn } from '@/lib/utils'
@@ -40,6 +41,7 @@ export function CommunityHomeScreen({
       {/* ── hero ── */}
       <ScrollReveal>
         <header className="relative space-y-3">
+          <Aurora intensity={0.6} />
           <DotMatrix className="rounded-2xl" />
           <div className="relative z-10 space-y-3">
           <MicroLabel>Medical learning community</MicroLabel>

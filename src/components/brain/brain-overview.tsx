@@ -16,6 +16,7 @@ import type { BrainAnswer, BrainConceptStatus, BrainHomePayload } from '@/lib/ty
 import { Button } from '@/components/ui/button'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
+import { BorderBeam, NoiseVeil } from '@/components/primitives/aura'
 import { ScrollReveal, Stagger, StaggerItem } from '@/components/primitives/motion'
 import { ContourAtlas } from '@/components/primitives/scenery'
 import { cn } from '@/lib/utils'
@@ -58,7 +59,13 @@ function ProfileStrip({ home, stale, reload, onJumpKnowledge }: {
       title="Your learning profile"
       icon={Brain}
       subtitle="Measured from your real study activity — questions, flashcards, revisions, sessions and mocks."
-      scenery={<ContourAtlas className="rounded-2xl" opacity={0.4} />}
+      scenery={
+        <>
+          <ContourAtlas className="rounded-2xl" opacity={0.4} />
+          <NoiseVeil />
+          <BorderBeam duration={13} size={210} />
+        </>
+      }
       action={(
         <Button variant="ghost" size="sm" className="min-h-9 shrink-0 rounded-full px-3 text-xs text-ink-soft" onClick={reload}>
           {stale ? 'Re-reading…' : 'Re-read'}

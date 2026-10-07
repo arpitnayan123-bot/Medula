@@ -38,6 +38,8 @@ import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Stagger, StaggerItem } from '@/components/primitives/motion'
+import { BorderBeam } from '@/components/primitives/aura'
+import { LegacyBoard } from '@/components/profile/profile-legacy'
 import { Slider } from '@/components/ui/slider'
 import { Switch } from '@/components/ui/switch'
 import { ERROR_TYPE_LABELS, PREP_STAGE_LABELS, YEAR_LABELS } from '@/lib/types'
@@ -85,6 +87,7 @@ const DISCLAIMER_BULLETS = [
 
 // Systematic hub ordering — each section is numbered and jump-linked.
 const HUB_SECTIONS: { href: string; label: string }[] = [
+  { href: '#pf-legacy', label: '00 · Legacy' },
   { href: '#pf-identity', label: '01 · Identity' },
   { href: '#pf-preparation', label: '02 · Preparation' },
   { href: '#pf-readiness', label: '03 · Readiness' },
@@ -123,7 +126,7 @@ function Card({
 }) {
   return (
     <section id={id} className={cn('clay scroll-mt-20 rounded-2xl p-5', className)}>
-      <header className="mb-4 flex items-center justify-between gap-3">
+      <header className="mb-4 flex flex-wrap items-center justify-between gap-x-3 gap-y-2">
         <h2 className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.14em] text-ink-soft">
           {index && (
             <span
@@ -1070,10 +1073,16 @@ export function ProfileView() {
       )}
 
       <div className="grid gap-5 md:grid-cols-3">
-        {/* ── Main column: 01 → 05 ── */}
+        {/* ── Main column: 00 → 05 ── */}
         <div className="space-y-5 md:col-span-2">
-          {/* 01 · IDENTITY */}
-          <Card icon={UserRound} index="01" id="pf-identity" title="Identity">
+          {/* 00 · LEGACY BOARD — the flex surface: everything measured since joining,
+              presented like a GitHub/LeetCode profile but built on honest ledgers */}
+          <LegacyBoard memberSince={profile.memberSince} />
+
+          {/* 01 · IDENTITY — the profile hero card; the border beam is the
+              section's single aura moment (edge rides the clay rounding) */}
+          <Card icon={UserRound} index="01" id="pf-identity" title="Identity" className="relative overflow-hidden">
+            <BorderBeam duration={12} size={200} />
             {editing ? (
               <div className="space-y-4">
                 <div className="space-y-1.5">

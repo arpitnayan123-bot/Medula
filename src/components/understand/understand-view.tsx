@@ -14,6 +14,7 @@ import {
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { PageHeader } from '@/components/primitives/kit'
+import { NoiseVeil } from '@/components/primitives/aura'
 import { Stagger, StaggerItem, ScrollReveal } from '@/components/primitives/motion'
 import { MoleculeDrift } from '@/components/primitives/scenery'
 import { useToast } from '@/hooks/use-toast'
@@ -164,6 +165,7 @@ export function UnderstandView() {
         className="clay relative overflow-hidden rounded-3xl p-5 sm:p-6"
       >
         <MoleculeDrift className="opacity-40" />
+        <NoiseVeil />
         <div className="relative z-10 flex flex-wrap items-start justify-between gap-4">
           <PageHeader
             className="min-w-0"

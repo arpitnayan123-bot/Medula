@@ -21,6 +21,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Skeleton } from '@/components/ui/skeleton'
 import { BlobField } from '@/components/primitives/scenery'
+import { BorderBeam } from '@/components/primitives/aura'
 import { cn } from '@/lib/utils'
 import {
   AiBadgeRow, ConnectionGroup, HighYieldList, KeyPoints, LevelChips, MasteryChip,
@@ -623,8 +624,9 @@ export function AskView() {
   return (
     <div className="mx-auto max-w-3xl px-4 pb-10 pt-6 md:px-6 md:pt-10">
       {/* ── hero (scenery: one soft BlobField wash behind the search zone) ── */}
-      <div className="relative">
+      <div className="relative rounded-3xl">
         <BlobField className="opacity-60" />
+        <BorderBeam duration={12} size={210} />
         <div className="relative z-10">
       <Reveal index={0} className="space-y-3 text-center">
         <p className="flex items-center justify-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-ink-soft">

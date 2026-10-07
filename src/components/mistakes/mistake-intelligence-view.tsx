@@ -24,6 +24,7 @@ import { Button } from '@/components/ui/button'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Badge } from '@/components/ui/badge'
+import { NoiseVeil } from '@/components/primitives/aura'
 import { Stagger, StaggerItem } from '@/components/primitives/motion'
 import { cn } from '@/lib/utils'
 import { MistakeDetail } from './mistake-detail'
@@ -268,8 +269,10 @@ function MistakeHome(props: {
           {/* Genome strip */}
           <section
             aria-label="Mistake genome totals"
+            className="relative rounded-2xl"
           >
-            <Stagger className="grid grid-cols-2 gap-2 sm:grid-cols-5">
+            <NoiseVeil />
+            <Stagger className="relative z-10 grid grid-cols-2 gap-2 sm:grid-cols-5">
               <StaggerItem><Stat value={genome.totals.open} label="open mistakes" tone="crit" /></StaggerItem>
               <StaggerItem><Stat value={genome.totals.repeated} label="missed 2×+" tone="warn" /></StaggerItem>
               <StaggerItem><Stat value={genome.totals.todayCount} label="made today" tone="warn" /></StaggerItem>

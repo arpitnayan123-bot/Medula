@@ -55,6 +55,8 @@ export interface Profile {
   examLabel: string
   examDate: string | null
   onboarded: boolean
+  /** ISO date the profile row was created — the «studying here since» anchor. */
+  memberSince: string
 }
 
 export interface SubjectSummary {

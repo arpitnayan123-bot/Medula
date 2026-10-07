@@ -24,6 +24,7 @@ import { TopicHub } from '@/components/hub/topic-hub'
 import type { HubHomePayload, SearchResults } from '@/lib/types'
 import { Stagger, StaggerItem } from '@/components/primitives/motion'
 import { DotMatrix } from '@/components/primitives/scenery'
+import { BorderBeam } from '@/components/primitives/aura'
 import { cn } from '@/lib/utils'
 
 const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1]
@@ -125,6 +126,7 @@ function HubHome({ onOpen }: { onOpen: (topicId: string, conceptId?: string | nu
       {/* hero */}
       <div className="podium relative overflow-hidden rounded-3xl p-5 md:p-8">
         <DotMatrix />
+        <BorderBeam duration={12} size={220} />
         <div className="relative z-10 mx-auto max-w-2xl space-y-4 text-center">
           <span className="inline-flex items-center gap-1.5 rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-primary">
             <BookMarked className="size-3.5" /> Topic Hub

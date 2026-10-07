@@ -38,6 +38,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { useToast } from '@/hooks/use-toast'
 import { FEATURES } from '@/lib/feature-flags'
 import { PageHeader } from '@/components/primitives/kit'
+import { NoiseVeil } from '@/components/primitives/aura'
 import { Stagger, StaggerItem } from '@/components/primitives/motion'
 import { BlobField } from '@/components/primitives/scenery'
 import { cn } from '@/lib/utils'
@@ -599,6 +600,7 @@ function ResearchViewInner({ initialQuery }: { initialQuery?: string }) {
       {/* header (scenery: one soft BlobField wash behind the title) */}
       <header className="relative">
         <BlobField className="opacity-50" />
+        <NoiseVeil />
         <div className="relative z-10">
           <PageHeader
             eyebrow={

@@ -31,6 +31,7 @@ import {
 } from '@/components/primitives/kit'
 import { ScrollReveal, Stagger, StaggerItem } from '@/components/primitives/motion'
 import { ContourAtlas } from '@/components/primitives/scenery'
+import { Aurora, SpotlightCard } from '@/components/primitives/aura'
 import { cn } from '@/lib/utils'
 
 // ── presentation-only helpers ────────────────────────────────────────────────
@@ -200,6 +201,7 @@ export function LearnView() {
     <div className="mx-auto max-w-6xl space-y-12 p-4 md:space-y-16 md:p-6">
       {/* ── 1 · HERO ─────────────────────────────────────────────────────── */}
       <section aria-labelledby="learn-hero-title" className="relative">
+        <Aurora intensity={0.8} />
         <ContourAtlas className="opacity-50" />
         {!reduceMotion && (
           <div aria-hidden className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
@@ -319,7 +321,7 @@ export function LearnView() {
           ) : (
             <div className="mt-4 grid grid-cols-[minmax(0,1fr)] gap-4 md:grid-cols-[repeat(2,minmax(0,1fr))]">
               {/* Next-best-action */}
-              <Card className="clay min-w-0 rounded-2xl">
+              <SpotlightCard className="clay min-w-0 rounded-2xl py-6">
                 <CardContent className="p-5">
                   <p className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.2em] text-primary">
                     <Target className="size-3" aria-hidden /> Recommended next
@@ -344,7 +346,7 @@ export function LearnView() {
                     </p>
                   )}
                 </CardContent>
-              </Card>
+              </SpotlightCard>
 
               {/* Weak concepts */}
               <Card className="clay min-w-0 rounded-2xl">

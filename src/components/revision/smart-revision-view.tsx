@@ -32,6 +32,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { Skeleton } from '@/components/ui/skeleton'
 import { Pop, Stagger, StaggerItem } from '@/components/primitives/motion'
 import { BlobField } from '@/components/primitives/scenery'
+import { BorderBeam } from '@/components/primitives/aura'
 import { cn } from '@/lib/utils'
 import { RevisionRun } from './revision-run'
 import {
@@ -787,7 +788,9 @@ export function SmartRevisionView() {
               {/* Intelligence strip */}
               <Reveal index={5} className="space-y-3">
                 <MicroLabel>Revision intelligence</MicroLabel>
-                <Stagger className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+                <div className="relative rounded-2xl">
+                  <BorderBeam duration={13} size={200} />
+                  <Stagger className="grid grid-cols-2 gap-2 sm:grid-cols-3">
                   {INTEL_CARDS.map((c) => {
                     const count = home.intelligence.counts[c.key]
                     return (
@@ -809,7 +812,8 @@ export function SmartRevisionView() {
                       </StaggerItem>
                     )
                   })}
-                </Stagger>
+                  </Stagger>
+                </div>
               </Reveal>
 
               {/* Mode cards */}

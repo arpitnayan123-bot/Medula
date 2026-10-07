@@ -21,6 +21,7 @@ import type { LabHome, LabImageSummary, LabMode, LabModality } from '@/lib/types
 import { Button } from '@/components/ui/button'
 import { Progress } from '@/components/ui/progress'
 import { Stagger, StaggerItem, ScrollReveal } from '@/components/primitives/motion'
+import { NoiseVeil } from '@/components/primitives/aura'
 import { DotMatrix } from '@/components/primitives/scenery'
 import { cn } from '@/lib/utils'
 import {
@@ -211,6 +212,7 @@ export function LabHomeScreen({ home, onOpenImage, onStartRapid, rapidSignal }: 
           <DotMatrix />
           <div className="pointer-events-none absolute -right-12 -top-16 size-52 rounded-full bg-[#f3d5a4]/35 blur-3xl" aria-hidden />
           <div className="pointer-events-none absolute -left-14 -bottom-8 size-48 rounded-full bg-[#c9e8d4]/30 blur-3xl" aria-hidden />
+          <NoiseVeil />
           <div className="relative min-w-0 space-y-2">
             <MicroLabel className="text-primary">Product 10 · Visual diagnosis</MicroLabel>
             <h1 className="font-display text-3xl font-semibold tracking-tight md:text-4xl">Medical Image Learning Lab</h1>

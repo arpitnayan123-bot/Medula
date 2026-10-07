@@ -31,6 +31,7 @@ import type { RoadmapPayload, RoadmapPhase, WeekDayPlan } from '@/lib/types'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { PageHeader } from '@/components/primitives/kit'
+import { BorderBeam } from '@/components/primitives/aura'
 import { SpringNumber, Stagger, StaggerItem } from '@/components/primitives/motion'
 import { DotMatrix } from '@/components/primitives/scenery'
 import { cn } from '@/lib/utils'
@@ -487,6 +488,7 @@ export function RoadmapView() {
         className="clay relative overflow-hidden rounded-3xl p-5 md:p-8"
       >
         <DotMatrix />
+        <BorderBeam duration={14} size={240} />
         <div className="relative z-10">
           <div className="flex flex-wrap items-center gap-2">
             <p className="inline-flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-ink-soft">

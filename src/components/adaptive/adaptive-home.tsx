@@ -22,6 +22,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { Slider } from '@/components/ui/slider'
 import { ScrollReveal, Stagger, StaggerItem } from '@/components/primitives/motion'
 import { BlobField } from '@/components/primitives/scenery'
+import { NoiseVeil } from '@/components/primitives/aura'
 import { cn } from '@/lib/utils'
 
 const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1]
@@ -196,6 +197,7 @@ export function AdaptiveHome({ onStart, onResume, refreshKey, starting, startErr
       {/* ── Hero ── */}
       <header className="relative space-y-2">
         <BlobField className="opacity-40" />
+        <NoiseVeil />
         <div className="relative z-10 space-y-2">
         <div className="flex items-center gap-2.5">
           <span className="grid size-10 place-items-center rounded-xl bg-primary/10">

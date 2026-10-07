@@ -13,6 +13,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { PageHeader } from '@/components/primitives/kit'
 import { Pop } from '@/components/primitives/motion'
+import { SpotlightCard } from '@/components/primitives/aura'
 import { cn } from '@/lib/utils'
 
 const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1]
@@ -426,7 +427,7 @@ export function ReviseView() {
 
       {/* Revision debt summary band */}
       <Reveal index={1}>
-        <section className="clay rounded-2xl p-5 md:p-6">
+        <SpotlightCard className="clay rounded-2xl p-5 md:p-6">
           <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
             <div className="min-w-0">
               <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-ink-soft">Revision debt</p>
@@ -455,7 +456,7 @@ export function ReviseView() {
               </Button>
             </div>
           </div>
-        </section>
+        </SpotlightCard>
       </Reveal>
 
       {/* Tabs */}

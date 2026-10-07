@@ -11,6 +11,7 @@ import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import { Magnetic, SpringNumber, Stagger, StaggerItem } from '@/components/primitives/motion'
 import { OrbitRings } from '@/components/primitives/scenery'
+import { BorderBeam, NoiseVeil, Sheen } from '@/components/primitives/aura'
 import type { OsAction, OsCommandCenter, OsReadiness, OsStats } from '@/lib/types'
 import {
   OS_KIND_ICON, MicroLabel, OsGoButton, useOsNavigate,
@@ -122,6 +123,8 @@ export function OsHero({ data }: { data: OsCommandCenter }) {
         className="podium relative overflow-hidden rounded-3xl p-4 md:p-6"
       >
         <OrbitRings className="opacity-60" />
+        <BorderBeam duration={11} size={240} />
+        <NoiseVeil />
         <div className="pointer-events-none absolute -right-12 -top-16 size-52 rounded-full bg-[#f3d5a4]/35 blur-3xl" aria-hidden />
         <div className="pointer-events-none absolute -left-14 -bottom-8 size-48 rounded-full bg-[#c9e8d4]/30 blur-3xl" aria-hidden />
         <div className="relative flex flex-col gap-4 sm:flex-row sm:items-start">
@@ -139,10 +142,12 @@ export function OsHero({ data }: { data: OsCommandCenter }) {
             <p className="mt-1.5 text-[13px] leading-relaxed text-ink-soft">{primary.reason}</p>
             <div className="mt-4 flex flex-wrap items-center gap-2">
               <Magnetic>
-                <Button size="sm" className="clay-btn rounded-xl text-xs" onClick={() => go(primary.view, primary.conceptId, primary.topicId)}>
-                  {primary.cta}
-                  <ChevronRight className="size-4" aria-hidden />
-                </Button>
+                <Sheen className="rounded-[calc(var(--radius)+2px)]">
+                  <Button size="sm" className="clay-btn rounded-xl text-xs" onClick={() => go(primary.view, primary.conceptId, primary.topicId)}>
+                    {primary.cta}
+                    <ChevronRight className="size-4" aria-hidden />
+                  </Button>
+                </Sheen>
               </Magnetic>
               <OsGoButton view="tutor" variant="ghost" size="sm" className="text-xs text-ink-soft">
                 <Sparkles className="size-3.5" aria-hidden />

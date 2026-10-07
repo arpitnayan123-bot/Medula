@@ -18,6 +18,7 @@ import { EXAM_MODES } from '@/lib/types'
 import { Button } from '@/components/ui/button'
 import { Stagger, StaggerItem } from '@/components/primitives/motion'
 import { PulseTrace } from '@/components/primitives/scenery'
+import { Aurora, Sheen } from '@/components/primitives/aura'
 import { cn } from '@/lib/utils'
 import {
   Reveal, SectionTitle, StatTile, accuracyText, asPct, formatClock, modeBadge, relTime,
@@ -122,6 +123,7 @@ export function ExamHomeScreen({ home, onStart, onResume, onOpenHistory, onOpenA
     <div className="mx-auto max-w-5xl space-y-6 p-4 md:p-6">
       {/* ── Hero ── */}
       <Reveal index={0} className="relative min-w-0 space-y-3">
+        <Aurora intensity={0.7} />
         <PulseTrace className="opacity-70" height={90} />
         <div className="relative z-10 space-y-3">
         <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-primary">Product 12 · Mock tests & exam intelligence</p>
@@ -135,8 +137,10 @@ export function ExamHomeScreen({ home, onStart, onResume, onOpenHistory, onOpenA
           className="clay-btn min-h-12 w-full text-sm sm:w-auto"
           onClick={() => onStart({ mode: 'full', count: fullPreset.count, minutes: fullPreset.minutes, negativeMark: fullPreset.negativeMark })}
         >
-          <ClipboardList className="size-4" aria-hidden />
-          Start Full-Length Mock ({fullPreset.count} Q · {fullPreset.minutes} min)
+          <Sheen className="justify-center gap-2">
+            <ClipboardList className="size-4" aria-hidden />
+            Start Full-Length Mock ({fullPreset.count} Q · {fullPreset.minutes} min)
+          </Sheen>
         </Button>
         </div>
       </Reveal>

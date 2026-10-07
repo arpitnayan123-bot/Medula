@@ -18,6 +18,7 @@ import { toast } from '@/hooks/use-toast'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Sheen } from '@/components/primitives/aura'
 import { cn } from '@/lib/utils'
 import {
   AiAssistedBadge, DRAFT_KIND_LABELS, EmptyNote, FacultyErrorState, FacultyStatusPill,
@@ -162,9 +163,11 @@ function AssistPanel({ rec, recLoading, onCreated }: {
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
-          <Button className="min-h-10 rounded-xl text-xs" onClick={generate} disabled={busy || !entityId.trim()}>
-            {busy ? 'Grounding on existing content…' : 'Generate draft'}
-          </Button>
+          <Sheen className="rounded-[calc(var(--radius)+2px)]">
+            <Button className="min-h-10 rounded-xl text-xs" onClick={generate} disabled={busy || !entityId.trim()}>
+              {busy ? 'Grounding on existing content…' : 'Generate draft'}
+            </Button>
+          </Sheen>
           <GateNote className="min-w-0 flex-1">
             The draft lands below and in your drafts list — unverified until a reviewer publishes it.
           </GateNote>

@@ -772,3 +772,98 @@ body::before {
 @media (prefers-reduced-motion: reduce) {
   .scenery-drift, [data-scenery] * { animation: none !important; transition: none !important; }
 }
+
+/* ══════════════════════════════════════════════════════════════════════════
+   AURA — v3 expressiveness layer (warm-light Skiper-UI-grade effects)
+   Champagne/teal light on porcelain. Every animation is transform/opacity
+   only, and everything collapses to a calm static state under
+   prefers-reduced-motion. Spend restraint: 1–2 aura moments per view.
+   ══════════════════════════════════════════════════════════════════════════ */
+
+/* ── BorderBeam — comet of champagne light along a card edge ── */
+@property --beam-angle-start {
+  syntax: '<angle>';
+  inherits: false;
+  initial-value: 0deg;
+}
+@keyframes beam-orbit {
+  to { --beam-angle-start: 360deg; }
+}
+.beam {
+  animation-name: beam-orbit;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+
+/* ── Aurora — slow warm light drifting behind heroes ── */
+@keyframes aurora-drift {
+  0%   { transform: translate3d(0, 0, 0) scale(1); }
+  33%  { transform: translate3d(4%, 3%, 0) scale(1.06); }
+  66%  { transform: translate3d(-3%, 4%, 0) scale(0.97); }
+  100% { transform: translate3d(0, 0, 0) scale(1); }
+}
+.aurora-a {
+  background: radial-gradient(closest-side, color-mix(in oklab, #e8c46a 26%, transparent), transparent 72%);
+  animation: aurora-drift 26s ease-in-out infinite;
+}
+.aurora-b {
+  background: radial-gradient(closest-side, color-mix(in oklab, #16788c 20%, transparent), transparent 72%);
+  animation: aurora-drift 32s ease-in-out infinite reverse;
+}
+.aurora-c {
+  background: radial-gradient(closest-side, color-mix(in oklab, #5cb491 22%, transparent), transparent 72%);
+  animation: aurora-drift 38s ease-in-out infinite;
+  animation-delay: -8s;
+}
+
+/* ── Marquee — infinite drift, pauses on hover ── */
+@keyframes marquee-scroll {
+  to { transform: translateX(-50%); }
+}
+.marquee-track {
+  animation-name: marquee-scroll;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+
+/* ── Sheen — hover light sweep for primary CTAs ── */
+@keyframes sheen-sweep {
+  from { transform: translateX(-130%) skewX(-18deg); }
+  to   { transform: translateX(230%) skewX(-18deg); }
+}
+.sheen-sweep {
+  background: linear-gradient(100deg, transparent 32%, rgba(255, 255, 255, 0.34) 50%, transparent 68%);
+  transform: translateX(-130%) skewX(-18deg);
+}
+.sheen-host:hover .sheen-sweep {
+  animation: sheen-sweep 0.9s cubic-bezier(0.22, 1, 0.36, 1) 1;
+}
+
+/* ── TextShimmer — metallic drift for one hero word ── */
+@keyframes shimmer-text-pan {
+  from { background-position: 160% 0; }
+  to   { background-position: -160% 0; }
+}
+.shimmer-text {
+  background-image: linear-gradient(100deg,
+    var(--ink-strong, var(--foreground)) 38%,
+    color-mix(in oklab, var(--gold) 62%, var(--foreground)) 50%,
+    var(--ink-strong, var(--foreground)) 62%);
+  background-size: 220% 100%;
+  animation: shimmer-text-pan 5.5s ease-in-out infinite;
+}
+
+/* ── NoiseVeil — fine paper grain (SVG feTurbulence data URI) ── */
+.noise-veil {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.55'/%3E%3C/svg%3E");
+  background-size: 160px 160px;
+  mix-blend-mode: multiply;
+}
+
+/* ── Aura calm-state: every effect settles under reduced motion ── */
+@media (prefers-reduced-motion: reduce) {
+  .beam, .aurora-blob, .marquee-track, .sheen-sweep, .shimmer-text {
+    animation: none !important;
+  }
+  .aurora-blob { transform: none !important; }
+}

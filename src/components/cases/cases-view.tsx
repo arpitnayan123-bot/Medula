@@ -32,6 +32,7 @@ import { api } from '@/lib/api'
 import { useAppStore } from '@/lib/store'
 import { Concept3D } from '@/components/concept/concept-3d'
 import { PageHeader } from '@/components/primitives/kit'
+import { BorderBeam } from '@/components/primitives/aura'
 import { Pop, ScrollReveal, Stagger, StaggerItem } from '@/components/primitives/motion'
 import { PulseTrace } from '@/components/primitives/scenery'
 import type { ConceptDetail } from '@/lib/types'
@@ -457,10 +458,11 @@ export function CasesView() {
     return (
       <div className="relative mx-auto max-w-5xl space-y-6 p-4 md:p-6">
         {/* ── Header — porcelain editorial, faint ECG pulse in the header zone ── */}
-        <div className="relative pb-12 md:pb-14">
+        <div className="relative overflow-hidden rounded-2xl pb-12 md:pb-14">
           <div className="pointer-events-none absolute inset-x-0 bottom-0 h-12 md:h-14" aria-hidden>
             <PulseTrace height={80} />
           </div>
+          <BorderBeam duration={11} size={220} />
           <PageHeader
             className="relative z-10"
             eyebrow={<><Stethoscope className="mr-1 inline size-3" />Clinical case simulator</>}

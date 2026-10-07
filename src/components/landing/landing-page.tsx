@@ -1,9 +1,10 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { Fragment, useEffect, useRef, useState } from 'react'
 import type { ReactNode } from 'react'
 import { motion, useInView, useReducedMotion } from 'framer-motion'
 import {
+  Asterisk,
   BrainCircuit,
   ChevronRight,
   Map as MapIcon,
@@ -18,6 +19,7 @@ import { LogoMark } from '@/components/brand/logo'
 import { HeroAnatomy } from '@/components/brand/hero-anatomy'
 import { Magnetic, ScrollReveal, Stagger, StaggerItem } from '@/components/primitives/motion'
 import { ContourAtlas } from '@/components/primitives/scenery'
+import { Aurora, BorderBeam, Marquee, NoiseVeil, Sheen, SpotlightCard, TextShimmer, TiltCard } from '@/components/primitives/aura'
 import { useAppStore } from '@/lib/store'
 
 const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1]
@@ -252,6 +254,18 @@ const HUES: Record<string, string> = {
     'text-sev-warn bg-sev-warn/10 border-sev-warn/20 group-hover:border-sev-warn/40',
 }
 
+// ─── Capability strip — the platform's eight instruments, drifting quietly ───
+const CAPABILITIES = [
+  'Doubt Search',
+  'Concept Explorer',
+  'Understand Your Topic',
+  'Adaptive Revision',
+  'Error Intelligence',
+  'Clinical Case Simulator',
+  'AI Study Coach',
+  'Topic Hub',
+] as const
+
 // ─── Classroom → NEET-PG chain ───
 const CHAIN = ['CBME competency', 'Core concept', 'Clinical connection', 'Question practice', 'Revision schedule']
 
@@ -312,9 +326,10 @@ export function LandingPage() {
         </nav>
       </header>
 
-      <main id="top">
+      <main id="top" className="overflow-x-clip">
         {/* ─── HERO ─── */}
         <section className="relative overflow-hidden">
+          <Aurora intensity={0.9} />
           <ContourAtlas className="opacity-60" />
           <div className="med-grid absolute inset-0" aria-hidden />
           <div
@@ -358,7 +373,7 @@ export function LandingPage() {
               Don&apos;t just study medicine.
               <br />
               <span className="ink-gradient">
-                Build a medical brain.
+                Build a <TextShimmer>medical brain</TextShimmer>.
               </span>
             </motion.h1>
 
@@ -379,13 +394,15 @@ export function LandingPage() {
               className="mt-10 flex flex-col items-center gap-4 sm:flex-row"
             >
               <Magnetic>
-                <Button
-                  size="lg"
-                  className="h-12 rounded-full px-8 text-sm font-semibold tracking-wide"
-                  onClick={() => setView('signin')}
-                >
-                  START YOUR MEDICAL JOURNEY
-                </Button>
+                <Sheen className="rounded-full">
+                  <Button
+                    size="lg"
+                    className="h-12 rounded-full px-8 text-sm font-semibold tracking-wide"
+                    onClick={() => setView('signin')}
+                  >
+                    START YOUR MEDICAL JOURNEY
+                  </Button>
+                </Sheen>
               </Magnetic>
               <Magnetic>
                 <Button
@@ -422,7 +439,23 @@ export function LandingPage() {
               <HeroAnatomy className="mx-auto w-full max-w-md" />
             </motion.div>
           </div>
+
+          <NoiseVeil />
         </section>
+
+        {/* ─── Capability strip — quiet drift of the eight instruments ─── */}
+        <div className="border-y border-line/60 py-4">
+          <Marquee duration={30}>
+            {CAPABILITIES.map((name) => (
+              <Fragment key={name}>
+                <span className="clay-in whitespace-nowrap rounded-full px-4 py-1.5 text-xs font-medium text-ink-soft">
+                  {name}
+                </span>
+                <Asterisk className="size-3 shrink-0 text-gold" aria-hidden />
+              </Fragment>
+            ))}
+          </Marquee>
+        </div>
 
         {/* ─── Fragmented → connected ─── */}
         <section id="philosophy" className="scroll-mt-24 px-4 py-24 sm:px-6 sm:py-32">
@@ -450,21 +483,23 @@ export function LandingPage() {
             <Stagger className="mt-14 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
               {FEATURES.map((f) => (
                 <StaggerItem key={f.title} className="h-full">
-                  <motion.div
-                    id={f.title === 'Doubt Search' ? 'medical-map' : f.title === 'AI Study Coach' ? 'ai-tutor' : undefined}
-                    whileHover={{ scale: 1.02 }}
-                    transition={{ duration: 0.25, ease: 'easeOut' }}
-                    className="clay clay-hover group h-full scroll-mt-32 rounded-2xl p-6"
-                  >
-                    <div
-                      className={`grid size-11 place-items-center rounded-xl border transition-all duration-300 ${HUES[f.hue]}`}
+                  <SpotlightCard className="h-full overflow-visible rounded-2xl">
+                    <motion.div
+                      id={f.title === 'Doubt Search' ? 'medical-map' : f.title === 'AI Study Coach' ? 'ai-tutor' : undefined}
+                      whileHover={{ scale: 1.02 }}
+                      transition={{ duration: 0.25, ease: 'easeOut' }}
+                      className="clay clay-hover group h-full scroll-mt-32 rounded-2xl p-6"
                     >
-                      <f.icon className="size-5" aria-hidden />
-                    </div>
-                    <h3 className="mt-5 text-lg font-semibold tracking-tight">{f.title}</h3>
-                    <p className="text-[10.5px] font-semibold italic uppercase tracking-wider text-primary/80">{f.latin}</p>
-                    <p className="mt-2 text-sm leading-relaxed text-ink-soft">{f.desc}</p>
-                  </motion.div>
+                      <div
+                        className={`grid size-11 place-items-center rounded-xl border transition-all duration-300 ${HUES[f.hue]}`}
+                      >
+                        <f.icon className="size-5" aria-hidden />
+                      </div>
+                      <h3 className="mt-5 text-lg font-semibold tracking-tight">{f.title}</h3>
+                      <p className="text-[10.5px] font-semibold italic uppercase tracking-wider text-primary/80">{f.latin}</p>
+                      <p className="mt-2 text-sm leading-relaxed text-ink-soft">{f.desc}</p>
+                    </motion.div>
+                  </SpotlightCard>
                 </StaggerItem>
               ))}
             </Stagger>
@@ -484,25 +519,28 @@ export function LandingPage() {
             </ScrollReveal>
 
             <ScrollReveal delay={0.1}>
-              <div className="mt-12 flex flex-wrap items-center justify-center gap-2 sm:gap-3">
-                {CHAIN.map((step, i) => (
-                  <div key={step} className="flex items-center gap-2 sm:gap-3">
-                    <span className="clay-in rounded-full px-4 py-2.5 text-sm font-medium text-ink-soft">
-                      {step}
-                    </span>
-                    {i < CHAIN.length - 1 && (
-                      <motion.span
-                        aria-hidden
-                        className="text-primary"
-                        initial={{ x: 0 }}
-                        animate={reduce ? undefined : { x: [0, 4, 0] }}
-                        transition={{ duration: 1.5, repeat: Infinity, delay: i * 0.18, ease: 'easeInOut' }}
-                      >
-                        <ChevronRight className="size-4" />
-                      </motion.span>
-                    )}
-                  </div>
-                ))}
+              <div className="clay relative mt-12 overflow-hidden rounded-3xl px-5 py-8 sm:px-8">
+                <BorderBeam duration={11} size={260} />
+                <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3">
+                  {CHAIN.map((step, i) => (
+                    <div key={step} className="flex items-center gap-2 sm:gap-3">
+                      <span className="clay-in rounded-full px-4 py-2.5 text-sm font-medium text-ink-soft">
+                        {step}
+                      </span>
+                      {i < CHAIN.length - 1 && (
+                        <motion.span
+                          aria-hidden
+                          className="text-primary"
+                          initial={{ x: 0 }}
+                          animate={reduce ? undefined : { x: [0, 4, 0] }}
+                          transition={{ duration: 1.5, repeat: Infinity, delay: i * 0.18, ease: 'easeInOut' }}
+                        >
+                          <ChevronRight className="size-4" />
+                        </motion.span>
+                      )}
+                    </div>
+                  ))}
+                </div>
               </div>
             </ScrollReveal>
           </div>
@@ -521,13 +559,15 @@ export function LandingPage() {
             <Stagger className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
               {PERSONAS.map((p) => (
                 <StaggerItem key={p.tag} className="h-full">
-                  <div className="clay clay-hover h-full rounded-2xl p-5">
-                    <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-primary">
-                      {p.tag}
-                    </p>
-                    <h3 className="mt-2 text-lg font-semibold tracking-tight">{p.title}</h3>
-                    <p className="mt-1.5 text-sm leading-relaxed text-ink-soft">{p.desc}</p>
-                  </div>
+                  <TiltCard className="h-full">
+                    <div className="clay clay-hover h-full rounded-2xl p-5">
+                      <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-primary">
+                        {p.tag}
+                      </p>
+                      <h3 className="mt-2 text-lg font-semibold tracking-tight">{p.title}</h3>
+                      <p className="mt-1.5 text-sm leading-relaxed text-ink-soft">{p.desc}</p>
+                    </div>
+                  </TiltCard>
                 </StaggerItem>
               ))}
             </Stagger>

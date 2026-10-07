@@ -35,6 +35,7 @@ import { PREP_STAGE_LABELS, YEAR_LABELS } from '@/lib/types'
 import type { Profile } from '@/lib/types'
 import { Magnetic } from '@/components/primitives/motion'
 import { ContourAtlas } from '@/components/primitives/scenery'
+import { Sheen } from '@/components/primitives/aura'
 import { cn } from '@/lib/utils'
 
 const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1]
@@ -721,23 +722,25 @@ export function OnboardingWizard() {
             </Button>
             {isReview ? (
               <Magnetic>
-                <Button
-                  className="h-11 min-w-44 rounded-xl text-sm font-semibold tracking-wide"
-                  onClick={enterMedula}
-                  disabled={saving || !stepValid}
-                >
-                  {saving ? (
-                    <>
-                      <Loader2 className="size-4 animate-spin" aria-hidden />
-                      Entering…
-                    </>
-                  ) : (
-                    <>
-                      ENTER MEDULA
-                      <ChevronRight className="size-4" aria-hidden />
-                    </>
-                  )}
-                </Button>
+                <Sheen className="rounded-xl">
+                  <Button
+                    className="h-11 min-w-44 rounded-xl text-sm font-semibold tracking-wide"
+                    onClick={enterMedula}
+                    disabled={saving || !stepValid}
+                  >
+                    {saving ? (
+                      <>
+                        <Loader2 className="size-4 animate-spin" aria-hidden />
+                        Entering…
+                      </>
+                    ) : (
+                      <>
+                        ENTER MEDULA
+                        <ChevronRight className="size-4" aria-hidden />
+                      </>
+                    )}
+                  </Button>
+                </Sheen>
               </Magnetic>
             ) : (
               <Button

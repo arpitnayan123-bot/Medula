@@ -27,6 +27,7 @@ import { Input } from '@/components/ui/input'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Textarea } from '@/components/ui/textarea'
 import { PageHeader } from '@/components/primitives/kit'
+import { SpotlightCard } from '@/components/primitives/aura'
 import { Stagger, StaggerItem } from '@/components/primitives/motion'
 import { cn } from '@/lib/utils'
 import {
@@ -280,7 +281,7 @@ export function PlannerView() {
 
       {/* ── TODAY board ── */}
       <Reveal delay={0.07}>
-        <div className="clay rounded-2xl p-4">
+        <SpotlightCard className="clay rounded-2xl p-4">
           <div className="flex flex-wrap items-center justify-between gap-2">
             <div className="min-w-0">
               <MicroLabel>Today · {today.modeLabel}</MicroLabel>
@@ -303,7 +304,7 @@ export function PlannerView() {
           {home.realized && (
             <p className="mt-1 text-[10px] leading-snug text-ink-soft">{home.realized.note}</p>
           )}
-        </div>
+        </SpotlightCard>
       </Reveal>
 
       {/* ── slots ── */}

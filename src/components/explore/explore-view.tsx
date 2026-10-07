@@ -16,6 +16,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { FEATURES } from '@/lib/feature-flags'
 import { PageHeader } from '@/components/primitives/kit'
+import { Aurora } from '@/components/primitives/aura'
 import { Stagger, StaggerItem } from '@/components/primitives/motion'
 import { OrbitRings } from '@/components/primitives/scenery'
 import type { SourceRecord } from '@/lib/institutions-registry'
@@ -203,6 +204,7 @@ function ExploreInner({ onNavigate }: { onNavigate?: (view: string, payload?: st
     <div className="mx-auto w-full max-w-3xl px-4 pb-16 pt-6 sm:px-6">
       {/* ── HERO (scenery: faint knowledge orbits behind the search zone) ─── */}
       <div className="relative">
+        <Aurora intensity={0.55} />
         <OrbitRings className="opacity-25" />
         <div className="relative z-10">
       <header>

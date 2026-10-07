@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input'
 import { cn } from '@/lib/utils'
 import { api } from '@/lib/api'
 import { useAppStore } from '@/lib/store'
+import { Sheen } from '@/components/primitives/aura'
 import { SpringNumber, Stagger, StaggerItem } from '@/components/primitives/motion'
 import type {
   VoiceDebrief,
@@ -191,8 +192,10 @@ export function VoiceView() {
             onClick={() => startSession('listen')}
             disabled={starting !== null}
           >
-            <Mic className="size-5" aria-hidden />
-            {starting === 'listen' ? 'Starting…' : 'Start talking — one tap'}
+            <Sheen className="justify-center gap-2">
+              <Mic className="size-5" aria-hidden />
+              {starting === 'listen' ? 'Starting…' : 'Start talking — one tap'}
+            </Sheen>
           </Button>
           {!micOk && (
             <span className="inline-flex items-center gap-1.5 rounded-full bg-sev-warn/10 px-3 py-1.5 text-xs font-medium text-sev-warn">

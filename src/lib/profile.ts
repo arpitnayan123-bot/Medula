@@ -6,7 +6,7 @@ export function toProfile(p: {
   gradYear: number; internshipDone: boolean; pastScore: string; prepStage: string
   dailyHours: number; weekdayHours: number; weekendHours: number
   learningStyles: unknown; resources: unknown; examMode: boolean; examLabel: string
-  examDate: Date | null; onboarded: boolean
+  examDate: Date | null; onboarded: boolean; createdAt: Date
 }): Profile {
   return {
     id: p.id, name: p.name, year: p.year, semester: p.semester,
@@ -18,6 +18,7 @@ export function toProfile(p: {
     examMode: p.examMode, examLabel: p.examLabel,
     examDate: p.examDate ? p.examDate.toISOString() : null,
     onboarded: p.onboarded,
+    memberSince: p.createdAt.toISOString(),
   }
 }
 

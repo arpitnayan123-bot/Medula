@@ -41,6 +41,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sh
 import { Textarea } from '@/components/ui/textarea'
 import { useToast } from '@/hooks/use-toast'
 import type { AttemptResult, QuestionClient, TutorContextPayload, TutorDepth, TutorMode } from '@/lib/types'
+import { Aurora, Sheen } from '@/components/primitives/aura'
 import { Pop, Stagger, StaggerItem } from '@/components/primitives/motion'
 import { cn } from '@/lib/utils'
 
@@ -1188,8 +1189,9 @@ export function TutorView() {
   return (
     <div className="mx-auto flex h-full max-w-3xl flex-col gap-3 px-4 pb-4 pt-4 md:px-6 md:pt-6">
       {/* Header */}
-      <header className="flex items-start justify-between gap-3">
-        <div className="flex min-w-0 items-start gap-3">
+      <header className="relative flex items-start justify-between gap-3">
+        <Aurora intensity={0.7} />
+        <div className="relative z-10 flex min-w-0 items-start gap-3">
           <div className="grid size-11 shrink-0 place-items-center rounded-xl border border-primary/20 bg-primary/10 text-primary">
             <Stethoscope className="size-5" aria-hidden />
           </div>
@@ -1200,7 +1202,7 @@ export function TutorView() {
             </p>
           </div>
         </div>
-        <div className="flex shrink-0 items-center gap-1">
+        <div className="relative z-10 flex shrink-0 items-center gap-1">
           <Button variant="ghost" size="icon" aria-label="Tutoring history" onClick={() => setHistoryOpen(true)} className="size-10 text-ink-soft hover:text-foreground">
             <History className="size-4.5" aria-hidden />
           </Button>
@@ -1555,7 +1557,9 @@ export function TutorView() {
             aria-label="Send message"
             className="size-11 shrink-0 rounded-xl"
           >
-            {thinking ? <Loader2 className="size-4 animate-spin" aria-hidden /> : <SendHorizontal className="size-4" aria-hidden />}
+            <Sheen className="rounded-xl">
+              {thinking ? <Loader2 className="size-4 animate-spin" aria-hidden /> : <SendHorizontal className="size-4" aria-hidden />}
+            </Sheen>
           </Button>
         </div>
       </div>

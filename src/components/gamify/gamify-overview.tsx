@@ -15,6 +15,7 @@ import { api } from '@/lib/api'
 import { useAppStore } from '@/lib/store'
 import { Button } from '@/components/ui/button'
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
+import { BorderBeam, GlowRing } from '@/components/primitives/aura'
 import { ScrollReveal, SpringNumber, Stagger, StaggerItem } from '@/components/primitives/motion'
 import { OrbitRings } from '@/components/primitives/scenery'
 import { cn } from '@/lib/utils'
@@ -68,17 +69,27 @@ function GamifyHero({ home }: { home: GamifyHomePayload }) {
   return (
     <section className="warm-card relative rounded-2xl p-5 md:p-6">
       <OrbitRings className="rounded-2xl opacity-60" />
+      <BorderBeam duration={12} size={230} />
       <div className="relative z-10 flex flex-col items-center gap-6 sm:flex-row sm:items-center sm:gap-7">
         <div className="flex flex-col items-center">
-          <XpRing
-            level={home.level.level}
-            tier={home.level.tier}
-            xpIntoLevel={home.level.xpIntoLevel}
-            xpForNextLevel={home.level.xpForNextLevel}
+          {/* GlowRing paints its conic ring + champagne halo directly behind the
+              measured XpRing — same 116/9 geometry, same fraction (0–100), so
+              the existing SVG stays fully visible on top. */}
+          <GlowRing
+            value={home.level.xpForNextLevel > 0 ? (home.level.xpIntoLevel / home.level.xpForNextLevel) * 100 : 0}
             size={116}
-            strokeWidth={9}
+            stroke={9}
             className="mb-5"
-          />
+          >
+            <XpRing
+              level={home.level.level}
+              tier={home.level.tier}
+              xpIntoLevel={home.level.xpIntoLevel}
+              xpForNextLevel={home.level.xpForNextLevel}
+              size={116}
+              strokeWidth={9}
+            />
+          </GlowRing>
         </div>
         <div className="min-w-0 flex-1 space-y-2.5 text-center sm:text-left">
           <MicroLabel>Your momentum — measured, never estimated</MicroLabel>
