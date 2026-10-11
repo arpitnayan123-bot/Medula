@@ -16,10 +16,8 @@ import {
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { LogoMark } from '@/components/brand/logo'
-import { HeroAnatomy } from '@/components/brand/hero-anatomy'
 import { Magnetic, ScrollReveal, Stagger, StaggerItem } from '@/components/primitives/motion'
-import { ContourAtlas } from '@/components/primitives/scenery'
-import { Aurora, BorderBeam, Marquee, NoiseVeil, Sheen, SpotlightCard, TextShimmer, TiltCard } from '@/components/primitives/aura'
+import { BorderBeam, Marquee, NoiseVeil, Sheen, SpotlightCard, TiltCard } from '@/components/primitives/aura'
 import { useAppStore } from '@/lib/store'
 
 const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1]
@@ -327,40 +325,58 @@ export function LandingPage() {
       </header>
 
       <main id="top" className="overflow-x-clip">
-        {/* ─── HERO ─── */}
+        {/* ─── HERO — cinematic video stage · upper part only, melts into the page ─── */}
         <section className="relative overflow-hidden">
-          <Aurora intensity={0.9} />
-          <ContourAtlas className="opacity-60" />
-          <div className="med-grid absolute inset-0" aria-hidden />
-          <div
-            className="absolute left-1/2 top-[-20%] h-[480px] w-[720px] -translate-x-1/2 rounded-full bg-gold/[0.12] blur-3xl"
-            aria-hidden
-          />
+          {/* Floating-island footage with a slow cinematic settle */}
+          <div className="absolute inset-0" aria-hidden>
+            <motion.div
+              initial={reduce ? false : { scale: 1.14, opacity: 0.4 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ duration: reduce ? 0 : 2.4, ease: EASE }}
+              className="size-full"
+            >
+              {reduce ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src="/videos/hero-poster.jpg" alt="" className="size-full object-cover" />
+              ) : (
+                <video
+                  className="size-full object-cover"
+                  autoPlay
+                  muted
+                  loop
+                  playsInline
+                  preload="metadata"
+                  poster="/videos/hero-poster.jpg"
+                >
+                  <source src="/videos/hero-loop.mp4" type="video/mp4" />
+                </video>
+              )}
+            </motion.div>
 
-          {/* Animated ECG line */}
-          <div
-            className="pointer-events-none absolute inset-x-0 bottom-16 h-32 w-full [mask-image:linear-gradient(to_right,transparent,black_18%,black_82%,transparent)]"
-            aria-hidden
-          >
-            <svg viewBox="0 0 1200 160" preserveAspectRatio="none" className="h-full w-full opacity-[0.28]">
-              <path
-                className="ecg-line"
-                d="M0 90 H150 l10 -14 10 14 H360 l8 10 12 -46 14 82 10 -46 6 10 H640 l10 -16 10 16 H880 l8 10 12 -46 14 82 10 -46 6 10 H1200"
-                fill="none"
-                stroke="#16788c"
-                strokeWidth={1.6}
-              />
-            </svg>
+            {/* Readability veils — theatre light over the footage */}
+            <div className="absolute inset-0 bg-black/35" aria-hidden />
+            <div
+              className="absolute inset-0 bg-[radial-gradient(120%_90%_at_50%_42%,rgba(0,0,0,0.18)_26%,rgba(10,8,5,0.6)_100%)]"
+              aria-hidden
+            />
+            <div className="absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-black/50 to-transparent" aria-hidden />
+            {/* The melt — the video belongs to the upper part, then the ivory page takes over */}
+            <div
+              className="absolute inset-x-0 bottom-0 h-44 bg-gradient-to-b from-transparent via-background/70 to-background sm:h-56"
+              aria-hidden
+            />
           </div>
+
+          <NoiseVeil />
 
           <div className="relative mx-auto flex min-h-[calc(100svh-4rem)] w-full max-w-5xl flex-col items-center justify-center px-4 py-24 text-center sm:px-6">
             <motion.div
               initial={{ opacity: 0, y: 24 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.7, ease: EASE }}
-              className="glass inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-[11px] font-medium tracking-wide text-muted-foreground sm:text-xs"
+              className="hero-glass-chip inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-[11px] font-medium tracking-wide text-[#f3ecdd]/90 sm:text-xs"
             >
-              <span className="size-1.5 rounded-full bg-primary" />
+              <span className="size-1.5 rounded-full bg-gold" />
               PROJECT MEDULA · The control centre of your medical mind
             </motion.div>
 
@@ -368,20 +384,22 @@ export function LandingPage() {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.12, ease: EASE }}
-              className="mt-8 text-4xl font-bold tracking-tighter sm:text-6xl lg:text-7xl"
+              className="mt-8 text-4xl font-bold tracking-tighter text-[#f7f2e7] [text-shadow:0_2px_28px_rgba(0,0,0,0.45)] sm:text-6xl lg:text-7xl"
             >
               Don&apos;t just study medicine.
               <br />
-              <span className="ink-gradient">
-                Build a <TextShimmer>medical brain</TextShimmer>.
-              </span>
+              {reduce ? (
+                <span className="text-[#e6c489]">Build a medical brain.</span>
+              ) : (
+                <span className="shimmer-text-dark">Build a medical brain.</span>
+              )}
             </motion.h1>
 
             <motion.p
               initial={{ opacity: 0, y: 24 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.24, ease: EASE }}
-              className="mt-6 max-w-2xl text-balance text-base leading-relaxed text-ink-soft sm:text-lg"
+              className="mt-6 max-w-2xl text-balance text-base leading-relaxed text-[#efe7d6]/80 sm:text-lg"
             >
               An AI-powered learning system that connects your MBBS curriculum, clinical reasoning and
               NEET-PG preparation into one continuously evolving knowledge map.
@@ -408,7 +426,7 @@ export function LandingPage() {
                 <Button
                   size="lg"
                   variant="ghost"
-                  className="h-12 rounded-full border border-line px-8 text-sm font-semibold tracking-wide text-ink-soft transition-transform hover:scale-[1.03] hover:text-foreground"
+                  className="h-12 rounded-full border border-white/25 bg-white/5 px-8 text-sm font-semibold tracking-wide text-white/90 backdrop-blur-sm transition-transform hover:scale-[1.03] hover:bg-white/10 hover:text-white"
                   onClick={() => {
                     // Sign-in is always explicit — no silent entry into the app.
                     // With an active session the sign-in page shows the one-tap
@@ -425,22 +443,28 @@ export function LandingPage() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 1, delay: 0.55 }}
-              className="mt-8 text-xs text-muted-foreground"
+              className="mt-8 text-xs text-[#efe7d6]/60"
             >
               Built on the NMC CBME curriculum · For every MBBS year → NEET-PG
             </motion.p>
 
+            {/* Scroll cue — a quiet invitation into the page */}
             <motion.div
-              initial={{ opacity: 0, y: 18 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.9, delay: 0.5, ease: EASE }}
-              className="mt-10 w-full max-w-md"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 1, delay: 0.9 }}
+              className="pointer-events-none mt-12 flex flex-col items-center gap-2"
+              aria-hidden
             >
-              <HeroAnatomy className="mx-auto w-full max-w-md" />
+              <span className="text-[10px] font-semibold uppercase tracking-[0.32em] text-[#efe7d6]/50">Scroll</span>
+              <motion.span
+                animate={reduce ? undefined : { y: [0, 6, 0] }}
+                transition={{ duration: 2.2, repeat: Infinity, ease: 'easeInOut' }}
+              >
+                <ChevronRight className="size-4 rotate-90 text-[#efe7d6]/50" />
+              </motion.span>
             </motion.div>
           </div>
-
-          <NoiseVeil />
         </section>
 
         {/* ─── Capability strip — quiet drift of the eight instruments ─── */}
